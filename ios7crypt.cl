@@ -15,15 +15,19 @@ exit
 ;;;;  - getopt
 ;;;;  - cl-quickcheck
 
-;;; Load Quicklisp.
-(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname))))
-  (when (probe-file quicklisp-init)
-    (load quicklisp-init)))
+;;; Hide stupid Quicklisp warnings
+(handler-bind ((warning #'muffle-warning))
+  ;;; Load Quicklisp.
+  (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname))))
+    (when (probe-file quicklisp-init)
+      (load quicklisp-init))))
 
-;;; Load dependencies.
-(asdf:oos 'asdf:load-op 'getopt :verbose nil)
-(asdf:oos 'asdf:load-op 'cl-quickcheck :verbose nil)
-(use-package :cl-quickcheck)
+;;; Hide stupid warnings from dependencies
+(handler-bind ((warning #'muffle-warning))
+  ;;; Load dependencies.
+  (asdf:oos 'asdf:load-op 'getopt :verbose nil)
+  (asdf:oos 'asdf:load-op 'cl-quickcheck :verbose nil)
+  (use-package :cl-quickcheck))
 
 (defparameter *xlat*
   (list #x64 #x73 #x66 #x64 #x3b #x6b #x66 #x6f
