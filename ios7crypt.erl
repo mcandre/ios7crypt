@@ -6,7 +6,7 @@
 -export([encrypt/1, decrypt/1, main/1]).
 -include_lib("triq/include/triq.hrl").
 -import(getopt, [usage/2, parse/2]).
--import(lists, [nth/2, map/2, keymember/3, flatten/1, nthtail/2, any/2]).
+-import(lists, [nth/2, map/2, flatten/1, nthtail/2, any/2]).
 -import(string, [concat/2, join/2, substr/3, to_integer/1]).
 -import(crypto, [exor/2]).
 
