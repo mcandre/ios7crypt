@@ -100,15 +100,19 @@ main(Args) ->
 
 	OptionSpec = option_spec(),
 	case parse(OptionSpec, Args) of
+		{error, _} -> u();
+
 		{ok, {Options, _}} ->
 			case nth(1, Options) of
-				{encrypt, Password} -> io:format("~s~n", [encrypt(Password)]);
-				{decrypt, Hash} -> case decrypt(Hash) of
-					{ok, Password} -> io:format("~s~n", [Password]);
-					_ -> io:format("Invalid hash.~n")
-				end;
+				help -> u();
 				test -> triq:check(prop_reversible());
-				help -> u()
-			end;
-		{error, _} -> u()
+
+				{encrypt, Password} ->
+					io:format("~s~n", [encrypt(Password)]);
+				{decrypt, Hash} ->
+					case decrypt(Hash) of
+						{ok, Password} -> io:format("~s~n", [Password]);
+						_ -> io:format("Invalid hash.~n")
+					end
+			end
 	end.
