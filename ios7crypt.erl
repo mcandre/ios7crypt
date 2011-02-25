@@ -98,8 +98,7 @@ main(Args) ->
 	{A1, A2, A3} = now(),
 	random:seed(A1, A2, A3),
 
-	OptionSpec = option_spec(),
-	case parse(OptionSpec, Args) of
+	case parse(option_spec(), Args) of
 		{error, _} -> u();
 
 		{ok, {Options, _}} ->
