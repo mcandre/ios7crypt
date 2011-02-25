@@ -6,6 +6,7 @@
 -export([encrypt/1, decrypt/1, main/1]).
 -include_lib("triq/include/triq.hrl").
 -import(getopt, [usage/2, parse/2]).
+-import(escript, [script_name/0]).
 -import(lists, [nth/2, map/2, flatten/1, nthtail/2, any/2]).
 -import(string, [concat/2, join/2, substr/3, to_integer/1]).
 -import(crypto, [exor/2]).
@@ -71,13 +72,13 @@ decrypt(Hash) ->
 	end.
 
 prop_reversible() ->
-	?FORALL({Passwd}, {list(int())},
+	?FORALL({Password}, {list(int())},
 
-	case any(fun(X) -> X < 0 end, Passwd) of
+	case any(fun(X) -> X < 0 end, Password) of
 		true -> true; % ignore non-ascii password input
-		false -> case ios7crypt:decrypt(ios7crypt:encrypt(Passwd)) of
+		false -> case ios7crypt:decrypt(ios7crypt:encrypt(Password)) of
 					{error, _} -> false;
-					{ok, Passwd2} -> Passwd2 == Passwd
+					{ok, Password2} -> Password2 == Password
 				end
 	end).
 
@@ -90,7 +91,9 @@ option_spec() ->
 	{help, $h, "help", undefined, "Display usage information"}
 	].
 
-main([]) -> usage(option_spec(), escript:script_name());
+u() -> usage(option_spec(), script_name()).
+
+main([]) -> u();
 main(Args) ->
 	{A1, A2, A3} = now(),
 	random:seed(A1, A2, A3),
@@ -105,8 +108,7 @@ main(Args) ->
 					_ -> io:format("Invalid hash.~n")
 				end;
 				test -> triq:check(prop_reversible());
-				help -> usage(option_spec(), escript:script_name())
+				help -> u()
 			end;
-		{error, _} ->
-			usage(option_spec(), escript:script_name())
+		{error, _} -> u()
 	end.
