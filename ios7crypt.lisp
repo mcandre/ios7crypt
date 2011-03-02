@@ -39,7 +39,7 @@ exit
         #x3b #x66 #x67 #x38 #x37))
 
 ;;; Initialize random-state.
-(setf *random-state* (make-random-state t))
+(setq *random-state* (make-random-state t))
 
 (defun key (seed len)
   (loop for i from 0 to (- len 1) collect
