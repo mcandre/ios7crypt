@@ -47,7 +47,6 @@ char *encrypt(char *password) {
 
 		hash=(char*) malloc(password_length*2+3);
 
-		srand(time(NULL));
 		int seed=rand()%16;
 
 		sprintf(hash, "%02d", seed);
@@ -85,6 +84,8 @@ char *decrypt(char *hash) {
 }
 
 int main(int argc, char **argv) {
+	srand(time(NULL));
+
 	int i;
 
 	if (argc<3) {
