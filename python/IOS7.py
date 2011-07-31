@@ -60,9 +60,9 @@ class MainFrame(wx.Frame):
 			seed=cipher.generateKeyPair()[0]
 			cipher.setKeys(seed)
 			hashBytes=cipher.encrypt(passwordBytes)
-			hash="".join([chr(e) for e in hashBytes])
+			h="".join([chr(e) for e in hashBytes])
 
-			self.hashControl.SetValue(hash)
+			self.hashControl.SetValue(h)
 
 			self.SetStatusText("Encrypted")
 		except:
@@ -71,8 +71,8 @@ class MainFrame(wx.Frame):
 	def OnHash(self, event):
 		self.SetStatusText("Decrypting")
 
-		hash=self.hashControl.GetValue()
-		hashBytes=[ord(e) for e in hash]
+		h=self.hashControl.GetValue()
+		hashBytes=[ord(e) for e in h]
 
 		try:
 			passwordBytes=cipher.decrypt(hashBytes)

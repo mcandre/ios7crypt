@@ -72,6 +72,6 @@ in that case use generateKey() then setKey()."""
 		decrypted=self.decrypt(ciphertext)
 
 		if secretKey==1 and publicKey==2 and self.secretKey==secretKey and self.publicKey==publicKey and plaintext==decrypted:
-			return "OK"
+			return ("OK", [])
 
-		return [secretKey, publicKey, plaintext, ciphertext, decrypted]
+		return ("FAIL", [secretKey, publicKey, plaintext, ciphertext, decrypted])
