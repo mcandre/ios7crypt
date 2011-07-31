@@ -32,6 +32,8 @@ class IOS7Crypt(Cipher):
 	TRUNCATE=11
 
 	def __init__(self, secretKey=None, publicKey=None): # ignore publicKey
+		Cipher.__init__(self)
+
 		if secretKey==None:
 			self.setKeys(self.generateKeyPair()[0])
 		else:
@@ -56,22 +58,22 @@ class IOS7Crypt(Cipher):
 		elif len(password)>self.TRUNCATE:
 			password=password[:self.TRUNCATE]
 
-		hash="%02d%s" % (
+		h="%02d%s" % (
 			self.secretKey,
 			"".join(["%02X" % (password[i]^self.XLAT[self.secretKey+i]) for i in range(len(password))])
 		)
 
-		return [ord(e) for e in hash]
+		return [ord(e) for e in h]
 
-	def decrypt(self, hash=[48, 48, 48, 48]): # "0000"
-		if len(hash)<4:
-			raise "Invalid hash length"
+	def decrypt(self, h=[48, 48, 48, 48]): # "0000"
+		if len(h)<4:
+			raise Exception("Invalid hash length")
 
-		hash="".join([chr(e) for e in hash])
+		h="".join([chr(e) for e in h])
 
-		self.secretKey=int(hash[:2])
+		self.secretKey=int(h[:2])
 
-		encrypted=hash[2:]
+		encrypted=h[2:]
 
 		cipherBytes=[]
 		i=0
@@ -88,14 +90,14 @@ class IOS7Crypt(Cipher):
 		plaintext=[97, 98, 99] # "abc"
 		self.secretKey=self.generateKeyPair()[0]
 
-		self.setKeys(secretKey)
+		self.setKeys(self.secretKey)
 		encrypted=self.encrypt(plaintext)
 		decrypted=self.decrypt(encrypted)
 
 		if decrypted==plaintext:
-			return "OK"
+			return ("OK", [])
 
-		return [plaintext, self.secretKey, encrypted, decrypted]
+		return ("FAIL", [plaintext, self.secretKey, encrypted, decrypted])
 
 def usage():
 	print "Usage: %s [options] <data>" % (sys.argv[0])
@@ -115,7 +117,7 @@ def main():
 	mode=ENCRYPT_MODE
 	password=[48]
 	seed=None
-	hash=[48, 48, 48, 48] # "0000"
+	h=[48, 48, 48, 48] # "0000"
 
 	systemArgs=sys.argv[1:] # ignore program name
 
@@ -145,8 +147,8 @@ def main():
 				seed=int(value)
 				if seed<0 or seed>25:
 					raise Exception
-			except Exception, e:
-				raise "Seed is between 0 and 25 inclusive"
+			except Exception:
+				raise Exception("Seed is between 0 and 25 inclusive")
 
 	if mode==TEST_MODE:
 		cipher=IOS7Crypt()
@@ -156,9 +158,9 @@ def main():
 		cipher=IOS7Crypt(seed)
 		print "".join([chr(e) for e in cipher.encrypt(password)])
 	elif mode==DECRYPT_MODE:
-		hash=[ord(e) for e in args[0]]
+		h=[ord(e) for e in args[0]]
 		cipher=IOS7Crypt(seed)
-		print "".join([chr(e) for e in cipher.decrypt(hash)])
+		print "".join([chr(e) for e in cipher.decrypt(h)])
 
 if __name__=="__main__":
 	main()
