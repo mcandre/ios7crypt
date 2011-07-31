@@ -6,7 +6,7 @@
 #include <string.h>
 #include <time.h>
 
-int xlat[]={
+static int xlat[] = {
 	0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
 	0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
 	0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
@@ -16,9 +16,9 @@ int xlat[]={
 	0x3b, 0x66, 0x67, 0x38, 0x37
 };
 
-int XLAT_SIZE=53;
+static int XLAT_SIZE = 53;
 
-void usage(char *program) {
+static void usage(char *program) {
 	printf("Usage: %s [options]\n\n", program);
 	printf("-e <passwords>\n");
 	printf("-d <hashes>\n");
@@ -26,79 +26,85 @@ void usage(char *program) {
 	exit(0);
 }
 
-int htoi(char x) {
+static int htoi(char x) {
 	if(isdigit(x))
-		return x-'0';
+		return (int) (x - '0');
 	else
-		return toupper(x)-'A'+10;
+		return (int) (toupper(x) - 'A' + 10);
 }
 
-char *encrypt(char *password) {
-	char *hash="";
+void encrypt(char *password, char *hash) {
+	int password_length, seed, i;
 
-	if (password!=NULL && strlen(password)>0) {
-		if (strlen(password)>11) {
-			char *temp=(char*) malloc(12);
-			strncpy(temp, password, 11);
-			password=temp;
-		}
+	char *temp = (char *) malloc(3);
 
-		int password_length=strlen(password);
+	if (temp != NULL && password != NULL && strlen(password) > 0 && hash != NULL) {
+		password_length = (int) strlen(password);
 
-		hash=(char*) malloc(password_length*2+3);
+		seed = rand() % 16;
 
-		int seed=rand()%16;
+		(void) snprintf(hash, 3, "%02d", seed);
 
-		sprintf(hash, "%02d", seed);
-
-		char *temp=(char*) malloc(3);
-
-		int i;
-		for (i=0; i<password_length; i++) {
-			sprintf(temp, "%02x", ((int) password[i])^xlat[(seed++)%XLAT_SIZE]);
+		for (i = 0; i < password_length; i++) {
+			(void) snprintf(temp, 3, "%02x", ((unsigned int) password[i]) ^ xlat[(seed++) % XLAT_SIZE]);
 			strcat(hash, temp);
 		}
 	}
 
-	return hash;
+	free(temp);
 }
 
-char *decrypt(char *hash) {
-	char *password="";
+void decrypt(char *hash, char *password) {
+	int seed, index, i, c;
 
-	if (hash!=NULL && strlen(hash)>3) {
-		password=(char*) malloc(strlen(hash)/2);
+	if (hash != NULL && strlen(hash) > 3 && password != NULL) {
+		seed = htoi(hash[0]) * 10 + htoi(hash[1]);
 
-		int seed=htoi(hash[0])*10+htoi(hash[1]);
+		index = 0;
 
-		int index=0;
-
-		int i;
-		for (i=2; i<strlen(hash); i+=2) {
-			int c=htoi(hash[i])*16+htoi(hash[i+1]);
-			password[index++]=(char) c^xlat[(seed++)%XLAT_SIZE];
+		for (i = 2; i < (int) strlen(hash); i += 2) {
+			c = htoi(hash[i]) * 16 + htoi(hash[i + 1]);
+			password[index++] = (char) c ^ xlat[(seed++) % XLAT_SIZE];
 		}
 	}
-
-	return password;
 }
 
 int main(int argc, char **argv) {
-	srand(time(NULL));
-
 	int i;
 
-	if (argc<3) {
+	char *password, *hash;
+
+	srand((unsigned int) time(NULL));
+
+	if (argc < 3) {
 		usage(argv[0]);
 	}
-	else if (strcmp(argv[1], "-e")==0) {
-		for (i=2; i<argc; i++) {
-			printf("%s\n", encrypt(argv[i]));
+	else if (strcmp(argv[1], "-e") == 0) {
+		for (i = 2; i < argc; i++) {
+			password = argv[i];
+
+			hash = (char *) malloc((size_t) strlen(password) * 2 + 3);
+
+			if (hash != NULL) {
+				encrypt(password, hash);
+				printf("%s\n", hash);
+
+				free(hash);
+			}
 		}
 	}
-	else if (strcmp(argv[1], "-d")==0) {
-		for (i=2; i<argc; i++) {
-			printf("%s\n", decrypt(argv[i]));
+	else if (strcmp(argv[1], "-d") == 0) {
+		for (i = 2; i < argc; i++) {
+			hash = argv[i];
+
+			password = (char *) malloc((size_t) strlen(hash) / 2);
+
+			if (password != NULL) {
+				decrypt(hash, password);
+				printf("%s\n", password);
+
+				free(password);
+			}
 		}
 	}
 	else {
