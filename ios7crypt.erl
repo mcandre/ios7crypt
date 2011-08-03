@@ -23,10 +23,10 @@
 ]).
 
 key(_, 0) -> [];
-key(Seed, Length) -> [nth((Seed+1) rem ?XlatLen, ?Xlat) | key(Seed+1, Length-1)].
+key(Seed, Length) -> [nth((Seed + 1) rem ?XlatLen, ?Xlat) | key(Seed + 1, Length - 1)].
 
 encrypt(Password) ->
-	Seed = random:uniform(16)-1,
+	Seed = random:uniform(16) - 1,
 	Key = key(Seed, length(Password)),
 	CipherText = binary_to_list(exor(Password, Key)),
 
