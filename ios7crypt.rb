@@ -19,7 +19,12 @@
 #
 # --decrypt, -d <hash1> <hash2> <hash3> ...:
 #    prints out the decrypted hashes as passwords
+#
+# --test, -t
+#    runs unit tests
 
+require "rubygems"
+require "rushcheck"
 require "getoptlong"
 require "rdoc/usage"
 
@@ -33,34 +38,43 @@ $xlat=[
 	0x3b, 0x66, 0x67, 0x38, 0x37
 ]
 
-def encrypt(password)
-	seed=rand(16)
-	password=password[0, 11]
+class String
+	def encrypt
+		seed=rand(16)
 
-	hash=(0 .. (password.length-1)).collect { |i| $xlat[(seed+i) % $xlat.length] ^ password[i] }
+		hash=(0 .. (self.length-1)).collect { |i| $xlat[(seed+i) % $xlat.length] ^ self[i] }
 
-	return format("%02d", seed) + hash.collect { |e| format("%02x", e) }.join("")
+		format("%02d", seed) + hash.collect { |e| format("%02x", e) }.join("")
+	end
+
+	def decrypt
+		seed=self[0, 2].to_i
+
+		hash=self[2, self.length-1]
+
+		pairs=(0 .. (hash.length/2-1)).collect { |i| hash[i*2, 2].to_i(16) }
+
+		decrypted=(0 .. (pairs.length-1)).collect { |i| $xlat[(seed+i) % $xlat.length] ^ pairs[i] }
+
+		decrypted.collect { |e| e.chr }.join("")
+	end
 end
 
-def decrypt(hash)
-	seed=hash[0, 2].to_i
-
-	hash=hash[2, hash.length-1]
-
-	pairs=(0 .. (hash.length/2-1)).collect { |i| hash[i*2, 2].to_i(16) }
-
-	decrypted=(0 .. (pairs.length-1)).collect { |i| $xlat[(seed+i) % $xlat.length] ^ pairs[i] }
-
-	return (decrypted.collect { |e| e.chr }).join("")
+def test
+	RushCheck::Assertion.new(String) { |s| s == s.encrypt.decrypt }.check
 end
 
 def main
 	mode = :encrypt
 
+	password = ""
+	hash = ""
+
 	opts=GetoptLong.new(
 		["--help", "-h", GetoptLong::NO_ARGUMENT],
-		["--encrypt", "-e", GetoptLong::NO_ARGUMENT],
-		["--decrypt", "-d", GetoptLong::NO_ARGUMENT]
+		["--encrypt", "-e", GetoptLong::REQUIRED_ARGUMENT],
+		["--decrypt", "-d", GetoptLong::REQUIRED_ARGUMENT],
+		["--test", "-t", GetoptLong::NO_ARGUMENT]
 	)
 
 	opts.each { |option, value|
@@ -69,20 +83,22 @@ def main
 			RDoc::usage("Usage")
 		when "--encrypt"
 			mode = :encrypt
+			password = value
 		when "--decrypt"
 			mode = :decrypt
+			hash = value
+		when "--test"
+			mode = :test
 		end
 	}
 
-	if ARGV.length<1
-		RDoc::usage("Usage")
-	end
-
 	case mode
 	when :encrypt
-		ARGV.each { |arg| puts encrypt(arg) }
+		puts password.encrypt
 	when :decrypt
-		ARGV.each { |arg| puts decrypt(arg) }
+		puts hash.decrypt
+	when :test
+		test
 	end
 end
 
