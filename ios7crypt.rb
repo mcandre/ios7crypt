@@ -14,11 +14,11 @@
 # --help, -h:
 #    show help
 #
-# --encrypt, -e <password1> <password2> <password3> ...:
-#    prints out the encrypted passwords as hashes
+# --encrypt, -e <password>
+#    prints out the encrypted password as a hash
 #
-# --decrypt, -d <hash1> <hash2> <hash3> ...:
-#    prints out the decrypted hashes as passwords
+# --decrypt, -d <hash>
+#    prints out the decrypted hash as a password
 #
 # --test, -t
 #    runs unit tests
