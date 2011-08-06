@@ -41,9 +41,9 @@ Object subclass: IOS7Crypt [
 	]
 ]
 
-| prog args mode selector arguments result |
-
 [
+	| prog args mode selector arguments result |
+
 	prog := Smalltalk getArgv: 1.
 
 	"Drop the program name."
@@ -54,10 +54,8 @@ Object subclass: IOS7Crypt [
 		Getopt parse: args with: '-e: -d: -t' do: [ :opt :arg |
 			selector := (opt asString, $: asString) asSymbol.
 			arguments := { arg }.
-		].
-	] on: Error  do: [ IOS7Crypt usage: prog. ObjectMemory quit: 0. ].
-
-	result := IOS7Crypt perform: selector withArguments: arguments.
-
-	Transcript show: result; cr.
+			result := IOS7Crypt perform: selector withArguments: arguments.
+			Transcript show: result; cr.
+		] ifError: [ self error: 'Parse error'. ].
+	] on: Error do: [ IOS7Crypt usage: prog. ObjectMemory quit: 0. ].
 ] on: ExUserBreak do: [].
