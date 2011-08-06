@@ -65,7 +65,7 @@ def test
 end
 
 def main
-	mode = :encrypt
+	mode = :usage
 
 	password = ""
 	hash = ""
@@ -93,6 +93,8 @@ def main
 	}
 
 	case mode
+	when :usage
+		RDoc::usage("Usage")
 	when :encrypt
 		puts password.encrypt
 	when :decrypt
