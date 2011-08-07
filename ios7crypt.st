@@ -7,7 +7,7 @@
 PackageLoader fileInPackage: 'QuickSmash'.
 
 Object subclass: IOS7Crypt [
-	| random xlat propReversible |
+	| random xlat |
 
 	random := Random new.
 
@@ -101,10 +101,10 @@ Object subclass: IOS7Crypt [
 		^password
 	]
 
-	propReversible := [ :password | password = IOS7Crypt decrypt: (IOS7Crypt encrypt: password). ].
-
 	IOS7Crypt class >> test [
-		| result |
+		| propReversible result |
+
+		propReversible := [ :password | password = (IOS7Crypt decrypt: (IOS7Crypt encrypt: password)). ].
 
 		result := QuickSmash testProperty: propReversible withGenerators: { [ QuickSmash genString. ] }.
 
