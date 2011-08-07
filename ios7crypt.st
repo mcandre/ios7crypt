@@ -30,7 +30,7 @@ Object subclass: IOS7Crypt [
 	]
 
 	IOS7Crypt class >> encrypt: password [
-		| seed hash cipherbytes |
+		| seed hash ciphertext |
 
 		seed := random between: 0 and: 15.
 
@@ -40,8 +40,8 @@ Object subclass: IOS7Crypt [
 			hash := '0', hash.
 		].
 
-		cipherbytes := 0 to: (password size - 1) collect: [ :i |
-			| plainbyte keybyte cipherbyte ciphertext |
+		ciphertext := 0 to: (password size - 1) collect: [ :i |
+			| plainbyte keybyte cipherbyte formatted |
 
 			plainbyte := password byteAt: (i + 1).
 
@@ -49,28 +49,49 @@ Object subclass: IOS7Crypt [
 
 			cipherbyte := plainbyte bitXor: keybyte.
 
-			ciphertext := (cipherbyte printString: 16) asLowercase.
+			formatted := (cipherbyte printString: 16) asLowercase.
 
-			[ ciphertext size < 2] whileTrue: [
-				ciphertext := '0', ciphertext.
+			[ formatted size < 2] whileTrue: [
+				formatted := '0', formatted.
 			].
 
-			ciphertext.
+			formatted.
 		].
 
-		cipherbytes := cipherbytes join: ''.
-
-		hash := hash, cipherbytes.
+		hash := hash, (ciphertext join: '').
 
 		^hash
 	]
 
 	IOS7Crypt class >> decrypt: hash [
-		| password |
+		| seed hashbytes password |
 
-		"password := self collect: [ :c | c rot13 ]."
+		seed := hash copyFrom: 1 to: 2.
+		seed := Number readFrom: (ReadStream on: seed) radix: 10.
 
-		password := 'Decrypting...'.
+		hashbytes := hash copyFrom: 3.
+
+		((hashbytes size) odd) ifTrue: [
+			hashbytes := hashbytes copyFrom: 1 to: (hashbytes size - 1).
+		].
+
+		hashbytes := 1 to: (hashbytes size) by: 2 collect: [ :i |
+			| h |
+
+			h := hashbytes copyFrom: i to: (i + 1).
+			h := Number readFrom: (ReadStream on: h) radix: 16.
+		].
+
+		password := 0 to: (hashbytes size - 1) collect: [ :i |
+			| cipherbyte keybyte plainbyte |
+
+			cipherbyte := hashbytes at: (i + 1).
+			keybyte := xlat byteAt: (((seed + i) \\ xlat size) + 1).
+
+			plainbyte := cipherbyte bitXor: keybyte.
+		].
+
+		password := (password asByteArray) asString.
 
 		^password
 	]
