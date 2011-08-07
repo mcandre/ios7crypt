@@ -112,34 +112,42 @@ Object subclass: IOS7Crypt [
 	]
 ]
 
-[
-	| prog args mode password hash |
+| main |
 
-	prog := Smalltalk getArgv: 1.
+main := [
+	[
+		| prog args mode password hash |
 
-	"Drop the program name."
-	args := (2 to: Smalltalk getArgc) collect: [ :i | Smalltalk getArgv: i. ].
+		prog := Smalltalk getArgv: 1.
 
-	"(args size < 1) ifTrue: [ IOS7Crypt usage: prog. ]."
+		"Drop the program name."
+		args := (2 to: Smalltalk getArgc) collect: [ :i | Smalltalk getArgv: i. ].
 
-	Getopt parse: args with: '-e: -d: -t' do: [ :o :v |
-		(o = $e) ifTrue: [ mode := #encrypt. password := v. ].
-		(o = $d) ifTrue: [ mode := #decrypt. hash := v. ].
-		(o = $t) ifTrue: [ mode := #test. ]
-	] ifError: [ IOS7Crypt usage: prog. ].
+		"(args size < 1) ifTrue: [ IOS7Crypt usage: prog. ]."
 
-	(mode = #encrypt) ifTrue: [
-		Transcript show: (IOS7Crypt encrypt: password); cr.
-	] ifFalse: [
-		(mode = #decrypt) ifTrue: [
-			Transcript show: (IOS7Crypt decrypt: hash); cr.
+		Getopt parse: args with: '-e: -d: -t' do: [ :o :v |
+			(o = $e) ifTrue: [ mode := #encrypt. password := v. ].
+			(o = $d) ifTrue: [ mode := #decrypt. hash := v. ].
+			(o = $t) ifTrue: [ mode := #test. ]
+		] ifError: [ IOS7Crypt usage: prog. ].
+
+		(mode = #encrypt) ifTrue: [
+			Transcript show: (IOS7Crypt encrypt: password); cr.
 		] ifFalse: [
-			(mode = #test) ifTrue: [
-				IOS7Crypt test.
+			(mode = #decrypt) ifTrue: [
+				Transcript show: (IOS7Crypt decrypt: hash); cr.
 			] ifFalse: [
-				IOS7Crypt usage: prog.
+				(mode = #test) ifTrue: [
+					IOS7Crypt test.
+				] ifFalse: [
+					IOS7Crypt usage: prog.
+				].
 			].
 		].
-	].
 	
-] on: ExUserBreak do: [].
+	] on: ExUserBreak do: [].
+].
+
+(((Smalltalk getArgc) > 0) and: [ ((Smalltalk getArgv: 1) endsWith: 'ios7crypt.st') ]) ifTrue: [
+	main value.
+].
