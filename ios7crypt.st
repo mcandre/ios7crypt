@@ -1,8 +1,13 @@
 "exec" "gst" "-f" "$0" "$0" "$@"
 "exit"
 
+"Requires quicksmash."
+"https://github.com/mcandre/quicksmash"
+
+PackageLoader fileInPackage: 'QuickSmash'.
+
 Object subclass: IOS7Crypt [
-	| random xlat |
+	| random xlat propReversible |
 
 	random := Random new.
 
@@ -96,12 +101,12 @@ Object subclass: IOS7Crypt [
 		^password
 	]
 
+	propReversible := [ :password | password = IOS7Crypt decrypt: (IOS7Crypt encrypt: password). ].
+
 	IOS7Crypt class >> test [
 		| result |
 
-		result := 'Testing...'.
-
-		"..."
+		result := QuickSmash testProperty: propReversible withGenerators: { [ QuickSmash genString. ] }.
 
 		^result
 	]
