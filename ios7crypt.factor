@@ -1,6 +1,6 @@
 #! /usr/bin/env factor
 
-USING: io ;
+USING: kernel namespaces io command-line prettyprint ;
 IN: ios7crypt
 
 : usage ( -- )
@@ -11,8 +11,11 @@ IN: ios7crypt
     "-help" print ;
 
 : main ( -- )
-    usage
-    ! ...
+    command-line get parse-command-line
+    "help" get .
+    ! [ usage ]
+    ! [ "BLARGH" print ]
+    ! if
     ;
 
 MAIN: main
