@@ -1,6 +1,21 @@
 #! /usr/bin/env factor
 
-USING: kernel namespaces sequences arrays combinators io command-line math math.ranges random formatting prettyprint ;
+USING:
+    kernel
+    namespaces
+    sequences
+    arrays
+    strings
+    grouping
+    combinators
+    io
+    command-line
+    math
+    math.ranges
+    math.parser
+    random
+    formatting ;
+
 IN: ios7crypt
 
 : xlat ( -- seq ) {
@@ -18,26 +33,39 @@ IN: ios7crypt
 : keys ( n r -- seq ) dup rot + 1 <range> [ xlat-nth ] map ;
 
 : encrypt ( str -- str )
-    ! password
     >array ! passchars
-
     0 15 1 <range> random ! passchars seed
-
     swap 2dup length swap keys ! seed passchars keys
-
     [ bitxor ] 2map ! seed ciphertext
-
     [ "%02x" sprintf ] map "" join ! seed hexciphertext
-
-    swap
-    "%02d" sprintf
-    swap
+    swap "%02d" sprintf swap
 
     append ;
 
-: decrypt ( str -- str )
-    ! ...
-    ;
+: decrypt ( str -- str/f )
+    dup 0 2 rot subseq 10 base> ! hash seed/f
+
+    [ ! Is seed valid?
+        ! hash seed
+
+        swap dup length ! seed hash rawlen
+
+        dup even? ! Reduce hash to valid hexpairs
+        [ ]
+        [ 1 - ]
+        if ! seed hash len
+
+        2 swap rot subseq 2 group ! seed hexpairs
+        dup length rot keys swap ! keys hexpairs
+        [ 16 base> ] map ! keys rawciphertext
+
+        dup f swap member? ! Any invalid numbers?
+        [ drop drop f ]
+        [ [ bitxor ] 2map >string ]
+        if
+    ]
+    [ drop f ]
+    if* ;
 
 : test ( -- )
     "Testing..." print
@@ -46,8 +74,8 @@ IN: ios7crypt
 
 : usage ( -- )
     "Usage: ios7crypt.factor [options]" print
-    "-e <password>" print
-    "-d <hash>" print
+    "-e=<password>" print
+    "-d=<hash>" print
     "-t" print
     "-h" print ;
 
@@ -56,8 +84,8 @@ IN: ios7crypt
 
     {
         { [ "h" get ] [ usage ] }
-        { [ "e" get ] [ "e" get encrypt print ] }
-        { [ "d" get ] [ "d" get decrypt print ] }
+        { [ "e" get string? ] [ "e" get encrypt print ] }
+        { [ "d" get string? ] [ "d" get decrypt [ print ] [ "Invalid hash" print ] if* ] }
         { [ "t" get ] [ test ] }
         [ usage ]
     }
