@@ -68,8 +68,17 @@ IN: ios7crypt
     if* ;
 
 : test ( -- )
-    "Testing..." print
-    ! ...
+    "monkey"
+    "060b002f474b10"
+    decrypt
+    assert=
+
+    "haberdasher"
+    "12110415171908053923213a"
+    decrypt
+    assert=
+
+    "All tests pass" print
     ;
 
 : usage ( -- )
