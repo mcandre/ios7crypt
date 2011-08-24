@@ -30,11 +30,11 @@ IN: ios7crypt
 
 : xlat-nth ( n -- n ) xlat length mod xlat nth ;
 
-: keys ( n r -- seq ) dup rot + 1 <range> [ xlat-nth ] map ;
+: keys ( n r -- seq ) dup rot + [a,b] [ xlat-nth ] map ;
 
 : encrypt ( str -- str )
     >array ! passchars
-    0 15 1 <range> random ! passchars seed
+    0 15 [a,b] random ! passchars seed
     swap 2dup length swap keys ! seed passchars keys
     [ bitxor ] 2map ! seed ciphertext
     [ "%02x" sprintf ] map "" join ! seed hexciphertext
@@ -77,6 +77,29 @@ IN: ios7crypt
     "12110415171908053923213a"
     decrypt
     assert=
+
+    "monkey"
+    encrypt
+    {
+        "00091c080f5e12"
+        "011e090a500e1f"
+        "020b0b55000316"
+        "030954050d0a38"
+        "04560408042455"
+        "050609012a4957"
+        "060b002f474b10"
+        "07022e42450c00"
+        "082c4340021c1c"
+        "0941410712000e"
+        "104306170e120b"
+        "1104160b1c1712"
+        "12140a19190e15"
+        "1308181c00091d"
+        "141a1d05070133"
+        "151f04020f2f32"
+    }
+    member?
+    t assert=
 
     "All tests pass" print
     ;
