@@ -34,12 +34,11 @@ IN: ios7crypt
 
 : encrypt ( str -- str )
     >array ! passchars
-    0 15 [a,b] random ! passchars seed
+    16 iota random ! passchars seed
     swap 2dup length swap keys ! seed passchars keys
     [ bitxor ] 2map ! seed ciphertext
     [ "%02x" sprintf ] map "" join ! seed hexciphertext
     swap "%02d" sprintf swap
-
     append ;
 
 : decrypt ( str -- str/f )
