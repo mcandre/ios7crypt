@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 static int xlat[] = {
 	0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
