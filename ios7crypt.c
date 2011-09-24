@@ -1,11 +1,21 @@
 /* Andrew Pennebaker
-	Copyright 2005 Andrew Pennebaker */
+   Copyright 2005-2011 Andrew Pennebaker
 
-#include <stdlib.h>
-#include <stdio.h>
+   Compile:
+
+   gcc -o ios7crypt ios7crypt.c qc.c qc.h -lgc -Wall
+
+   Run:
+
+   ./ios7crypt [options]
+*/
+
+#include "qc.h"
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 static int xlat[] = {
 	0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
@@ -23,6 +33,7 @@ static void usage(char *program) {
 	printf("Usage: %s [options]\n\n", program);
 	printf("-e <passwords>\n");
 	printf("-d <hashes>\n");
+	printf("-t unit test\n");
 
 	exit(0);
 }
@@ -70,17 +81,48 @@ void decrypt(char *hash, char *password) {
 	}
 }
 
+bool reversible(void *data) {
+	int i;
+
+	char* password = qc_args(char*, 0, sizeof(char*));
+
+	char* hash = (char*) malloc((size_t) strlen(password) * 2 + 3);
+	for (i = 0; i < strlen(password) * 2 + 3; i++) {
+		hash[i] = '\0';
+	}
+
+	encrypt(password, hash);
+
+	char* password2 = (char*) malloc((size_t) strlen(hash) / 2 * sizeof(char));
+	for (i = 0; i < strlen(hash) / 2; i++) {
+		password2[i] = '\0';
+	}
+
+	decrypt(hash, password2);
+
+	int cmp = strcmp(password, password2);
+
+	free(hash);
+	free(password2);
+
+	return cmp == 0;
+}
+
 int main(int argc, char **argv) {
 	int i;
 
 	char *password, *hash;
 
-	srand((unsigned int) time(NULL));
+	qc_init();
 
-	if (argc < 3) {
+	if (argc < 2) {
 		usage(argv[0]);
 	}
 	else if (strcmp(argv[1], "-e") == 0) {
+		if (argc < 3) {
+			usage(argv[0]);
+		}
+
 		for (i = 2; i < argc; i++) {
 			password = argv[i];
 
@@ -95,6 +137,10 @@ int main(int argc, char **argv) {
 		}
 	}
 	else if (strcmp(argv[1], "-d") == 0) {
+		if (argc < 3) {
+			usage(argv[0]);
+		}
+
 		for (i = 2; i < argc; i++) {
 			hash = argv[i];
 
@@ -107,6 +153,12 @@ int main(int argc, char **argv) {
 				free(password);
 			}
 		}
+	}
+	else if (strcmp(argv[1], "-t") == 0) {
+		fp gs[] = { gen_string };
+		fp ps[] = { print_string };
+
+		for_all(reversible, 1, gs, ps, sizeof(char*));
 	}
 	else {
 		usage(argv[0]);
