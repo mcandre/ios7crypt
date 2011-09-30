@@ -37,11 +37,15 @@ let prop_reversible : string -> bool =
 	fun password -> decrypt (encrypt password) = password
 
 (* for generating random strings *)
-module ArbString = Arbitrary_string ;;
+let arbstring = arbitrary_string
 
-module C = Check(Testable_fun (ArbString) (PShow_string) (Testable_bool))
+(* for printing out strings *)
+let showstring = show_string
 
-let test () = C.quickCheck prop_reversible
+(* for being able to test (string -> bool) *)
+let testable_string_to_bool = testable_fun arbstring showstring testable_bool
+
+let test () = quickCheck testable_string_to_bool prop_reversible
 
 let specs = [
 	('e', "encrypt", None, Some (fun v -> mode := Encrypt; password := v));
@@ -50,21 +54,21 @@ let specs = [
 	('t', "test", (set mode Test), None)
 ]
 
-let usage program : string -> unit =
+let usage program =
 	print_endline ("Usage: " ^ program ^ " [options]");
 	print_endline "-e --encrypt <password>\tEncrypt a password";
 	print_endline "-d --decrypt <hash>\tDecrypt a hash";
 	print_endline "-t --test\t\tRun unit tests";
 	print_endline "-h --help\t\tUsage info"
 
-let main program : string -> unit =
+let main program =
 	parse_cmdline specs print_endline;
 
 	match !mode with
 		Help -> usage program |
 		Encrypt -> print_endline (encrypt !password) |
 		Decrypt -> print_endline (decrypt !hash) |
-		Test -> print_endline (test ())
+		Test -> test ()
 
 let _ =
 	let program = Sys.argv.(0)
