@@ -5,7 +5,7 @@ Andrew Pennebaker
 
 Requirements:
 
- * Getopt (http://alain.frisch.fr/soft.html#Getopt)
+ * Getopt (https://github.com/mcandre/ocaml-getopt)
  * QuickCheck (https://github.com/camlunity/ocaml-quickcheck)
 
 Compile:
