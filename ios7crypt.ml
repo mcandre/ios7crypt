@@ -82,7 +82,7 @@ let decrypt hash =
 		try
 			let s = int_of_string (String.sub hash 0 2) in
 			let keys = xlat s ((String.length hash - 2) / 2) in
-			let ciphertext = List.map (int_of_string) (List.map (fun x -> "0x" ^ x) (only_pairs (String.sub hash 2 (String.length hash - 2)))) in
+			let ciphertext = List.map (fun x -> int_of_string ("0x" ^ x)) (only_pairs (String.sub hash 2 (String.length hash - 2))) in
 			let plaintext = List.map2 (lxor) keys ciphertext in
 			Some (implode (List.map (Char.chr) plaintext))
 		with Failure "int_of_string" -> None
