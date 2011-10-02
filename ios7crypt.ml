@@ -70,11 +70,10 @@ let encrypt password =
 	let ciphertext = List.map2 (lxor) plaintext keys in
 		(Printf.sprintf "%02d" seed) ^ (String.concat "" (List.map (Printf.sprintf "%02x") ciphertext))
 
-let only_pairs text =
-	if String.length text <= 3 then
-		[String.sub text 0 2]
+let rec only_pairs text = [String.sub text 0 2] @ if String.length text <= 3 then
+		[]
 	else
-		[String.sub text 0 2] @ (onlyPairs . drop 2) text	
+		only_pairs (String.sub text 2 (String.length text - 2))
 
 let decrypt hash =
 	if String.length hash < 4 then
@@ -82,10 +81,10 @@ let decrypt hash =
 	else
 		try
 			let s = int_of_string (String.sub hash 0 2) in
+			let keys = xlat s (String.length hash - 2) in
 			let p = List.map (int_of_string) (List.map (fun x -> "0x" ^ x) (only_pairs (String.sub hash 2 (String.length hash)))) in
-			let keys = xlat s in
 			let plaintext = List.map2 (lxor) keys p in
-			Some (String.concat "" (map (Char.chr) plaintext))
+			Some (implode (List.map (Char.chr) plaintext))
 		with Failure "int_of_string" -> None
 
 let prop_reversible password =
@@ -122,7 +121,9 @@ let main program =
 	match !mode with
 		Help -> usage program |
 		Encrypt -> print_endline (encrypt !password) |
-		Decrypt -> print_endline (decrypt !hash) |
+		Decrypt -> (match decrypt !hash with
+			Some password -> print_endline password |
+			_ -> print_endline "Invalid hash.") |
 		Test -> test ()
 
 let _ =
