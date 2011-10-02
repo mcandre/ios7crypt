@@ -20,7 +20,6 @@ Run:
 
 open Getopt
 open QuickCheck
-open List
 
 type mode = Encrypt | Decrypt | Help | Test
 
@@ -42,13 +41,38 @@ let rec xlat i len =
 	if len < 1 then
 		[]
 	else
-		append [nth xlat' (i mod (length xlat'))] (xlat (i + 1) (len - 1))
+		[List.nth xlat' (i mod (List.length xlat'))] @ (xlat (i + 1) (len - 1))
+
+(* Seed the random number generator. *)
+let _ = Random.self_init ()
+
+(*
+From OCaml FAQ: What is the equivalent of explode : string -> char list and the converse implode : char list -> string ?
+http://caml.inria.fr/pub/old_caml_site/FAQ/FAQ_EXPERT-eng.html#strings
+*)
+
+let explode s =
+	let rec exp i l =
+		if i < 0 then l else exp (i - 1) (s.[i] :: l) in
+			exp (String.length s - 1) []
+
+let implode l =
+	let res = String.create (List.length l) in
+	let rec imp i = function
+		| [] -> res
+		| c :: l -> res.[i] <- c; imp (i + 1) l in
+			imp 0 l
 
 let encrypt password =
-	password (* ... *)
+	let seed = Random.int 16 in
+	let keys = xlat seed (String.length password) in
+	let plaintext = List.map Char.code (explode password) in
+	let ciphertext = List.map2 (lxor) plaintext keys in
+		(Printf.sprintf "%02d" seed) ^ (String.concat "" (List.map (Printf.sprintf "%02x") ciphertext))
+	
 
-let decrypt hash =
-	hash (* ... *)
+let decrypt hash = "monkey"
+	(* ... *)
 
 let prop_reversible password =
 	decrypt (encrypt password) = password
