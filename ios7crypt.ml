@@ -69,13 +69,27 @@ let encrypt password =
 	let plaintext = List.map Char.code (explode password) in
 	let ciphertext = List.map2 (lxor) plaintext keys in
 		(Printf.sprintf "%02d" seed) ^ (String.concat "" (List.map (Printf.sprintf "%02x") ciphertext))
-	
 
-let decrypt hash = "monkey"
-	(* ... *)
+let only_pairs text =
+	if String.length text <= 3 then
+		[String.sub text 0 2]
+	else
+		[String.sub text 0 2] @ (onlyPairs . drop 2) text	
+
+let decrypt hash =
+	if String.length hash < 4 then
+		Some ""
+	else
+		try
+			let s = int_of_string (String.sub hash 0 2) in
+			let p = List.map (int_of_string) (List.map (fun x -> "0x" ^ x) (only_pairs (String.sub hash 2 (String.length hash)))) in
+			let keys = xlat s in
+			let plaintext = List.map2 (lxor) keys p in
+			Some (String.concat "" (map (Char.chr) plaintext))
+		with Failure "int_of_string" -> None
 
 let prop_reversible password =
-	decrypt (encrypt password) = password
+	decrypt (encrypt password) = Some password
 
 (* for generating random strings *)
 let arbstring = arbitrary_string
