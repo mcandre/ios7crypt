@@ -1,5 +1,4 @@
-% Andrew Pennebaker
-% 6 Dec 2010 - 24 Feb 2011
+% Warning: unit tests fail unless this module is compiled.
 
 -module(ios7crypt).
 -author("andrew.pennebaker@gmail.com").
@@ -36,8 +35,11 @@ encrypt(Password) ->
 
 	concat(flatten(io_lib:format("~2.10.0b", [Seed])), Rest).
 
-onlyPairs(Text) when length(Text) =< 3 -> [substr(Text, 1, 2)];
-onlyPairs(Text) -> [substr(Text, 1, 2) | onlyPairs(substr(Text, 3, length(Text)))].
+onlyPairs(Text) -> [ substr(Text, 1, 2) |
+	case length(Text) =< 3 of
+		true -> [];
+		false -> onlyPairs(substr(Text, 3, length(Text)))
+	end].
 
 decrypt(Hash) when length(Hash) < 4 -> {ok, ""};
 decrypt(Hash) ->
