@@ -1,7 +1,6 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
-# Copyright 2005 Andrew Pennebaker
-
+use Test::LectroTest;
 use strict;
 use warnings;
 
@@ -64,13 +63,24 @@ sub usage {
 	exit 0;
 }
 
-if (@ARGV < 2) {
+sub test {
+	Property {
+		##[ password <- String ]##
+		decrypt(encrypt($password)) eq $password;
+	}, name => "crypto should be reversible";
+}
+
+if (@ARGV < 1) {
 	usage;
 }
 
 my $mode = shift;
 
 if ($mode eq "-e") {
+	if (@ARGV < 1) {
+		usage;
+	}
+
 	my $password = shift;
 
 	my $hash = encrypt $password;
@@ -78,11 +88,18 @@ if ($mode eq "-e") {
 	print "$hash\n";
 }
 elsif ($mode eq "-d") {
+	if (@ARGV < 1) {
+		usage;
+	}
+
 	my $hash = shift;
 
 	my $password = decrypt $hash;
 
 	print "$password\n";
+}
+elsif ($mode eq "-t") {
+	test;
 }
 else {
 	usage;
