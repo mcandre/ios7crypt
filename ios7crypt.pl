@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
-use Test::LectroTest;
+use Test::More tests => 1;
+use Test::LectroTest::Compat;
 use strict;
 use warnings;
 
@@ -14,6 +15,8 @@ my @xlat=(
 	0x3b, 0x66, 0x67, 0x38, 0x37
 );
 
+my $xlat_len = length @xlat;
+
 sub encrypt {
 	my $password = shift;
 
@@ -22,13 +25,10 @@ sub encrypt {
 	my $hash = $seed;
 	$hash = "0" . $hash if ($hash < 10);
 
-	my $encrypted;
+	my $encrypted = "";
 
-	my $stop = length $password;
-
-	for (my $i = 0; $i < $stop; $i++) {
-		$password =~ s/^(.)//;
-		my $encrypted_byte = ord($1) ^ $xlat[$seed++];
+	for (my $i = 0; $i < length $password; $i++) {
+		my $encrypted_byte = ord(substr($password, $i, 1)) ^ $xlat[($seed++) % $xlat_len];
 		$encrypted .= unpack("H*", chr $encrypted_byte);
 	}
 
@@ -40,15 +40,25 @@ sub encrypt {
 sub decrypt {
 	my $hash = shift;
 
+	if (length $hash < 4) {
+		return "";
+	}
+	elsif ($hash !~ /^([0-9]{2})([a-fA-F0-9]+)/) {
+		return "Invalid hash";
+	}
+
+	my ($seed, $encrypted) = ($hash =~ /^([0-9]{2})([a-fA-F0-9]+)/i);
+
+	my $len = length $encrypted;
+	
+	if ($len % 2 != 0) {
+		$len--;
+	}
+
 	my $password;
 
-	my ($seed, $encrypted) = ($hash =~ /^(\d{2})([\da-f]+)/i);
-
-	my $stop = length($encrypted) / 2;
-
-	for (my $i = 0; $i < $stop; $i++) {
-		$encrypted =~ s/^([\da-f]{2})//i;
-		my $decrypted_byte = hex($1) ^ $xlat[$seed++];
+	for (my $i = 0; $i < $len; $i += 2) {
+		my $decrypted_byte = hex(substr($encrypted, $i, 2)) ^ $xlat[($seed++) % $xlat_len];
 		$password .= chr($decrypted_byte);
 	}
 
@@ -64,10 +74,12 @@ sub usage {
 }
 
 sub test {
-	Property {
-		##[ password <- String ]##
-		decrypt(encrypt($password)) eq $password;
-	}, name => "crypto should be reversible";
+	holds(
+		Property {
+			##[ password <- String(charset=>"\x00-\x7f") ]##
+			decrypt(encrypt($password)) eq $password;
+		}, name => "crypto should be reversible"
+	);
 }
 
 if (@ARGV < 1) {
