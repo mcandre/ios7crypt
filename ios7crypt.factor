@@ -1,6 +1,10 @@
 #! /usr/bin/env factor
 
+! Requires factcheck
+! https://github.com/mcandre/factcheck
+
 USING:
+    factcheck
     kernel
     namespaces
     sequences
@@ -66,42 +70,9 @@ IN: ios7crypt
     [ drop f ]
     if* ;
 
-: test ( -- )
-    "monkey"
-    "060b002f474b10"
-    decrypt
-    assert=
+: prop-reversible ( str -- ? ) dup encrypt decrypt = ;
 
-    "haberdasher"
-    "12110415171908053923213a"
-    decrypt
-    assert=
-
-    "monkey"
-    encrypt
-    {
-        "00091c080f5e12"
-        "011e090a500e1f"
-        "020b0b55000316"
-        "030954050d0a38"
-        "04560408042455"
-        "050609012a4957"
-        "060b002f474b10"
-        "07022e42450c00"
-        "082c4340021c1c"
-        "0941410712000e"
-        "104306170e120b"
-        "1104160b1c1712"
-        "12140a19190e15"
-        "1308181c00091d"
-        "141a1d05070133"
-        "151f04020f2f32"
-    }
-    member?
-    t assert=
-
-    "All tests pass" print
-    ;
+: test ( -- ) [ prop-reversible ] [ gen-string ] for-all ;
 
 : usage ( -- )
     "Usage: ios7crypt.factor [options]" print
