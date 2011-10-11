@@ -24,7 +24,7 @@ IOS7Crypt XlatPrime := list(
 IOS7Crypt Xlat := method(i, len,
 	if(len < 1,
 		list(),
-		list(IOS7Crypt xlatPrime at(i % (xlatPrime size))) appendSeq(xlat (i + 1) (len - 1))
+		list(XlatPrime at(i % (XlatPrime size))) appendSeq(Xlat (i + 1) (len - 1))
 	)
 )
 
@@ -61,32 +61,30 @@ usage := method(program,
 )
 
 main := method(
-	mode := "encrypt"
+	mode := "usage"
 	password := ""
 	hash := ""
 
 	args := System args
 	program := args removeFirst
 
-	if(args size < 1,
-		usage(program)
-	)
-
 	valid := list("-e", "-d", "-t")
 
 	options := System getOptions(args)
 	options foreach(k, v,
 		if(k == "-e",
-			mode := "encrypt"
-			if(v == nil,
-				usage(program),
+			if(v == "",
+				mode := "usage",
+
+				mode := "encrypt"
 				password := v
 			)
 		)
 		if(k == "-d",
-			mode := "decrypt"
-			if(v == nil,
-				usage(program),
+			if(v == "",
+				mode := "usage",
+
+				mode := "decrypt"
 				hash := v
 			)
 		)
@@ -94,10 +92,13 @@ main := method(
 			mode := "test"
 		)
 		if(valid contains(k) not,
-			usage(program)
+			mode := "usage"
 		)
 	)
 
+	if(mode == "usage"
+		usage(program)
+	)
 	if(mode == "encrypt",
 		IOS7Crypt Encrypt(password) println
 	)
