@@ -61,10 +61,44 @@ IOS7Crypt Encrypt := method(password,
 	hash
 )
 
-IOS7Crypt Decrypt := method(hash,
-	# ...
+IOS7Crypt OnlyPairs := method(text,
+	prefix := list(text exSlice(0, 2))
 
-	"monkey"
+	if(text size <= 3,
+		prefix,
+		prefix appendSeq(OnlyPairs(text exSlice(2, text size)))
+	)
+)
+
+IOS7Crypt Decrypt := method(hash,
+	if(hash size < 4,
+		"",
+
+		seed := hash exSlice(0, 2) asNumber
+
+		if(seed isNan,
+			"invalid hash",
+
+			hash := OnlyPairs(hash exSlice(2, hash size))
+
+			ciphertext := list()
+			invalid := try(
+				ciphertext := hash map(pair, pair fromBase(16))
+			)
+
+			if(invalid != nil,
+				"invalid hash",
+
+				keys := Xlat(seed, ciphertext size)
+
+				plaintext := 0 to(ciphertext size - 1) map(i,
+					keys at(i) bitwiseXor(ciphertext at(i))
+				) map(asCharacter) join
+
+				plaintext
+			)
+		)
+	)
 )
 
 IOS7Crypt Test := method(
