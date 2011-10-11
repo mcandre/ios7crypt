@@ -1,5 +1,7 @@
 #!/usr/bin/env io
 
+Range
+
 # From StackOverflow
 # http://stackoverflow.com/questions/4255123/how-do-i-convert-a-string-to-a-list-in-io/4256258#4256258
 Sequence asList := method(
@@ -24,7 +26,7 @@ IOS7Crypt XlatPrime := list(
 IOS7Crypt Xlat := method(i, len,
 	if(len < 1,
 		list(),
-		list(XlatPrime at(i % (XlatPrime size))) appendSeq(Xlat (i + 1) (len - 1))
+		list(XlatPrime at(i % (XlatPrime size))) appendSeq(Xlat(i + 1, len - 1))
 	)
 )
 
@@ -35,9 +37,28 @@ IOS7Crypt Encrypt := method(password,
 
 	plaintext := password asList map(c, c(0))
 
-	# ...
+	ciphertext := 0 to(password size - 1) map(i,
+		keys at(i) bitwiseXor(plaintext at(i))
+	)
 
-	"01234"
+	hash := seed asString
+	if(seed < 10,
+		hash := "0" .. hash
+	)
+
+	hash := hash .. (
+		ciphertext map(b,
+			s := b toBase(16)
+
+			if (b < 16,
+				s := "0" .. s
+			)
+
+			s
+		) join()
+	)
+
+	hash
 )
 
 IOS7Crypt Decrypt := method(hash,
@@ -96,7 +117,7 @@ main := method(
 		)
 	)
 
-	if(mode == "usage"
+	if(mode == "usage",
 		usage(program)
 	)
 	if(mode == "encrypt",
