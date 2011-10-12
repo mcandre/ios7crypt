@@ -113,6 +113,8 @@ usage := method(program,
 	"-d=<hash>\tDecrypt" println
 	"-t\t\tUnit test" println
 	"-h\t\tUsage info" println
+
+	exit
 )
 
 main := method(
@@ -127,6 +129,10 @@ main := method(
 
 	options := System getOptions(args)
 	options foreach(k, v,
+		if(valid contains(k) not,
+			mode := "usage"
+		)
+
 		if(k == "-e",
 			if(v == "",
 				mode := "usage",
@@ -145,9 +151,6 @@ main := method(
 		)
 		if(k == "-t",
 			mode := "test"
-		)
-		if(valid contains(k) not,
-			mode := "usage"
 		)
 	)
 
