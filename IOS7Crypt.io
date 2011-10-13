@@ -2,15 +2,6 @@
 
 Range
 
-# From StackOverflow
-# http://stackoverflow.com/questions/4255123/how-do-i-convert-a-string-to-a-list-in-io/4256258#4256258
-Sequence asList := method(
-	result := list()
-	self foreach(x,
-		result append(x)
-	)
-)
-
 IOS7Crypt := Object clone
 
 IOS7Crypt XlatPrime := list(
@@ -35,10 +26,8 @@ IOS7Crypt Encrypt := method(password,
 
 	keys := Xlat(seed, password size)
 
-	plaintext := password asList map(c, c(0))
-
 	ciphertext := 0 to(password size - 1) map(i,
-		keys at(i) bitwiseXor(plaintext at(i))
+		keys at(i) bitwiseXor(password at(i))
 	)
 
 	hash := seed asString
