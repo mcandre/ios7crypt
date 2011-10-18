@@ -11,11 +11,19 @@
 
 module ios7crypt;
 
+import core.stdc.stdlib;
+import std.getopt;
 import std.random;
 import std.string;
 import std.array;
 import std.conv;
 import std.stdio;
+
+enum mode {
+	ENCRYPT,
+	DECRYPT,
+	TEST
+}
 
 int[] xlatPrime = [
 	0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
@@ -83,20 +91,65 @@ string decrypt(string hash) {
 	}
 }
 
+void test() {
+	// ...
+}
+
 version (ios7crypt) {
+	void usage(string program) {
+		writeln("Usage: ", program, " [options]");
+		writeln("--encrypt -e=<password>\tEncrypt");
+		writeln("--decrypt -d=<hash>\tDecrypt");
+		writeln("--test -t\t\tUnit test");
+		writeln("--help -h\t\tUsage info");
+
+		exit(0);
+	}
+
 	void main(string[] args) {
-		string password = "monkey";
+		mode m;
+		string password;
+		string hash;
 
-		writeln("Encrypting password: ", password);
+		if (args.length < 2) {
+			usage(args[0]);
+		}
 
-		string hash = encrypt(password);
+		void handleEncrypt(string option, string value) {
+			m = mode.ENCRYPT;
+			password = value;
+		}
 
-		writeln("Hash: ", hash);
+		void handleDecrypt(string option, string value) {
+			m = mode.DECRYPT;
+			hash = value;
+		}
 
-		string password2 = decrypt(hash);
+		void handleTest(string option, string value) {
+			m = mode.TEST;
+		}
 
-		writeln("Decrypted password: ", password2);
+		try {
+			getopt(
+				args,
+				"encrypt|e", &handleEncrypt,
+				"decrypt|d", &handleDecrypt,
+				"test|t", &handleTest,
+			);
+		}
+		catch(Exception e) {
+			usage(args[0]);
+		}
 
-		// ...
+		switch(m) {
+			case mode.ENCRYPT:
+				writeln(encrypt(password));
+				break;
+			case mode.DECRYPT:
+				writeln(decrypt(hash));
+				break;
+			case mode.TEST:
+				test();
+		}
 	}
 }
