@@ -2,6 +2,13 @@
 
 Range
 
+# Requires IoCheck
+# https://github.com/mcandre/IoCheck
+
+Importer addSearchPath("~/.io/IoCheck")
+
+IoCheck
+
 IOS7Crypt := Object clone
 
 IOS7Crypt XlatPrime := list(
@@ -90,10 +97,12 @@ IOS7Crypt Decrypt := method(hash,
 	)
 )
 
-IOS7Crypt Test := method(
-	# ...
+propReversible := block(password,
+	password == IOS7Crypt Decrypt(IOS7Crypt Encrypt(password))
+)
 
-	"success"
+IOS7Crypt Test := method(
+	IoCheck forAll(propReversible, list(genString))
 )
 
 usage := method(program,
