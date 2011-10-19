@@ -43,10 +43,10 @@ exit
 
 (define (pairs text)
 	(let ((pair (substring text 0 2)))
-		(if (<= (string-length text) 3)
+		(cons
 			pair
-			(cons
-				pair
+			(if (<= (string-length text) 3)
+				'()
 				(pairs (substring text 2))))))
 
 (define (decrypt hash)
@@ -66,7 +66,7 @@ exit
 					(hexpairs (pairs hash))
 					(keys (xlat seed (length hexpairs)))
 					(plaintext (map bitwise-xor keys ciphertext)))
-					(list->string plaintext))))))
+					(list->string (map integer->char plaintext)))))))
 
 (define (reversible? password)
 	(string=? password (decrypt (encrypt password))))
