@@ -41,12 +41,32 @@ exit
 						ciphertext)
 					""))))
 
+(define (pairs text)
+	(let ((pair (substring text 0 2)))
+		(if (<= (string-length text) 3)
+			pair
+			(cons
+				pair
+				(pairs (substring text 2))))))
+
 (define (decrypt hash)
-	"abc"
+	(if (< (string-length hash) 4)
+		"invalid hash"
+		(let (
+			(seed (string->number (substring hash 0 2)))
+			(ciphertext (take-while
+				identity
+				(map
+					(lambda (x) (string->number x 16))
+					(pairs (substring hash 2))))))
 
-	; ...
-
-	)
+			(if (not seed)
+				"invalid hash"
+				(let* (
+					(hexpairs (pairs hash))
+					(keys (xlat seed (length hexpairs)))
+					(plaintext (map bitwise-xor keys ciphertext)))
+					(list->string plaintext))))))
 
 (define (reversible? password)
 	(string=? password (decrypt (encrypt password))))
