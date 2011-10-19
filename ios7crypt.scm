@@ -35,9 +35,9 @@ exit
 		(plaintext (map char->integer (string->list password)))
 		(ciphertext (map bitwise-xor keys plaintext)))
 			(string-append
-				(fmt #f (pad 2 "0" (num seed 10)))
+				(fmt #f (pad-char #\0 (pad/left 2 (num seed 10))))
 				(string-join
-					(map (lambda (x) (string-downcase (fmt #f (pad 2 "0" (num x 16)))))
+					(map (lambda (x) (string-downcase (fmt #f (pad-char #\0 (pad/left 2 (num x 16))))))
 						ciphertext)
 					""))))
 
