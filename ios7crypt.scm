@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #|
 exec csi -ss $0 ${1+"$@"}
 exit
@@ -9,6 +9,7 @@ exit
 
 (use posix)
 (use srfi-1) ; lists
+(use srfi-13) ; strings
 (import extras) ; random
 
 (define (xlat-prime) '(
@@ -34,8 +35,11 @@ exit
 		(plaintext (map char->integer (string->list password)))
 		(ciphertext (map bitwise-xor keys plaintext)))
 			(string-append
-				(num seed 10 2)
-				(string-join (map (lambda (x) (num x 16 2)) ciphertext)))))
+				(fmt #f (pad 2 "0" (num seed 10)))
+				(string-join
+					(map (lambda (x) (string-downcase (fmt #f (pad 2 "0" (num x 16)))))
+						ciphertext)
+					""))))
 
 (define (decrypt hash)
 	"abc"
