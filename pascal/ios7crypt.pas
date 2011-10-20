@@ -16,20 +16,32 @@ const
 		$39, $38, $37, $33, $32, $35, $34, $6b,
 		$3b, $66, $67, $38, $37
 	);
+	Empty : bytes = nil;
+	One : array[0 .. 0] of byte = ($00);
 {$IFDEF ios7crypt}{$ELSE}
 interface
-function Xlat (index : integer, length : integer) : bytes;
+function Xlat (i : integer; len : integer) : bytes;
 function Encrypt (password : string) : string;
 function Decrypt (hash : string) : string;
 implementation
 {$ENDIF}
-function Xlat (i : integer, len : integer) : bytes;
+function Xlat (i : integer; len : integer) : bytes;
+var
+	Rest : bytes;
+	J : integer;
 begin
 	if len < 1 then
-		Xlat := ();
+		Xlat := Empty
 	else
 		begin
-			XlatPrime[i % XlatSize] { ... }
+			Rest := Xlat(i + 1, len - 1);
+
+			SetLength(Xlat, Length(Rest) + 1);
+
+			Xlat[0] := XlatPrime[i mod XlatSize];
+
+			for J := 0 to Length(Rest) - 1 do
+				Xlat[J + 1] := Rest[J];
 		end;
 end;
 
