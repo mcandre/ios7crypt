@@ -3,6 +3,8 @@ program IOS7Crypt;
 {$ELSE}
 unit IOS7Crypt;
 {$ENDIF}
+uses
+	sysutils;
 type
 	bytes = array of byte;
 const
@@ -17,7 +19,6 @@ const
 		$3b, $66, $67, $38, $37
 	);
 	Empty : bytes = nil;
-	One : array[0 .. 0] of byte = ($00);
 {$IFDEF ios7crypt}{$ELSE}
 interface
 function Xlat (i : integer; len : integer) : bytes;
@@ -27,29 +28,48 @@ implementation
 {$ENDIF}
 function Xlat (i : integer; len : integer) : bytes;
 var
-	Rest : bytes;
 	J : integer;
 begin
-	if len < 1 then
-		Xlat := Empty
-	else
-		begin
-			Rest := Xlat(i + 1, len - 1);
+	SetLength(Xlat, len);
 
-			SetLength(Xlat, Length(Rest) + 1);
-
-			Xlat[0] := XlatPrime[i mod XlatSize];
-
-			for J := 0 to Length(Rest) - 1 do
-				Xlat[J + 1] := Rest[J];
-		end;
+	for J := 0 to len - 1 do
+		Xlat[J] := XlatPrime[(i + J) mod XlatSize];
 end;
 
-function Encrypt (hash : string) : string;
+function Encrypt (password : string) : string;
+var
+	Seed : integer;
+	Plaintext : bytes;
+	Keys : bytes;
+	Ciphertext : bytes;
+	I : integer;
+	Result : string;
 begin
-	Encrypt := 'abc';
+	if Length(password) = 0 then
+		Encrypt := ''
+	else
+		begin
+			Seed := Random(16);
 
-	{ ... }
+			Keys := Xlat(Seed, Length(password));
+
+			SetLength(Plaintext, Length(password));
+
+			for I := 0 to Length(password) - 1 do
+				Plaintext[I] := Ord(password[I + 1]); { string indices start at 1!? }
+
+			SetLength(Ciphertext, Length(password));
+
+			for I := 0 to Length(password) - 1 do
+				Ciphertext[I] := Keys[I] xor Plaintext[I];
+
+			Result := '';
+
+			for I := 0 to Length(Ciphertext) - 1 do
+				Result := Concat(Result, AnsiLowerCase(Format('%.2x', [Ciphertext[I]])));
+
+			Encrypt := Concat(Format('%.2d', [Seed]), Result);
+		end;
 end;
 
 function Decrypt (hash : string) : string;
@@ -62,15 +82,22 @@ end;
 var
 	password : string;
 	hash : string;
+	password2 : string;
 begin
-	password := 'abc';
-
-	hash := Encrypt(password);
-
-	password := Decrypt(hash);
+	password := 'monkey';
 
 	write('Password: ');
 	writeln(password);
+
+	hash := Encrypt(password);
+
+	write('Hash: ');
+	writeln(hash);
+
+	password2 := Decrypt(hash);
+
+	write('Password: ');
+	writeln(password2);
 
 	{ ... }
 {$ENDIF}
