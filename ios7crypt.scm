@@ -5,6 +5,7 @@ exit
 |#
 
 (use cluckcheck)
+(use getopt-long)
 (use fmt)
 
 (use posix)
@@ -71,18 +72,35 @@ exit
 (define (reversible? password)
 	(string=? password (decrypt (encrypt password))))
 
-(define (test)
+(define (run-test)
 	(for-all reversible? gen-string))
 
-(define (main args)
-	(let* (
-		(password "monkey")
-		(hash (encrypt password))
-		(password2 (decrypt hash)))
-				(display (format "Encrypted: ~a\n" hash))
-				(display (format "Decrypted: ~a\n" password2)))
+(define (grammar)
+`((encrypt (single-char #\e)
+		(value (required password)
+			(predicate ,string?)))
+	(decrypt (single-char #\d)
+		(value (required hash)
+			(predicate ,string?)))
+	(test (required #f)
+		(single-char #\t)
+		(value #f))))
 
-	; ...
+(define (main args)
+	(with-exception-handler
+		(lambda (e) (usage (grammar)))
+		(let* (
+			(options (getopt-long args (grammar)))
+			(password (get 'password options))
+			(hash (get 'hash options))
+			(test (get 'test options)))
+				(if password
+					(display (format "~a\n" (encrypt password)))
+					(if hash
+						(display (format "~a\n" (decrypt hash)))
+						(if test
+							(run-test)
+							(usage (grammar)))))))
 
 	(exit))
 
