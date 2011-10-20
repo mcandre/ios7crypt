@@ -51,23 +51,25 @@ exit
 				(pairs (substring text 2))))))
 
 (define (decrypt hash)
-	(if (< (string-length hash) 4)
-		"invalid hash"
-		(let (
-			(seed (string->number (substring hash 0 2)))
-			(ciphertext (take-while
-				identity
-				(map
-					(lambda (x) (string->number x 16))
-					(pairs (substring hash 2))))))
+	(if (= (string-length hash) 2)
+		""
+		(if (< (string-length hash) 4)
+			"invalid hash"
+			(let (
+				(seed (string->number (substring hash 0 2)))
+				(ciphertext (take-while
+					identity
+					(map
+						(lambda (x) (string->number x 16))
+						(pairs (substring hash 2))))))
 
-			(if (not seed)
-				"invalid hash"
-				(let* (
-					(hexpairs (pairs hash))
-					(keys (xlat seed (length hexpairs)))
-					(plaintext (map bitwise-xor keys ciphertext)))
-					(list->string (map integer->char plaintext)))))))
+				(if (not seed)
+					"invalid hash"
+					(let* (
+						(hexpairs (pairs hash))
+						(keys (xlat seed (length hexpairs)))
+						(plaintext (map bitwise-xor keys ciphertext)))
+						(list->string (map integer->char plaintext))))))))
 
 (define (reversible? password)
 	(string=? password (decrypt (encrypt password))))
@@ -75,34 +77,48 @@ exit
 (define (run-test)
 	(for-all reversible? gen-string))
 
-(define (grammar)
-`((encrypt (single-char #\e)
-		(value (required password)
-			(predicate ,string?)))
-	(decrypt (single-char #\d)
-		(value (required hash)
-			(predicate ,string?)))
+(define grammar
+`((encrypt
+		(required #f)
+		(single-char #\e)
+		(value (required PASSWORD) (predicate ,string?)))
+	(decrypt
+		(required #f)
+		(single-char #\d)
+		(value (required HASH) (predicate ,string?)))
 	(test (required #f)
 		(single-char #\t)
+		(value #f))
+	(help (required #f)
+		(single-char #\h)
 		(value #f))))
+
+(define (u p g)
+	(display (format "Usage: ~a [options]\n~a" (cdr p) (usage g)))
+	(exit))
 
 (define (main args)
 	(with-exception-handler
-		(lambda (e) (usage (grammar)))
+		(lambda (e) (u (program) grammar))
 		(let* (
-			(options (getopt-long args (grammar)))
-			(password (get 'password options))
-			(hash (get 'hash options))
-			(test (get 'test options)))
+			(options (make-option-dispatch (getopt-long args grammar) grammar))
+			(password (options 'encrypt))
+			(hash (options 'decrypt))
+			(test (options 'test))
+			(help (options 'help)))
 				(if password
-					(display (format "~a\n" (encrypt password)))
+					(begin
+						(display (format "~a\n" (encrypt password)))
+						(exit))
 					(if hash
-						(display (format "~a\n" (decrypt hash)))
+						(begin
+							(display (format "~a\n" (decrypt hash)))
+							(exit))
 						(if test
-							(run-test)
-							(usage (grammar)))))))
-
-	(exit))
+							(begin
+								(run-test)
+								(exit))
+							(u (program) grammar)))))))
 
 (define (program)
 	(if (string=? (car (argv)) "csi")
