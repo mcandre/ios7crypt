@@ -56,7 +56,8 @@ begin
 			SetLength(Plaintext, Length(password));
 
 			for I := 0 to Length(password) - 1 do
-				Plaintext[I] := Ord(password[I + 1]); { string indices start at 1!? }
+				{ String indices start at 1, but array indices start at 0 !? }
+				Plaintext[I] := Ord(password[I + 1]);
 
 			SetLength(Ciphertext, Length(password));
 
@@ -84,6 +85,11 @@ var
 	hash : string;
 	password2 : string;
 begin
+{$ELSE}
+initialization
+{$ENDIF}
+	Randomize;
+{$IFDEF ios7crypt}
 	password := 'monkey';
 
 	write('Password: ');
