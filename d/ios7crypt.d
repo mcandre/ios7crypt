@@ -1,14 +1,5 @@
 #!/usr/bin/env rdmd -version=ios7crypt
 
-// Interpret:
-// ./ios7crypt.d
-//
-// Compile:
-// dmd ios7crypt.d -version=ios7crypt
-//
-// Run:
-// ./ios7crypt
-
 module ios7crypt;
 
 import core.stdc.stdlib;
