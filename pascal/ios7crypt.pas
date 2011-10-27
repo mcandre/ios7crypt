@@ -5,6 +5,7 @@ unit IOS7Crypt;
 {$ENDIF}
 {$Mode ObjFPC}
 uses
+	getopts;
 	sysutils;
 type
 	bytes = array of byte;
@@ -148,29 +149,35 @@ begin
 end;
 {$IFDEF ios7crypt}
 var
-	password : string;
-	hash : string;
-	password2 : string;
+	C : char;
+	OptionIndex : longint;
+	Options : array[1..7] of TOption;
 begin
 {$ELSE}
 initialization
 {$ENDIF}
 	Randomize;
 {$IFDEF ios7crypt}
-	password := 'monkey';
-
-	write('Password: ');
-	writeln(password);
-
-	hash := Encrypt(password);
-
-	write('Hash: ');
-	writeln(hash);
-
-	password2 := Decrypt(hash);
-
-	write('Password: ');
-	writeln(password2);
+	with Options[1] do
+		begin
+			name := 'encrypt';
+			has_arg := 1;
+			flag := nil;
+			value := #0;
+		end;
+	with Options[2] do
+		begin
+			name := 'decrypt';
+			has_arg := 1;
+			flag := nil;
+			value := #0;
+		end;
+	with Options[3] do
+		begin
+			name := 'test';
+			has_arg := 0;
+			value := #0;
+		end;
 
 	{ ... }
 {$ENDIF}
