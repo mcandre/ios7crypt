@@ -1,5 +1,8 @@
 #!/usr/bin/env rdmd -version=ios7crypt -I~/.d
 
+// Requires dashcheck
+// https://github.com/mcandre/dashcheck
+
 module ios7crypt;
 
 import dashcheck;
