@@ -1,7 +1,8 @@
-#!/usr/bin/env rdmd -version=ios7crypt
+#!/usr/bin/env rdmd -version=ios7crypt -I~/.d
 
 module ios7crypt;
 
+import dashcheck;
 import core.stdc.stdlib;
 import std.getopt;
 import std.random;
@@ -50,7 +51,7 @@ string encrypt(string password) {
 
 string decrypt(string hash) {
 	if (hash.length < 4) {
-		return "invalid hash";
+		return "";
 	}
 
 	try {
@@ -82,8 +83,12 @@ string decrypt(string hash) {
 	}
 }
 
+bool reversible(string password) {
+	return password == decrypt(encrypt(password));
+}
+
 void test() {
-	// ...
+	forAll!reversible(&genString);
 }
 
 version (ios7crypt) {
@@ -141,6 +146,9 @@ version (ios7crypt) {
 				break;
 			case mode.TEST:
 				test();
+				break;
+			default:
+				usage(args[0]);
 		}
 	}
 }
