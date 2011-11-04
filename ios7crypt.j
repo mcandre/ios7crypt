@@ -18,8 +18,13 @@ xlat =: dyad : 0
 xor =: 22 b.
 
 NB. With help from Alan Stebbens.
-hex =: '0123456789abcdef' {~ 16 16 #: ]
-dec =: '0123456789' {~ 10 10 #: ]
+hex =: monad : 0
+	;>1j0# ('0123456789abcdef' {~ 16 16 #: ] y)
+)
+
+dec =: monad : 0
+	;>1j0# ('0123456789' {~ 10 10 #: ] y)
+)
 
 NB. With help from Raul Miller.
 join =: #@[ }. [:;,L:0
@@ -28,11 +33,11 @@ encrypt =: monad : 0
 	seed =: ? 16
 
 	plaintext =: 3 u: 7 u: y
-	keys =: seed xlat #plaintext
+	keys =: seed xlat (#plaintext)
 
 	ciphertext =: plaintext xor keys
 
-	'' join (dec seed), (hex ciphertext)
+	'' join ((dec seed), (hex ciphertext))
 )
 
 main =: monad : 0
