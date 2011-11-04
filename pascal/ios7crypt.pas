@@ -5,7 +5,7 @@ unit IOS7Crypt;
 {$ENDIF}
 {$Mode ObjFPC}
 uses
-	getopts;
+	getopts,
 	sysutils;
 type
 	bytes = array of byte;
@@ -26,6 +26,7 @@ interface
 function Xlat (i : integer; len : integer) : bytes;
 function Encrypt (password : string) : string;
 function Decrypt (hash : string) : string;
+procedure Test;
 implementation
 {$ENDIF}
 function Xlat (i : integer; len : integer) : bytes;
@@ -147,17 +148,37 @@ begin
 			end;
 		end;
 end;
+procedure Test;
+begin
+	{ ... }
+end;
+procedure Usage (Prog : string);
+begin
+	write('Usage: ');
+	write(Prog);
+	writeln(' [options]');
+	writeln('--encrypt -e <password>'#9'Encrypt');
+	writeln('--decrypt -d <hash>'#9'Decrypt');
+	writeln('--test -t'#9#9'Unit test');
+	writeln('--help -h'#9#9'Usage info');
+	Halt(0);
+end;
 {$IFDEF ios7crypt}
 var
 	C : char;
 	OptionIndex : longint;
 	Options : array[1..7] of TOption;
+	Mode : string;
+	Password : string;
+	Hash : string;
 begin
 {$ELSE}
 initialization
 {$ENDIF}
 	Randomize;
 {$IFDEF ios7crypt}
+	Mode := 'help';
+
 	with Options[1] do
 		begin
 			name := 'encrypt';
@@ -178,7 +199,42 @@ initialization
 			has_arg := 0;
 			value := #0;
 		end;
+	with Options[4] do
+		begin
+			name := 'help';
+			has_arg := 0;
+		end;
 
-	{ ... }
+	C := #0;
+
+	repeat
+		C := getlongopts('e:d:th', @Options[1], OptionIndex);
+		case C of
+			'e':
+			begin
+				Mode := 'encrypt';
+				Password := optarg;
+			end;
+			'd':
+			begin
+				Mode := 'decrypt';
+				Hash := optarg;
+			end;
+			't': Mode := 'test';
+			'h': Usage(ParamStr(0));
+			'?': Usage(ParamStr(0));
+		end;
+	until C = endofoptions;
+
+	if Mode = 'encrypt' then
+		writeln(Encrypt(Password))
+	else
+		if Mode = 'decrypt' then
+			writeln(Decrypt(Hash))
+		else
+			if Mode = 'test' then
+				Test()
+			else
+				Usage(ParamStr(0));
 {$ENDIF}
 end.
