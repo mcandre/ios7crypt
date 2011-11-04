@@ -1,15 +1,8 @@
-/* Andrew Pennebaker
+/*
+   Andrew Pennebaker
    Copyright 2005-2011 Andrew Pennebaker
 
    Requires qc (https://github.com/mcandre/qc)
-
-   Compile:
-
-   gcc -o ios7crypt ios7crypt.c qc.c qc.h -lgc -Wall
-
-   Run:
-
-   ./ios7crypt [options]
 */
 
 #include "qc.h"
