@@ -5,3 +5,4 @@ ios7crypt: ios7crypt.pas
 
 clean:
 	-rm ios7crypt
+	-rm ios7crypt.o
