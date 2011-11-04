@@ -8,14 +8,6 @@ Requirements:
  * Getopt (https://github.com/mcandre/ocaml-getopt)
  * QuickCheck (https://github.com/camlunity/ocaml-quickcheck)
 
-Compile:
-
-ocamlfind ocamlc -package str,getopt,quickcheck -linkpkg -o ios7crypt ios7crypt.ml
-
-Run:
-
-./ios7crypt [options]
-
 *)
 
 open Getopt
