@@ -58,10 +58,6 @@ class IOS7Crypt {
 	}
 
 	static test() {
-		/* ... */
-	}
-
-	static main(args) {
 		def password = "monkey"
 
 		println "Password: " + password
@@ -73,7 +69,50 @@ class IOS7Crypt {
 		def password2 = decrypt(hash)
 
 		println "Password2: " + password2
+	}
 
-		/* ... */
+	static main(args) {
+		def cl = new CliBuilder(usage: "Usage: IOS7Crypt.groovy [options]")
+		cl.h(longOpt: "help", "Show usage")
+		cl.e(longOpt: "encrypt", argName: "password", args:1, "Encrypt password")
+		cl.d(longOpt: "decrypt", argName: "hash", args:1, "Decrypt hash")
+		cl.t(longOpt: "test", "Run unit tests")
+
+		def mode = "help"
+		def password = ""
+		def hash = ""
+
+		def opt = cl.parse(args)
+
+		if (!opt) {
+			System.exit(0)
+		}
+
+		if (opt.e) {
+			mode = "encrypt"
+			password = opt.e
+		}
+
+		if (opt.d) {
+			mode = "decrypt"
+			hash = opt.d
+		}
+
+		if (opt.t) {
+			mode = "test"
+		}
+
+		if (mode == "help") {
+			cl.usage()
+		}
+		else if (mode == "encrypt") {
+			println encrypt(password)
+		}
+		else if (mode == "decrypt") {
+			println decrypt(hash)
+		}
+		else if (mode == "test") {
+			test()
+		}
 	}
 }
