@@ -1,7 +1,9 @@
 #!/usr/bin/env groovy
 
+import java.util.Random
+
 class IOS7Crypt {
-	def xlat = [
+	static def xlatPrime = [
 		0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
 		0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
 		0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
@@ -11,8 +13,30 @@ class IOS7Crypt {
 		0x3b, 0x66, 0x67, 0x38, 0x37
 	]
 
+	static xlat(i, len) {
+		if (len < 1) {
+			[]
+		}
+		else {
+			def xLen = xlatPrime.size
+			def safeIndex = (i % xLen) as int
+			def head = xlatPrime[safeIndex]
+			def tail = xlat(i + 1, len - 1)
+
+			[head] + tail
+		}
+	}
+
 	static encrypt(password) {
-		/* ... */
+		def seed = (new Random().nextDouble() * 16) as int
+
+		def plaintext = password.toCharArray().collect({ c -> c as int })
+
+		def keys = xlat(seed, plaintext.size)
+
+		def ciphertext = (0 .. (plaintext.size - 1)).collect({ i -> plaintext[i] ^ keys[i] })
+
+		String.format("%02d%s", seed, ciphertext.collect({ e -> String.format("%02x", e) }).join(""))
 	}
 
 	static decrypt(password) {
@@ -24,6 +48,8 @@ class IOS7Crypt {
 	}
 
 	static main(args) {
+		println (encrypt("monkey"))
+
 		/* ... */
 	}
 }
