@@ -29,18 +29,32 @@ class IOS7Crypt {
 
 	static encrypt(password) {
 		def seed = (new Random().nextDouble() * 16) as int
-
 		def plaintext = password.toCharArray().collect({ c -> c as int })
-
 		def keys = xlat(seed, plaintext.size)
-
 		def ciphertext = (0 .. (plaintext.size - 1)).collect({ i -> plaintext[i] ^ keys[i] })
 
 		String.format("%02d%s", seed, ciphertext.collect({ e -> String.format("%02x", e) }).join(""))
 	}
 
+	static onlyPairs(text) {
+		def head = text.substring(0, 2)
+		def tail = []
+
+		if (text.length() > 3) {
+			tail = onlyPairs(text.substring(2))
+		}
+
+		[head] + tail
+	}
+
 	static decrypt(password) {
-		/* ... */
+		def seed = Integer.parseInt(password.substring(0, 2))
+		def hexpairs = onlyPairs(password.substring(2))
+		def ciphertext = hexpairs.collect({ pair -> Integer.parseInt(pair, 16) })
+		def keys = xlat(seed, ciphertext.size)
+		def plaintext = (0 .. (ciphertext.size - 1)).collect({ i -> ciphertext[i] ^ keys[i] })
+
+		plaintext.collect({ e -> e as char }).join("")
 	}
 
 	static test() {
@@ -48,7 +62,17 @@ class IOS7Crypt {
 	}
 
 	static main(args) {
-		println (encrypt("monkey"))
+		def password = "monkey"
+
+		println "Password: " + password
+
+		def hash = encrypt(password)
+
+		println "Hash: " + hash
+
+		def password2 = decrypt(hash)
+
+		println "Password2: " + password2
 
 		/* ... */
 	}
