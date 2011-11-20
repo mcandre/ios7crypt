@@ -19,6 +19,10 @@ class IOS7Crypt {
 		/* ... */
 	}
 
+	static test() {
+		/* ... */
+	}
+
 	static main(args) {
 		/* ... */
 	}
