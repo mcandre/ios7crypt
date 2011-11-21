@@ -1,5 +1,8 @@
 #!/usr/bin/env groovy
 
+/* Requires gruesome
+   https://github.com/mcandre/gruesome */
+
 import java.util.Random
 
 class IOS7Crypt {
@@ -57,18 +60,10 @@ class IOS7Crypt {
 		plaintext.collect({ e -> e as char }).join("")
 	}
 
+	static def reversible = { password -> decrypt(encrypt(password)) == password }
+
 	static test() {
-		def password = "monkey"
-
-		println "Password: " + password
-
-		def hash = encrypt(password)
-
-		println "Hash: " + hash
-
-		def password2 = decrypt(hash)
-
-		println "Password2: " + password2
+		Gruesome.forAll(reversible, [Gruesome.genString])
 	}
 
 	static main(args) {
