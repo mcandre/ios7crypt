@@ -33,16 +33,31 @@ fn xlat(i : uint, len : uint) -> [int] {
 	}
 }
 
+fn xor(tp : (int, int)) -> int {
+	let (a, b) : (int, int) = tp;
+	ret a ^ b;
+}
+
 fn encrypt(password : str) -> str {
 	let r : float = std::rand::mk_rng().next_float();
 
-	let seed : int = (r * 16.0f) as int;
+	let seed : uint = (r * 16.0f) as uint;
 
-	std::io::println("Seed: " + core::int::to_str(seed, 10u));
+	let plaintext : [int] = vec::map(str::chars(password), { |c| ret c as int; });
 
-	// ...
+	let keys : [int] = xlat(seed, str::char_len(password));
 
-	ret "";
+	check vec::same_length(plaintext, keys);
+
+	let zipped : [(int, int)] = vec::zip(plaintext, keys);
+
+	let ciphertext : [int] = vec::map(zipped, xor);
+
+	let rest : [str] = vec::map(ciphertext, { |c| ret #fmt("%02x", c as uint); });
+
+	let hash : str = #fmt("%02d%s", seed as int, str::connect(rest, ""));
+
+	ret hash;
 }
 
 fn decrypt(password : str) -> str {
@@ -58,5 +73,5 @@ fn usage() {
 fn main() {
 	// ...
 
-	encrypt("monkey");
+	std::io::println(encrypt("monkey"));
 }
