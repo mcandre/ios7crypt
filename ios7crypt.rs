@@ -53,11 +53,14 @@ fn encrypt(password : str) -> str {
 
 	let ciphertext : [int] = vec::map(zipped, xor);
 
-	let rest : [str] = vec::map(ciphertext, { |c| ret #fmt("%02x", c as uint); });
-
-	let hash : str = #fmt("%02d%s", seed as int, str::connect(rest, ""));
-
-	ret hash;
+	ret #fmt(
+		"%02d%s",
+		seed as int,
+		str::connect(
+			vec::map(ciphertext, { |c| ret #fmt("%02x", c as uint); }),
+			""
+		)
+	);
 }
 
 fn decrypt(password : str) -> str {
