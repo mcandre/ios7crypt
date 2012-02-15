@@ -2,7 +2,7 @@
 
 #library("ios7crypt");
 
-var xlatPrime = [
+var xlatPrime = const [
 	0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
 	0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
 	0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
@@ -17,7 +17,17 @@ xlat(index, len) {
 		return [];
 	}
 	else {
-		return [xlatPrime[index % xlatPrime.length]] + xlat(index + 1, len - 1);
+		var i = (index % xlatPrime.length).toInt();
+
+		var head = xlatPrime[i];
+
+		var res = [head];
+
+		var tail = xlat(index + 1, len - 1);
+
+		res.addAll(tail);
+
+		return res;
 	}
 }
 
@@ -26,17 +36,41 @@ encrypt(password) {
 		return "";
 	}
 
-	var seed = Math.random() * 16;
+	var seed = (Math.random() * 16).toInt();
 
 	var keys = xlat(seed, password.length);
 
-	var plaintext = []; // ...
+	var plaintext = [];
 
-	var ciphertext = []; // ...
+	for (var i = 0; i < password.length; i++) {
+		plaintext.add(password.charCodeAt(i));
+	}
 
-	var hash = ""; // ...
+	var ciphertext = [];
 
-	return hash;
+	for (var i = 0; i < plaintext.length; i++) {
+		ciphertext.add(plaintext[i] ^ keys[i]);
+	}
+
+	var seedpair = "${seed}";
+
+	if (seedpair.length < 2) {
+		seedpair = "0${seedpair}";
+	}
+
+	var hexpairs = [];
+
+	for (var i = 0; i < ciphertext.length; i++) {
+		var pair = ciphertext[i].toRadixString(16);
+
+		if (pair.length < 2) {
+			pair = "0$pair";
+		}
+
+		hexpairs.add(pair);
+	}
+
+	return "${seedpair}${Strings.concatAll(hexpairs).toLowerCase()}";
 }
 
 decrypt(hash) {
