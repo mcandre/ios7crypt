@@ -116,7 +116,48 @@ decrypt(hash) {
 	return password;
 }
 
+test() {
+	// ...
+}
+
+usage(program) {
+	print("Usage: ${program} [options]");
+	print("-e --encrypt <password>\tEncrypt");
+	print("-d --decrypt <hash>\tDecrypt");
+	print("-t --test\t\tUnit test");
+	print("-h --help\t\tUsage");
+
+	exit(0);
+}
+
 main() {
-	//print(encrypt("monkey"));
-	print(decrypt("00091c080f5e12"));
+	var program = new Options().script;
+	var args = new Options().arguments;
+
+	if (args.length < 1) {
+		usage(program);
+	}
+
+	if (args[0] == "-e" || args[0] == "--encrypt") {
+		if (args.length < 2) {
+			usage(program);
+		}
+
+		var password = args[1];
+		print(encrypt(password));
+	}
+	else if (args[0] == "-d" || args[0] == "--decrypt") {
+		if (args.length < 2) {
+			usage(program);
+		}
+
+		var hash = args[1];
+		print(decrypt(hash));
+	}
+	else if (args[0] == "-t" || args[0] == "--test") {
+		test();
+	}
+	else {
+		usage(program);
+	}
 }
