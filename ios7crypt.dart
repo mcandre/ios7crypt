@@ -73,24 +73,50 @@ encrypt(password) {
 	return "${seedpair}${Strings.concatAll(hexpairs).toLowerCase()}";
 }
 
+pairs(text) {
+	var ps = [text.substring(0, 2)];
+
+	if (text.length > 3) {
+		ps.addAll(pairs(text.substring(2)));
+	}
+
+	return ps;
+}
+
 decrypt(hash) {
 	if (hash.length < 4) {
 		return "";
 	}
 
-	var seed = 0; // ...
+	var seedStr = hash.substring(0, 2);
+	var hashStr = hash.substring(2);
 
-	var ciphertext = []; // ...
+	var seed = Math.parseInt(seedStr);
+
+	var hexpairs = pairs(hashStr);
+
+	var ciphertext = [];
+
+	for (var i = 0; i < hexpairs.length; i++) {
+		var cipher = Math.parseInt("0x" + hexpairs[i]);
+		ciphertext.add(cipher);
+	}
 
 	var keys = xlat(seed, ciphertext.length);
 
-	var plaintext = []; // ...
+	var plaintext = [];
 
-	var password = ""; // ...
+	for (var i = 0; i < ciphertext.length; i++) {
+		var plain = ciphertext[i] ^ keys[i];
+		plaintext.add(plain);
+	}
+
+	var password = new String.fromCharCodes(plaintext);
 
 	return password;
 }
 
 main() {
-	print(encrypt("monkey"));
+	//print(encrypt("monkey"));
+	print(decrypt("00091c080f5e12"));
 }
