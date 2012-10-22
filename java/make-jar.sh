@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 javac CommandLine.java
 javac IOS7CryptGUI.java
