@@ -1,31 +1,35 @@
-require 'ruboto/widget'
-require 'ruboto/util/toast'
+require "ruboto/widget"
+require "ruboto/util/toast"
 
-ruboto_import_widgets :Button, :LinearLayout, :TextView
-
-# http://xkcd.com/378/
+ruboto_import_widgets :EditText, :Button, :LinearLayout, :TextView
 
 class Main
-  def on_create(bundle)
-    super
-    set_title 'Domo arigato, Mr Ruboto!'
+	def on_create(bundle)
+		super
 
-    self.content_view =
-        linear_layout :orientation => :vertical do
-          @text_view = text_view :text => 'What hath Matz wrought?', :id => 42, :width => :match_parent,
-                                 :gravity => :center, :text_size => 48.0
-          button :text => 'M-x butterfly', :width => :match_parent, :id => 43, :on_click_listener => proc { butterfly }
-        end
-  rescue
-    puts "Exception creating activity: #{$!}"
-    puts $!.backtrace.join("\n")
-  end
+		set_title "IOS7Crypt"
 
-  private
+		self.content_view =
+			linear_layout :orientation => :vertical do
+				@password = edit_text :text => "monkey", :id => 42, :width => :match_parent,
+					:gravity => :center, :text_size => 48.0, :on_change_listener => proc { android_encrypt }
+				@hash = edit_text :text => "04560408042455", :id => 43, :width => :match_parent,
+					:gravity => :center, :text_size => 48.0, :on_change_listener => proc { android_decrypt }
+			end
+	rescue
+		puts "Exception creating activity: #{$!}"
+		puts $!.backtrace.join("\n")
+	end
 
-  def butterfly
-    @text_view.text = 'What hath Matz wrought!'
-    toast 'Flipped a bit via butterfly'
-  end
+	private
 
+	def android_encrypt
+		@hash.text = @password.text.encrypt
+		toast "Encrypted"
+	end
+
+	def android_decrypt
+		@password.text = @hash.text.decrypt
+		toast "Decrypted"
+	end
 end
