@@ -1,7 +1,9 @@
+require "ios7crypt"
+
 require "ruboto/widget"
 require "ruboto/util/toast"
 
-ruboto_import_widgets :EditText, :Button, :LinearLayout, :TextView
+ruboto_import_widgets :Button, :EditText, :LinearLayout, :TextView
 
 class Main
 	def on_create(bundle)
@@ -10,11 +12,22 @@ class Main
 		set_title "IOS7Crypt"
 
 		self.content_view =
-			linear_layout :orientation => :vertical do
-				@password = edit_text :text => "monkey", :id => 42, :width => :match_parent,
-					:gravity => :center, :text_size => 48.0, :on_change_listener => proc { android_encrypt }
-				@hash = edit_text :text => "04560408042455", :id => 43, :width => :match_parent,
-					:gravity => :center, :text_size => 48.0, :on_change_listener => proc { android_decrypt }
+			linear_layout(:orientation => :vertical) do
+				linear_layout(:orientation => :vertical) do
+					text_view :text => "Password:", :text_size => 24.0
+					@password = edit_text :single_line => true, :text => "monkey",
+						:width => :match_parent, :gravity => :center, :text_size => 24.0
+					button :text => "Encrypt", :text_size => 24.0,
+						:on_click_listener => proc { android_encrypt }
+				end
+
+				linear_layout(:orientation => :vertical) do
+					text_view :text => "Hash", :text_size => 24.0
+					@hash = edit_text :single_line => true, :text => "04560408042455",
+						:width => :match_parent, :gravity => :center, :text_size => 24.0
+					button :text => "Decrypt", :text_size => 24.0,
+						:on_click_listener => proc { android_decrypt }
+				end
 			end
 	rescue
 		puts "Exception creating activity: #{$!}"
@@ -24,12 +37,18 @@ class Main
 	private
 
 	def android_encrypt
-		@hash.text = @password.text.encrypt
-		toast "Encrypted"
+		password = @password.text.to_string
+
+		hash = password.encrypt
+
+		@hash.text = hash
 	end
 
 	def android_decrypt
-		@password.text = @hash.text.decrypt
-		toast "Decrypted"
+		hash = @hash.text.to_string
+
+		password = hash.decrypt
+
+		@password.text = password
 	end
 end
