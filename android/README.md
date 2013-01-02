@@ -11,3 +11,4 @@ http://www.yellosoft.us/ios7crypt
 # EXAMPLE
 
 	$ rake debug
+	$ rake install
