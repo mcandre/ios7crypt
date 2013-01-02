@@ -2,7 +2,7 @@
 
 # VERSION
 
-1.0
+1.1
 
 # HOMEPAGE
 
@@ -10,5 +10,4 @@ http://www.yellosoft.us/ios7crypt
 
 # EXAMPLE
 
-	$ rake debug
 	$ rake install
