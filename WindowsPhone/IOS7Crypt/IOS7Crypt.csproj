@@ -48,8 +48,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IronRuby">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\IronRuby 1.1\Silverlight\bin\IronRuby.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\IronRuby 1.1\Silverlight\bin\IronRuby.Libraries.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries.Yaml">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\IronRuby 1.1\Silverlight\bin\IronRuby.Libraries.Yaml.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\IronRuby 1.1\Silverlight\bin\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\IronRuby 1.1\Silverlight\bin\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\IronRuby 1.1\Silverlight\bin\System.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
@@ -87,6 +105,7 @@
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="ios7crypt.rb" />
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
