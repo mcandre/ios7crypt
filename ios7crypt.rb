@@ -1,34 +1,30 @@
 #!/usr/bin/env ruby
-
-# Author:: Andrew Pennebaker
-# Copyright:: Copyright 2007 Andrew Pennebaker
 #
-# == Synopsis
-#
-# ios7crypt: encrypts and decrypts passwords with Cisco IOS7 algorithm
-#
-# == Usage
-#
-# ios7crypt [OPTIONS]
-#
-# --help, -h:
-#    show help
-#
-# --encrypt, -e <password>
-#    prints out the encrypted password as a hash
-#
-# --decrypt, -d <hash>
-#    prints out the decrypted hash as a password
-#
-# --test, -t
-#    runs unit tests
+# Requires Ruby 1.9+
 
 require "rubygems"
-require "rushcheck"
+require "rubycheck"
 require "getoptlong"
-require "rdoc/usage"
 
-$xlat=[
+def usage
+	puts "Usage: $0 [options]
+
+--help, -h:
+	show help
+
+--encrypt, -e <password>
+	prints out the encrypted password as a hash
+
+--decrypt, -d <hash>
+	prints out the decrypted hash as a password
+
+--test, -t
+	runs unit tests"
+
+	exit
+end
+
+$xlat = [
 	0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
 	0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
 	0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
@@ -42,7 +38,7 @@ class String
 	def encrypt
 		seed=rand(16)
 
-		hash=(0 .. (self.length-1)).collect { |i| $xlat[(seed+i) % $xlat.length] ^ self[i] }
+		hash=(0 .. (self.length-1)).collect { |i| $xlat[(seed+i) % $xlat.length] ^ self[i].ord }
 
 		format("%02d", seed) + hash.collect { |e| format("%02x", e) }.join("")
 	end
@@ -61,7 +57,9 @@ class String
 end
 
 def test
-	RushCheck::Assertion.new(String) { |s| s == s.encrypt.decrypt }.check
+	propReversible = Proc.new { |s| s == s.encrypt.decrypt }
+
+	RubyCheck::for_all(propReversible, [:gen_str])
 end
 
 def main
@@ -94,7 +92,7 @@ def main
 
 	case mode
 	when :usage
-		RDoc::usage("Usage")
+		usage
 	when :encrypt
 		puts password.encrypt
 	when :decrypt
@@ -104,7 +102,7 @@ def main
 	end
 end
 
-if __FILE__==$0
+if __FILE__ == $0
 	begin
 		main
 	rescue Interrupt => e
