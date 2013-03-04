@@ -1,12 +1,11 @@
 #!/usr/bin/env ruby
-
+#
 # Author:: Andrew Pennebaker
 # Copyright:: Copyright 2007 - 2013 Andrew Pennebaker
 #
 # == Synopsis
 #
 # ios7crypt: encrypts and decrypts passwords with Cisco IOS7 algorithm
-#
 
 def usage
   puts "#{$0} [OPTIONS]
@@ -45,22 +44,30 @@ $xlat=[
 class String
   Contract String => String
   def encrypt
-    seed=rand(16)
+    seed = rand(16)
 
-    hash=(0 .. (self.length-1)).collect { |i| $xlat[(seed+i) % $xlat.length] ^ self[i].ord }
+    hash = (0 .. (self.length-1)).collect { |i|
+      $xlat[(seed + i) % $xlat.length] ^ self[i].ord
+    }
 
-    format("%02d", seed) + hash.collect { |e| format("%02x", e) }.join("")
+    format("%02d", seed) + hash.collect { |e|
+      format("%02x", e)
+    }.join("")
   end
 
   Contract String => String
   def decrypt
-    seed=self[0, 2].to_i
+    seed = self[0, 2].to_i
 
-    hash=self[2, self.length-1]
+    hash = self[2, self.length - 1]
 
-    pairs=(0 .. (hash.length/2-1)).collect { |i| hash[i*2, 2].to_i(16) }
+    pairs = (0 .. (hash.length / 2 - 1)).collect { |i|
+      hash[i * 2, 2].to_i(16)
+    }
 
-    decrypted=(0 .. (pairs.length-1)).collect { |i| $xlat[(seed+i) % $xlat.length] ^ pairs[i] }
+    decrypted = (0 .. (pairs.length - 1)).collect { |i|
+      $xlat[(seed + i) % $xlat.length] ^ pairs[i]
+    }
 
     decrypted.collect { |e| e.chr }.join("")
   end
