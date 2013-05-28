@@ -3,7 +3,7 @@
 -module(ios7crypt).
 -author("andrew.pennebaker@gmail.com").
 -export([encrypt/1, decrypt/1, main/1]).
--include_lib("triq/include/triq.hrl").
+-include_lib("proper/include/proper.hrl").
 -import(getopt, [usage/2, parse/2]).
 -import(escript, [script_name/0]).
 -import(lists, [nth/2, map/2, flatten/1, nthtail/2, any/2]).
@@ -106,7 +106,7 @@ main(Args) ->
     {ok, {Options, _}} ->
       case nth(1, Options) of
         help -> u();
-        test -> triq:check(prop_reversible());
+        test -> proper:quickcheck(prop_reversible());
 
         {encrypt, Password} ->
           io:format("~s~n", [encrypt(Password)]);
