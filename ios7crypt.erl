@@ -29,8 +29,8 @@ encrypt(Password) ->
   Key = key(Seed, length(Password)),
   CipherText = binary_to_list(exor(Password, Key)),
 
-  % io_lib:format needs to be flattened
-  % per http://www.erlang.org/pipermail/erlang-questions/2007-August/028664.html
+  %% io_lib:format needs to be flattened
+  %% per http://www.erlang.org/pipermail/erlang-questions/2007-August/028664.html
   Rest = flatten(map(fun(A) -> io_lib:format("~2.16.0b", [A]) end, CipherText)),
 
   concat(flatten(io_lib:format("~2.10.0b", [Seed])), Rest).
