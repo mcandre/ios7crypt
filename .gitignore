@@ -1,4 +1,6 @@
+*.exe
 *.dSYM
 *.class
 *.pyc
 *.beam
+**/ios7crypt
