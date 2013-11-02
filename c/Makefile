@@ -10,7 +10,7 @@ ios7crypt: ios7crypt.c qc.c qc.h
 	$(CC) -o ios7crypt ios7crypt.c qc.c qc.h -lgc -Wall
 
 lint:
-	splint *.c *.h
+	splint *.c *.h 2>&1
 
 clean:
 	-rm ios7crypt
