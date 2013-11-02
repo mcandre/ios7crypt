@@ -41,6 +41,9 @@ $xlat=[
   0x3b, 0x66, 0x67, 0x38, 0x37
 ]
 
+#
+# Monkeypatch String to feature #encrypt, #decrypt methods.
+#
 class String
   Contract String => String
   def encrypt
@@ -73,7 +76,7 @@ class String
   end
 end
 
-def test
+def self.test
   prop_reversible = Proc.new { |s| s == s.encrypt.decrypt }
   RubyCheck::for_all(prop_reversible, [:gen_str])
 end
@@ -118,7 +121,7 @@ def main
   end
 end
 
-if __FILE__==$0
+if __FILE__ == $0
   begin
     main
   rescue Interrupt => e
