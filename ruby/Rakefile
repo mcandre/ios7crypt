@@ -1,3 +1,8 @@
+task :test => [] do
+  sh "ruby ios7crypt.rb -e monkey"
+  sh "ruby ios7crypt.rb -d 12140a19190e15"
+end
+
 task :lint => [] do
   sh "bundle exec reek -q .; true"
   sh "bundle exec flay ."
