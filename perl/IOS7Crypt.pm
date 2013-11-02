@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1;
 use Test::LectroTest::Compat;
 
 my @xlat=(
@@ -16,7 +15,7 @@ my @xlat=(
   0x3b, 0x66, 0x67, 0x38, 0x37
 );
 
-my $xlat_len = length @xlat;
+my $xlat_len = scalar @xlat;
 
 sub encrypt {
   my $password = shift;
@@ -83,37 +82,41 @@ sub test {
   );
 }
 
-if (@ARGV < 1) {
-  usage;
-}
-
-my $mode = shift;
-
-if ($mode eq "-e") {
+sub main {
   if (@ARGV < 1) {
     usage;
   }
 
-  my $password = shift;
+  my $mode = shift @ARGV;
 
-  my $hash = encrypt $password;
+  if ($mode eq "-e") {
+    if (@ARGV < 1) {
+      usage;
+    }
 
-  print "$hash\n";
-}
-elsif ($mode eq "-d") {
-  if (@ARGV < 1) {
+    my $password = shift @ARGV;
+
+    my $hash = encrypt $password;
+
+    print "$hash\n";
+  }
+  elsif ($mode eq "-d") {
+    if (@ARGV < 1) {
+      usage;
+    }
+
+    my $hash = shift @ARGV;
+
+    my $password = decrypt $hash;
+
+    print "$password\n";
+  }
+  elsif ($mode eq "-t") {
+    test;
+  }
+  else {
     usage;
   }
-
-  my $hash = shift;
-
-  my $password = decrypt $hash;
-
-  print "$password\n";
 }
-elsif ($mode eq "-t") {
-  test;
-}
-else {
-  usage;
-}
+
+main unless caller;
