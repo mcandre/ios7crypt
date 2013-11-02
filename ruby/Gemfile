@@ -1,4 +1,7 @@
 source "http://rubygems.org"
+gem "rubycheck"
+gem "contracts"
+
 group :development do
   gem "guard"
   gem "guard-shell"
