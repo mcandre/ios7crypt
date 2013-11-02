@@ -5,107 +5,107 @@
 #include <time.h>
 
 void qc_init() {
-	GC_INIT();
-	srand((unsigned int) time(NULL));
+  GC_INIT();
+  srand((unsigned int) time(NULL));
 
-	QC_INITIALIZED = true;
+  QC_INITIALIZED = true;
 }
 
 void gen_bool(void* data) {
-	bool b = rand() % 2 == 0;
+  bool b = rand() % 2 == 0;
 
-	qc_return(bool, b);
+  qc_return(bool, b);
 }
 
 void gen_int(void* data) {
-	int i = rand();
+  int i = rand();
 
-	qc_return(int, i);
+  qc_return(int, i);
 }
 
 void gen_char(void* data) {
-	char c = (char) (rand() % 128);
+  char c = (char) (rand() % 128);
 
-	qc_return(char, c);
+  qc_return(char, c);
 }
 
 void _gen_array(void* data, fp gen, int len, size_t size) {
-	int i;
-	for (i = 0; i < len; i++) {
-		gen(data + i * size);
-	}
+  int i;
+  for (i = 0; i < len; i++) {
+    gen(data + i * size);
+  }
 }
 
 void gen_string(void* data) {
-	int len = rand() % 100;
+  int len = rand() % 100;
 
-	size_t size = sizeof(char);
+  size_t size = sizeof(char);
 
-	char* s = (char*) GC_MALLOC(len * size);
+  char* s = (char*) GC_MALLOC(len * size);
 
-	gen_array(s, gen_char, len, size);
+  gen_array(s, gen_char, len, size);
 
-	qc_return(char*, s);
+  qc_return(char*, s);
 }
 
 void print_bool(void* data) {
-	bool b = (* (bool*) data);
+  bool b = (* (bool*) data);
 
-	if (b) {
-		printf("true");
-	}
-	else {
-		printf("false");
-	}
+  if (b) {
+    printf("true");
+  }
+  else {
+    printf("false");
+  }
 }
 
 void print_int(void* data) {
-	int i = qc_args(int, 0, sizeof(int));
+  int i = qc_args(int, 0, sizeof(int));
 
-	printf("%d", i);
+  printf("%d", i);
 }
 
 void print_char(void* data) {
-	char c = qc_args(char, 0, sizeof(char));
+  char c = qc_args(char, 0, sizeof(char));
 
-	printf("\'%c\'", c);
+  printf("\'%c\'", c);
 }
 
 void print_string(void* data) {
-	char* s = qc_args(char*, 0, sizeof(char*));
+  char* s = qc_args(char*, 0, sizeof(char*));
 
-	printf("%s", s);
+  printf("%s", s);
 }
 
 void _for_all(prop property, int arglen, fp generators[], fp printers[], size_t max_size) {
-	int i, j;
+  int i, j;
 
-	// Because GC_MALLOC will segfault if GC_INIT() is not called beforehand.
-	if (!QC_INITIALIZED) {
-		printf("*** Error: Run qc_init() before calling for_all().\n");
-		return;
-	}
+  // Because GC_MALLOC will segfault if GC_INIT() is not called beforehand.
+  if (!QC_INITIALIZED) {
+    printf("*** Error: Run qc_init() before calling for_all().\n");
+    return;
+  }
 
-	void* values = GC_MALLOC(arglen * max_size);
+  void* values = GC_MALLOC(arglen * max_size);
 
-	for (i = 0; i < 100; i++) {
-		for (j = 0; j < arglen; j++) {
-			generators[j](values + j * max_size);
-		}
+  for (i = 0; i < 100; i++) {
+    for (j = 0; j < arglen; j++) {
+      generators[j](values + j * max_size);
+    }
 
-		bool holds = property(values);
+    bool holds = property(values);
 
-		if (!holds) {
-			printf("*** Failed!\n");
-		
-			for (j = 0; j < arglen; j++) {
-				printers[j](values + j * max_size);
-				printf("\n");
-			}
+    if (!holds) {
+      printf("*** Failed!\n");
+    
+      for (j = 0; j < arglen; j++) {
+        printers[j](values + j * max_size);
+        printf("\n");
+      }
 
-			return;
-		}
-	}
+      return;
+    }
+  }
 
-	printf("+++ OK, passed 100 tests.\n");
+  printf("+++ OK, passed 100 tests.\n");
 }
