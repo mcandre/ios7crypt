@@ -77,25 +77,34 @@ void decrypt(char *hash, char *password) {
 }
 
 bool reversible(void *data) {
-  int i;
+  char* password;
+  char* hash;
+  char* password2;
+  int cmp;
 
-  char* password = qc_args(char*, 0, sizeof(char*));
+  password = qc_args(char*, 0, sizeof(char*));
 
-  char* hash = (char*) malloc((size_t) strlen(password) * 2 + 3);
-  for (i = 0; i < strlen(password) * 2 + 3; i++) {
-    hash[i] = '\0';
+  hash = (char*) calloc((size_t) strlen(password) * 2 + 3, sizeof(char));
+
+  if (hash == NULL) {
+    printf("Out of memory.\n");
+    return false;
   }
 
   encrypt(password, hash);
 
-  char* password2 = (char*) malloc((size_t) strlen(hash) / 2 * sizeof(char));
-  for (i = 0; i < strlen(hash) / 2; i++) {
-    password2[i] = '\0';
+  password2 = (char*) calloc((size_t) strlen(hash) / 2 * sizeof(char), sizeof(char));
+
+  if (password2 == NULL) {
+    printf("Out of memory.\n");
+    free(password);
+
+    return false;
   }
 
   decrypt(hash, password2);
 
-  int cmp = strcmp(password, password2);
+  cmp = strcmp(password, password2);
 
   free(hash);
   free(password2);
