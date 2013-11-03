@@ -1,8 +1,15 @@
-%% Warning: unit tests fail unless this module is compiled.
+%%
+%% Compile
+%%
+%% erlc -Wall ios7crypt.erl
+%%
+%% Run
+%%
+%% erl -noshell -s ios7crypt -- -e monkey
 
 -module(ios7crypt).
 -author("andrew.pennebaker@gmail.com").
--export([encrypt/1, decrypt/1, main/1]).
+-export([encrypt/1, decrypt/1, start/1]).
 -include_lib("proper/include/proper.hrl").
 -import(getopt, [usage/2, parse/2]).
 -import(escript, [script_name/0]).
@@ -93,10 +100,10 @@ option_spec() ->
   {help, $h, "help", undefined, "Display usage information"}
   ].
 
-u() -> usage(option_spec(), script_name()).
+u() -> usage(option_spec(), "ios7crypt.erl").
 
-main([]) -> u();
-main(Args) ->
+start([]) -> u();
+start(Args) ->
   {A1, A2, A3} = now(),
   random:seed(A1, A2, A3),
 
