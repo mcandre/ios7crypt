@@ -2,5 +2,4 @@
 *.dSYM
 *.class
 *.pyc
-*.beam
-**/ios7crypt
+ios7crypt
