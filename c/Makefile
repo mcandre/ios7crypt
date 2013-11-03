@@ -8,7 +8,7 @@ test: ios7crypt
 	./ios7crypt -t
 
 ios7crypt: ios7crypt.c qc.c qc.h
-	$(CC) -o ios7crypt ios7crypt.c qc.c qc.h -lgc -Wall
+	$(CC) -o ios7crypt -O2 ios7crypt.c qc.c qc.h -lgc -Wall
 
 lint:
 	splint ios7crypt.c
