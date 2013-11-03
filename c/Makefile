@@ -14,4 +14,5 @@ lint:
 	splint ios7crypt.c
 
 clean:
+	-rm *.exe
 	-rm ios7crypt
