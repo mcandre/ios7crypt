@@ -1,7 +1,9 @@
 import java.util.Random;
 
-public class IOS7Crypt {
-  public static int[] XLAT={
+public final class IOS7Crypt {
+  private IOS7Crypt() {}
+
+  public static final int[] XLAT = {
     0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
     0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
     0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
@@ -11,43 +13,39 @@ public class IOS7Crypt {
     0x3b, 0x66, 0x67, 0x38, 0x37
   };
 
-  public static String encrypt(String password) {
-    if (password.length()<1) {
+  public static String encrypt(final String password) {
+    if (password.length() < 1) {
       return "";
     }
-    else if (password.length()>11) {
-      password=password.substring(0, 11);
-    }
 
-    int seed=(int) (new Random().nextDouble()*16);
+    int seed = (int) (new Random().nextDouble() * 16);
 
-    String hash=String.format("%02d", seed);
+    String hash = String.format("%02d", seed);
 
-    for (int i=0; i<password.length(); i++) {
-      int encryptedByte=XLAT[(seed++)%XLAT.length]^password.charAt(i);
-      hash+=String.format("%02x", encryptedByte);
+    for (int i = 0; i < password.length() && i < 11; i++) {
+      int encryptedByte = XLAT[(seed++) % XLAT.length] ^ password.charAt(i);
+      hash += String.format("%02x", encryptedByte);
     }
 
     return hash;
   }
 
-  public static String decrypt(String hash) {
-    if (hash.length()<1) {
+  public static String decrypt(final String hash) {
+    if (hash.length() < 1) {
       return "";
     }
-    else if (hash.length()%2!=0) {
+    else if (hash.length() % 2 != 0) {
       return "";
     }
 
     try {
-      String password="";
+      String password = "";
 
-      int seed=Integer.parseInt(hash.substring(0,2));
-      hash=hash.substring(2);
+      int seed = Integer.parseInt(hash.substring(0, 2));
 
-      for (int i=0; i+1<hash.length(); i+=2) {
-        int encryptedByte=Integer.parseInt(hash.substring(i, i+2), 16);
-        password+=(char) (encryptedByte^XLAT[(seed++)%XLAT.length]);
+      for (int i = 2; i + 1 < hash.length(); i += 2) {
+        int encryptedByte = Integer.parseInt(hash.substring(i, i + 2), 16);
+        password += (char) (encryptedByte ^ XLAT[(seed++) % XLAT.length]);
       }
 
       return password;
