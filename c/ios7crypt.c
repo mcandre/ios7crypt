@@ -58,7 +58,7 @@ void encrypt(char *password, char *hash) {
     (void) snprintf(hash, 3, "%02d", seed);
 
     for (i = 0; i < password_length; i++) {
-      (void) snprintf(temp, 3, "%02x", password[i] ^ xlat[(seed++) % XLAT_SIZE]);
+      (void) snprintf(temp, 3, "%02x", (unsigned int) (password[i] ^ xlat[(seed++) % XLAT_SIZE]));
       strcat(hash, temp);
     }
   }
@@ -102,6 +102,7 @@ bool reversible(void *data) {
 
   if (password2 == NULL) {
     printf("Out of memory.\n");
+    free(hash);
     free(password);
 
     return false;
