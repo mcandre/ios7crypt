@@ -25,7 +25,7 @@ int xlat[] = {
 
 int XLAT_SIZE = 53;
 
-static void __attribute((noreturn)) usage(char *program) {
+static void __attribute__((noreturn)) usage(char *program) {
   printf("Usage: %s [options]\n\n", program);
   printf("-e <passwords>\n");
   printf("-d <hashes>\n");
