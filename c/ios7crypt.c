@@ -5,14 +5,15 @@
    Requires qc (https://github.com/mcandre/qc)
 */
 
-#include "qc.h"
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "qc.h"
+#include "ios7crypt.h"
 
-static int xlat[] = {
+int xlat[] = {
   0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
   0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
   0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
@@ -22,9 +23,9 @@ static int xlat[] = {
   0x3b, 0x66, 0x67, 0x38, 0x37
 };
 
-static int XLAT_SIZE = 53;
+int XLAT_SIZE = 53;
 
-static void usage(char *program) {
+static void __attribute((noreturn)) usage(char *program) {
   printf("Usage: %s [options]\n\n", program);
   printf("-e <passwords>\n");
   printf("-d <hashes>\n");
@@ -41,19 +42,23 @@ static int htoi(char x) {
 }
 
 void encrypt(char *password, char *hash) {
-  int password_length, seed, i;
+  size_t password_length;
+
+  int seed;
+
+  size_t i;
 
   char *temp = (char *) malloc(3);
 
   if (temp != NULL && password != NULL && strlen(password) > 0 && hash != NULL) {
-    password_length = (int) strlen(password);
+    password_length = strlen(password);
 
     seed = rand() % 16;
 
     (void) snprintf(hash, 3, "%02d", seed);
 
     for (i = 0; i < password_length; i++) {
-      (void) snprintf(temp, 3, "%02x", ((unsigned int) password[i]) ^ xlat[(seed++) % XLAT_SIZE]);
+      (void) snprintf(temp, 3, "%02x", password[i] ^ xlat[(seed++) % XLAT_SIZE]);
       strcat(hash, temp);
     }
   }
@@ -71,7 +76,7 @@ void decrypt(char *hash, char *password) {
 
     for (i = 2; i < (int) strlen(hash); i += 2) {
       c = htoi(hash[i]) * 16 + htoi(hash[i + 1]);
-      password[index++] = (char) c ^ xlat[(seed++) % XLAT_SIZE];
+      password[index++] = (char) (c ^ xlat[(seed++) % XLAT_SIZE]);
     }
   }
 }

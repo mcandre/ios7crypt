@@ -1,4 +1,5 @@
-CC=gcc-4.7
+CC=clang
+FLAGS=-O2 -Wall -Wextra -Wmost -Weverything -Wno-pointer-arith
 
 all: test
 
@@ -8,7 +9,7 @@ test: ios7crypt
 	./ios7crypt -t
 
 ios7crypt: ios7crypt.c qc.c qc.h
-	$(CC) -O2 -Wall -Wextra -o ios7crypt ios7crypt.c qc.c qc.h -lgc
+	$(CC) $(FLAGS) -o ios7crypt ios7crypt.c qc.c -lgc
 
 lint:
 	splint ios7crypt.c
