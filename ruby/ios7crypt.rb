@@ -76,6 +76,7 @@ class String
   end
 end
 
+Contract nil => Bool
 def self.test
   prop_reversible = Proc.new { |s| s == s.encrypt.decrypt }
   RubyCheck::for_all(prop_reversible, [:gen_str])
