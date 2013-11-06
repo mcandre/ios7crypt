@@ -12,7 +12,7 @@ ios7crypt: ios7crypt.c qc.c qc.h
 	$(CC) $(FLAGS) -o ios7crypt ios7crypt.c qc.c -lgc
 
 lint:
-	splint *.c *.h -preproc
+	splint *.c *.h
 
 clean:
 	-rm *.exe
