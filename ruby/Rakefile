@@ -6,4 +6,5 @@ end
 task :lint => [] do
   sh "bundle exec reek -q .; true"
   sh "bundle exec flay ."
+  sh "bundle exec flog ."
 end
