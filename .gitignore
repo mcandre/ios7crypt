@@ -2,4 +2,6 @@
 *.dSYM
 *.class
 *.pyc
+Gemfile.lock
+tmp/
 ios7crypt
