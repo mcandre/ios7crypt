@@ -1,4 +1,5 @@
 source "http://rubygems.org"
+
 gem "rubycheck"
 gem "contracts"
 
@@ -11,4 +12,5 @@ group :development do
   gem "flog"
   gem "roodi"
   gem "cane"
+  gem "excellent"
 end
