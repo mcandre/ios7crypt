@@ -1,18 +1,18 @@
-source "http://rubygems.org"
+source 'http://rubygems.org'
 
-gem "rubycheck"
-gem "contracts"
+gem 'rubycheck'
+gem 'contracts'
 
 group :development do
-  gem "guard"
-  gem "guard-shell"
-  gem "rake"
-  gem "reek"
-  gem "flay"
-  gem "flog"
-  gem "roodi"
-  gem "cane"
-  gem "excellent"
-  gem "rubocop"
-  gem "tailor"
+  gem 'guard'
+  gem 'guard-shell'
+  gem 'rake'
+  gem 'reek'
+  gem 'flay'
+  gem 'flog'
+  gem 'roodi'
+  gem 'cane'
+  gem 'excellent'
+  gem 'rubocop'
+  gem 'tailor'
 end
