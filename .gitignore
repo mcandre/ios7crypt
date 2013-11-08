@@ -4,4 +4,5 @@
 *.pyc
 Gemfile.lock
 tmp/
+__pycache__
 ios7crypt
