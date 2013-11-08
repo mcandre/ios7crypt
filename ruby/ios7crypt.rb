@@ -8,7 +8,7 @@
 # ios7crypt: encrypts and decrypts passwords with Cisco IOS7 algorithm
 
 def usage
-  puts "#{$0} [OPTIONS]
+  puts "#{$PROGRAM_NAME} [OPTIONS]
 
 --help, -h:
     show help
@@ -25,23 +25,26 @@ def usage
   exit
 end
 
-require "rubygems"
-require "rubycheck"
-require "getoptlong"
+require 'rubygems'
+require 'rubycheck'
+require 'getoptlong'
 
-require "contracts"
+require 'contracts'
 include Contracts
 
+#
+# IOS7Crypt
+#
 module IOS7Crypt
   XLAT = [
-          0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
-          0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
-          0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
-          0x55, 0x42, 0x73, 0x67, 0x76, 0x63, 0x61, 0x36,
-          0x39, 0x38, 0x33, 0x34, 0x6e, 0x63, 0x78, 0x76,
-          0x39, 0x38, 0x37, 0x33, 0x32, 0x35, 0x34, 0x6b,
-          0x3b, 0x66, 0x67, 0x38, 0x37
-         ].freeze
+    0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
+    0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
+    0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
+    0x55, 0x42, 0x73, 0x67, 0x76, 0x63, 0x61, 0x36,
+    0x39, 0x38, 0x33, 0x34, 0x6e, 0x63, 0x78, 0x76,
+    0x39, 0x38, 0x37, 0x33, 0x32, 0x35, 0x34, 0x6b,
+    0x3b, 0x66, 0x67, 0x38, 0x37
+  ].freeze
 end
 
 #
@@ -52,67 +55,67 @@ class String
   def encrypt
     seed = rand(16)
 
-    hash = (0 .. (self.length-1)).collect { |i|
+    hash = (0 .. (length - 1)).map do |i|
       IOS7Crypt::XLAT[(seed + i) % IOS7Crypt::XLAT.length] ^ self[i].ord
-    }
+    end
 
-    format("%02d", seed) + hash.collect { |e|
-      format("%02x", e)
-    }.join("")
+    format('%02d', seed) + hash.map do |e|
+      format('%02x', e)
+    end.join('')
   end
 
   Contract String => String
   def decrypt
     seed = self[0, 2].to_i
 
-    hash = self[2, self.length - 1]
+    hash = self[2, length - 1]
 
-    pairs = (0 .. (hash.length / 2 - 1)).collect { |i|
+    pairs = (0 .. (hash.length / 2 - 1)).map do |i|
       hash[i * 2, 2].to_i(16)
-    }
+    end
 
-    decrypted = (0 .. (pairs.length - 1)).collect { |i|
+    decrypted = (0 .. (pairs.length - 1)).map do |i|
       IOS7Crypt::XLAT[(seed + i) % IOS7Crypt::XLAT.length] ^ pairs[i]
-    }
+    end
 
-    decrypted.collect { |e| e.chr }.join("")
+    decrypted.map { |e| e.chr }.join('')
   end
 end
 
 def self.test
-  prop_reversible = Proc.new { |s| s == s.encrypt.decrypt }
-  RubyCheck::for_all(prop_reversible, [:gen_str])
+  prop_reversible = -> s { s == s.encrypt.decrypt }
+  RubyCheck.for_all(prop_reversible, [:gen_str])
 end
 
 def main
   mode = :usage
 
-  password = ""
-  hash = ""
+  password = ''
+  hash = ''
 
-  opts=GetoptLong.new(
-    ["--help", "-h", GetoptLong::NO_ARGUMENT],
-    ["--encrypt", "-e", GetoptLong::REQUIRED_ARGUMENT],
-    ["--decrypt", "-d", GetoptLong::REQUIRED_ARGUMENT],
-    ["--test", "-t", GetoptLong::NO_ARGUMENT]
+  opts = GetoptLong.new(
+    ['--help', '-h', GetoptLong::NO_ARGUMENT],
+    ['--encrypt', '-e', GetoptLong::REQUIRED_ARGUMENT],
+    ['--decrypt', '-d', GetoptLong::REQUIRED_ARGUMENT],
+    ['--test', '-t', GetoptLong::NO_ARGUMENT]
   )
 
-  opts.each { |option, value|
+  opts.each do |option, value|
     case option
-    when "--help"
+    when '--help'
       usage
-    when "--encrypt"
+    when '--encrypt'
       mode = :encrypt
       password = value
-    when "--decrypt"
+    when '--decrypt'
       mode = :decrypt
       hash = value
-    when "--test"
+    when '--test'
       mode = :test
     else
       usage
     end
-  }
+  end
 
   case mode
   when :usage
@@ -128,10 +131,10 @@ def main
   end
 end
 
-if __FILE__ == $0
+if $PROGRAM_NAME == __FILE__
   begin
     main
-  rescue Interrupt => e
+  rescue Interrupt
     nil
   end
 end
