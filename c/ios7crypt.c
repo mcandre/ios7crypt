@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
     for (i = 2; i < argc; i++) {
       password = argv[i];
 
-      hash = (char *) malloc((size_t) strlen(password) * 2 + 3);
+      hash = (char *) calloc((size_t) strlen(password) * 2 + 3, sizeof(char));
 
       if (hash != NULL) {
         encrypt(password, hash);
@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
     for (i = 2; i < argc; i++) {
       hash = argv[i];
 
-      password = (char *) malloc((size_t) strlen(hash) / 2);
+      password = (char *) calloc((size_t) strlen(hash) / 2, sizeof(char));
 
       if (password != NULL) {
         decrypt(hash, password);
