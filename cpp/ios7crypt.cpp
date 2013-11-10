@@ -44,16 +44,16 @@ string encrypt(string password) {
 
     seed = rand() % 16;
 
-    hash.setf(ios::dec);
+    hash.setf(ios::dec, ios::basefield);
     hash.width(2);
     hash.fill('0');
     hash << seed;
 
-    hash.setf(ios::hex);
-    hash.width(2);
-    hash.fill('0');
-
     for (i = 0; i < password_length; i++) {
+      hash.setf(ios::hex, ios::basefield);
+      hash.width(2);
+      hash.fill('0');
+
       hash << (unsigned int) (password[i] ^ xlat[(seed++) % XLAT_SIZE]);
     }
   }
