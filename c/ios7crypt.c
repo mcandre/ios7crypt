@@ -34,15 +34,6 @@ static void __attribute__((noreturn)) usage(char *program) {
   exit(0);
 }
 
-static int htoi(char x) {
-  if (isdigit(x)) {
-    return (int) (x - '0');
-  }
-  else {
-    return (int) (toupper(x) - 'A' + 10);
-  }
-}
-
 void encrypt(char *password, char *hash) {
   size_t password_length;
 
@@ -68,17 +59,33 @@ void encrypt(char *password, char *hash) {
 }
 
 void decrypt(char *hash, char *password) {
-  int seed, index, i, c;
+  long seed;
+  size_t i;
+  int index, c;
 
-  if (hash != NULL && strlen(hash) > 3 && password != NULL) {
-    seed = htoi(hash[0]) * 10 + htoi(hash[1]);
+  char *pair = (char*) calloc(3, sizeof(char));
+
+  if (
+    hash != NULL &&
+    strlen(hash) > 3 &&
+    password != NULL &&
+    pair != NULL) {
+
+    strncat(pair, hash, 2);
+
+    seed = strtol(pair, NULL, 10);
 
     index = 0;
 
-    for (i = 2; i < (int) strlen(hash); i += 2) {
-      c = htoi(hash[i]) * 16 + htoi(hash[i + 1]);
+    for (i = 2; i < strlen(hash); i += 2) {
+      pair[0] = pair[1] = '\0';
+      strncat(pair, hash + i, 2);
+      c = (int) strtol(pair, NULL, 16);
+
       password[index++] = (char) (c ^ xlat[(seed++) % XLAT_SIZE]);
     }
+
+    free(pair);
   }
 }
 
