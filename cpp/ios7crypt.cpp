@@ -1,17 +1,9 @@
-/*
-   Andrew Pennebaker
-   Copyright 2005-2011 Andrew Pennebaker
-
-   Requires qc (https://github.com/mcandre/qc)
-*/
-
-#include <string.h>
-#include <time.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include "qc.h"
+#include <cstring>
+#include <ctime>
+#include <cstdlib>
+#include <iostream>
 #include "ios7crypt.h"
+using namespace std;
 
 int xlat[] = {
   0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
@@ -26,10 +18,10 @@ int xlat[] = {
 int XLAT_SIZE = 53;
 
 static void __attribute__((noreturn)) usage(char *program) {
-  printf("Usage: %s [options]\n\n", program);
-  printf("-e <passwords>\n");
-  printf("-d <hashes>\n");
-  printf("-t unit test\n");
+  cout << "Usage: " << program << " [options]" << endl << endl;
+  cout << "-e <passwords>" << endl;
+  cout << "-d <hashes>" << endl;
+  cout << "-t unit test" << endl;
 
   exit(0);
 }
@@ -44,16 +36,14 @@ static int htoi(char x) {
 }
 
 void encrypt(char *password, char *hash) {
-  size_t password_length;
-
-  int seed;
-
-  size_t i;
-
   char *temp = (char *) malloc(3);
 
   if (temp != NULL && password != NULL && strlen(password) > 0 && hash != NULL) {
-    password_length = strlen(password);
+    size_t password_length = strlen(password);
+
+    int seed;
+
+    size_t i;
 
     seed = rand() % 16;
 
@@ -69,63 +59,24 @@ void encrypt(char *password, char *hash) {
 }
 
 void decrypt(char *hash, char *password) {
-  int seed, index, i, c;
-
   if (hash != NULL && strlen(hash) > 3 && password != NULL) {
-    seed = htoi(hash[0]) * 10 + htoi(hash[1]);
+    int seed = htoi(hash[0]) * 10 + htoi(hash[1]);
 
-    index = 0;
+    int index = 0;
+
+    int i;
 
     for (i = 2; i < (int) strlen(hash); i += 2) {
-      c = htoi(hash[i]) * 16 + htoi(hash[i + 1]);
+      int c = htoi(hash[i]) * 16 + htoi(hash[i + 1]);
       password[index++] = (char) (c ^ xlat[(seed++) % XLAT_SIZE]);
     }
   }
-}
-
-bool reversible(void *data) {
-  char* password;
-  char* hash;
-  char* password2;
-  int cmp;
-
-  password = qc_args(char*, 0, sizeof(char*));
-
-  hash = (char*) calloc((size_t) strlen(password) * 2 + 3, sizeof(char));
-
-  if (hash == NULL) {
-    printf("Out of memory.\n");
-    return false;
-  }
-
-  encrypt(password, hash);
-
-  password2 = (char*) calloc((size_t) strlen(hash) / 2 * sizeof(char), sizeof(char));
-
-  if (password2 == NULL) {
-    printf("Out of memory.\n");
-    free(hash);
-    free(password);
-
-    return false;
-  }
-
-  decrypt(hash, password2);
-
-  cmp = strcmp(password, password2);
-
-  free(hash);
-  free(password2);
-
-  return cmp == 0;
 }
 
 int main(int argc, char **argv) {
   int i;
 
   char *password, *hash;
-
-  qc_init();
 
   if (argc < 2) {
     usage(argv[0]);
@@ -142,7 +93,7 @@ int main(int argc, char **argv) {
 
       if (hash != NULL) {
         encrypt(password, hash);
-        printf("%s\n", hash);
+        cout << hash << endl;
 
         free(hash);
       }
@@ -160,17 +111,11 @@ int main(int argc, char **argv) {
 
       if (password != NULL) {
         decrypt(hash, password);
-        printf("%s\n", password);
+        cout << password << endl;
 
         free(password);
       }
     }
-  }
-  else if (strcmp(argv[1], "-t") == 0) {
-    gen gs[] = { gen_string };
-    gen ps[] = { print_string };
-
-    for_all(reversible, 1, gs, ps, sizeof(char*));
   }
   else {
     usage(argv[0]);
