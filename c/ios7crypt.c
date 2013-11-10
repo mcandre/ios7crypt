@@ -50,9 +50,11 @@ void encrypt(char *password, char *hash) {
 
   size_t i;
 
-  char *temp = (char *) malloc(3);
-
-  if (temp != NULL && password != NULL && strlen(password) > 0 && hash != NULL) {
+  if (
+    password != NULL &&
+    strlen(password) > 0 &&
+    hash != NULL
+  ) {
     password_length = strlen(password);
 
     seed = rand() % 16;
@@ -60,12 +62,9 @@ void encrypt(char *password, char *hash) {
     (void) snprintf(hash, 3, "%02d", seed);
 
     for (i = 0; i < password_length; i++) {
-      (void) snprintf(temp, 3, "%02x", (unsigned int) (password[i] ^ xlat[(seed++) % XLAT_SIZE]));
-      strcat(hash, temp);
+      (void) snprintf(hash + 2 + i * 2, 3, "%02x", (unsigned int) (password[i] ^ xlat[(seed++) % XLAT_SIZE]));
     }
   }
-
-  free(temp);
 }
 
 void decrypt(char *hash, char *password) {
