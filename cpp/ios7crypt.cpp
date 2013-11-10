@@ -3,7 +3,8 @@
 #include <cstdlib>
 #include <iostream>
 #include "ios7crypt.h"
-using namespace std;
+using std::cout;
+using std::endl;
 
 int xlat[] = {
   0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
@@ -38,7 +39,12 @@ static int htoi(char x) {
 void encrypt(char *password, char *hash) {
   char *temp = (char *) malloc(3);
 
-  if (temp != NULL && password != NULL && strlen(password) > 0 && hash != NULL) {
+  if (
+    temp != NULL &&
+    password != NULL &&
+    strlen(password) > 0 &&
+    hash != NULL
+  ) {
     size_t password_length = strlen(password);
 
     int seed;
@@ -76,7 +82,10 @@ void decrypt(char *hash, char *password) {
 int main(int argc, char **argv) {
   int i;
 
-  char *password, *hash;
+  char *password;
+  char *hash;
+
+  srand((unsigned int) time(NULL));
 
   if (argc < 2) {
     usage(argv[0]);
