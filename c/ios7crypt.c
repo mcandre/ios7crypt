@@ -125,6 +125,8 @@ int main(int argc, char **argv) {
 
   char *password, *hash;
 
+  srand((unsigned int) time(NULL));
+
   qc_init();
 
   if (argc < 2) {
