@@ -11,3 +11,6 @@ test: compile
 
 lint: ~/.dialyzer_plt
 	dialyzer *.beam
+
+clean:
+	-rm *.beam
