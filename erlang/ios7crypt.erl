@@ -5,7 +5,7 @@
 %%
 %% Run
 %%
-%% erl -noshell -s ios7crypt -- -e monkey
+%% erl -noshell -s ios7crypt -extra -e monkey
 
 -module(ios7crypt).
 -author("andrew.pennebaker@gmail.com").
@@ -124,4 +124,6 @@ start() ->
             _ -> io:format("Invalid hash.~n")
           end
       end
-  end.
+  end,
+
+  init:stop().
