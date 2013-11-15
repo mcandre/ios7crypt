@@ -9,7 +9,7 @@
 
 -module(ios7crypt).
 -author("andrew.pennebaker@gmail.com").
--export([encrypt/1, decrypt/1, start/1]).
+-export([encrypt/1, decrypt/1, start/0]).
 -include_lib("proper/include/proper.hrl").
 -import(getopt, [usage/2, parse/2]).
 -import(escript, [script_name/0]).
@@ -102,10 +102,11 @@ option_spec() ->
 
 u() -> usage(option_spec(), "ios7crypt.erl").
 
-start([]) -> u();
-start(Args) ->
+start() ->
   {A1, A2, A3} = now(),
   random:seed(A1, A2, A3),
+
+  Args = init:get_plain_arguments(),
 
   case parse(option_spec(), Args) of
     {error, _} -> u();
