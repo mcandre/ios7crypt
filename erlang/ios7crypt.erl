@@ -52,16 +52,7 @@ decrypt(Hash) when length(Hash) < 4 -> {ok, ""};
 decrypt(Hash) ->
   FirstTwo = substr(Hash, 1, 2),
 
-  FirstOneRaw = re:replace(FirstTwo, "^0", ""),
-
-  FirstTemp = nthtail(1, FirstOneRaw),
-
-  FirstOne = case is_binary(FirstTemp) of
-    true -> binary_to_list(FirstTemp);
-    false -> FirstOneRaw
-  end,
-
-  ToInt = (catch list_to_integer(FirstOne, 10)),
+  ToInt = (catch list_to_integer(FirstTwo, 10)),
 
   case ToInt of
     badarg ->
