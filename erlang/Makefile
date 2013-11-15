@@ -6,6 +6,7 @@ compile: ios7crypt.erl
 test: compile
 	erl -noshell -s ios7crypt -extra -e monkey
 	erl -noshell -s ios7crypt -extra -d 020b0b55000316
+	erl -noshell -s ios7crypt -extra -t
 
 ~/.dialyzer_plt: compile
 	dialyzer *.beam --build_plt --quiet
