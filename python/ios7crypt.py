@@ -2,7 +2,8 @@
 
 """IOS7Crypt password encryptor/decryptor"""
 
-import os, sys
+import os
+import sys
 from getopt import getopt
 
 XLAT = [
@@ -25,7 +26,7 @@ def encrypt(password):
 
 def decrypt(h):
   seed, h = int(h[:2]), h[2:]
-  cipher_bytes = [int(h[i : i + 2], 16) for i in range(0, len(h), 2)]
+  cipher_bytes = [int(h[i:i + 2], 16) for i in range(0, len(h), 2)]
   return "".join(
     [chr(
       cipher_bytes[i] ^ XLAT[(seed + i) % len(XLAT)]
