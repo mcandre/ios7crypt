@@ -1,18 +1,18 @@
 all: test
 
-compile: ios7crypt.erl
-	erlc -Wall +debug_info ios7crypt.erl
-
 test: compile
 	erl -noshell -s ios7crypt -extra -e monkey
 	erl -noshell -s ios7crypt -extra -d 020b0b55000316
 	erl -noshell -s ios7crypt -extra -t
 
-~/.dialyzer_plt: compile
-	dialyzer *.beam --build_plt --quiet
+compile:
+	for f in *.erl; do erlc -Wall +debug_info $$f; done
 
-lint: ~/.dialyzer_plt
-	dialyzer *.beam
+plt:
+	dialyzer *.beam --build_plt --apps erts kernel stdlib
+
+lint: compile
+	dialyzer *.beam --quiet
 
 clean:
 	-rm *.beam
