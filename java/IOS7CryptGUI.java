@@ -8,12 +8,15 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 
+/** IOS7Crypt GUI */
+@SuppressWarnings("serial")
 public class IOS7CryptGUI extends JPanel implements ActionListener {
   private JLabel passwordLabel;
   private JTextField passwordField;
   private JLabel hashLabel;
   private JTextField hashField;
 
+  /** Construct GUI */
   public IOS7CryptGUI() {
     super(new BorderLayout());
 
@@ -43,6 +46,10 @@ public class IOS7CryptGUI extends JPanel implements ActionListener {
     add(hashPanel, BorderLayout.SOUTH);
   }
 
+  /**
+     <p>Respond to GUI event</p>
+     @param e GUI event
+  */
   public final void actionPerformed(final ActionEvent e) {
     if (e.getSource() == passwordField) {
       hashField.setText(IOS7Crypt.encrypt(passwordField.getText()));
@@ -52,6 +59,10 @@ public class IOS7CryptGUI extends JPanel implements ActionListener {
     }
   }
 
+  /**
+     <p>Launch GUI app</p>
+     @param args CLI arguments
+  */
   public static void main(final String[] args) {
     JFrame.setDefaultLookAndFeelDecorated(true);
     JDialog.setDefaultLookAndFeelDecorated(true);
