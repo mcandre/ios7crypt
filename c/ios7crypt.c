@@ -34,7 +34,7 @@ static void __attribute__((noreturn)) usage(char *program) {
   exit(0);
 }
 
-void encrypt(char *password, char *hash) {
+void encrypt(const char *password, char *hash) {
   size_t password_length;
 
   int seed;
@@ -58,7 +58,7 @@ void encrypt(char *password, char *hash) {
   }
 }
 
-void decrypt(char *hash, char *password) {
+void decrypt(const char *hash, char *password) {
   long seed;
   size_t i;
   int index, c;
