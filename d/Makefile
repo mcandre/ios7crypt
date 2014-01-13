@@ -1,4 +1,8 @@
-all: ios7crypt
+all: test
+
+test: ios7crypt
+	./ios7crypt -e monkey
+	./ios7crypt -d 104306170e120b
 
 ios7crypt: ios7crypt.d
 	dmd ios7crypt.d -version=ios7crypt ~/.d/dashcheck.d
