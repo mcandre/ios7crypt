@@ -30,7 +30,7 @@ int[] xlatPrime = [
 	0x3b, 0x66, 0x67, 0x38, 0x37
 ];
 
-int[] xlat(int i, int len) {
+int[] xlat(int i, ulong len) {
 	if (len < 1) {
 		return [];
 	}
@@ -58,12 +58,16 @@ string decrypt(string hash) {
 	}
 
 	try {
-		auto seed = parse!(int)(hash[0..2]);
+		auto seed_str = hash[0..2];
+
+		auto seed = parse!(int)(seed_str);
 
 		int[] ciphertext = [];
 		for(int i = 2; i < hash.length; i += 2) {
 			try {
-				auto c = parse!(int)(hash[i..i+2], 16);
+				auto hexpair = hash[i..i+2];
+
+				auto c = parse!(int)(hexpair, 16);
 
 				ciphertext ~= c;
 			}
