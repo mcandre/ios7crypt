@@ -20,7 +20,7 @@ enum mode {
 	TEST
 }
 
-immutable int[] xlatPrime = [
+const int[] xlatPrime = [
 	0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
 	0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
 	0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
@@ -30,7 +30,7 @@ immutable int[] xlatPrime = [
 	0x3b, 0x66, 0x67, 0x38, 0x37
 ];
 
-int[] xlat(immutable int i, immutable ulong len) {
+int[] xlat(const int i, const ulong len) {
 	if (len < 1) {
 		return [];
 	}
@@ -39,10 +39,10 @@ int[] xlat(immutable int i, immutable ulong len) {
 	}
 }
 
-string encrypt(immutable string password) {
-	immutable auto seed = uniform(0, 16);
+string encrypt(const string password) {
+	const auto seed = uniform(0, 16);
 
-	int[] keys = xlat(seed, password.length);
+	const int[] keys = xlat(seed, password.length);
 
 	string[] cipherpairs = [];
 
@@ -53,23 +53,23 @@ string encrypt(immutable string password) {
 	return format("%02d%s", seed, join(cipherpairs, ""));
 }
 
-string decrypt(immutable string hash) {
+string decrypt(const string hash) {
 	if (hash.length < 4) {
 		return "";
 	}
 
 	try {
-		auto seed_str = hash[0..2];
+		string seed_str = hash[0..2];
 
-		auto seed = parse!(int)(seed_str);
+		const int seed = parse!(int)(seed_str);
 
 		int[] ciphertext = [];
 
 		for (int i = 2; i < hash.length; i += 2) {
 			try {
-				auto hexpair = hash[i..i+2];
+				string hexpair = hash[i..i+2];
 
-				auto c = parse!(int)(hexpair, 16);
+				const int c = parse!(int)(hexpair, 16);
 
 				ciphertext ~= c;
 			}
@@ -78,7 +78,7 @@ string decrypt(immutable string hash) {
 			}
 		}
 
-		int[] keys = xlat(seed, ciphertext.length);
+		const int[] keys = xlat(seed, ciphertext.length);
 
 		string password = "";
 
@@ -102,7 +102,7 @@ void test() {
 }
 
 version (ios7crypt) {
-	void usage(immutable string program) {
+	void usage(const string program) {
 		writeln("Usage: ", program, " [options]");
 		writeln("--encrypt -e=<password>\tEncrypt");
 		writeln("--decrypt -d=<hash>\tDecrypt");
@@ -121,17 +121,17 @@ version (ios7crypt) {
 			usage(args[0]);
 		}
 
-		void handleEncrypt(immutable string option, immutable string value) {
+		void handleEncrypt(const string option, const string value) {
 			m = mode.ENCRYPT;
 			password = value;
 		}
 
-		void handleDecrypt(immutable string option, immutable string value) {
+		void handleDecrypt(const string option, const string value) {
 			m = mode.DECRYPT;
 			hash = value;
 		}
 
-		void handleTest(immutable string option, immutable string value) {
+		void handleTest(const string option, const string value) {
 			m = mode.TEST;
 		}
 
