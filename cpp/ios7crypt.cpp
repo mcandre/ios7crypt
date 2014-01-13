@@ -23,7 +23,7 @@ int xlat[] = {
 
 int XLAT_SIZE = 53;
 
-static void __attribute__((noreturn)) usage(string program) {
+static void __attribute__((noreturn)) usage(string const program) {
   cout << "Usage: " << program << " [options]" << endl << endl;
   cout << "-e <passwords>" << endl;
   cout << "-d <hashes>" << endl;
@@ -32,7 +32,7 @@ static void __attribute__((noreturn)) usage(string program) {
   exit(0);
 }
 
-string encrypt(string password) {
+string encrypt(string const password) {
   stringstream hash;
 
   if (password.length() > 0) {
@@ -61,7 +61,7 @@ string encrypt(string password) {
   return hash.str();
 }
 
-string decrypt(string hash) {
+string decrypt(string const hash) {
   stringstream password;
 
   if (hash.length() > 3) {
@@ -79,7 +79,7 @@ string decrypt(string hash) {
   return password.str();
 }
 
-int main(int argc, char **argv) {
+int main(int const argc, char** const argv) {
   int i;
 
   srand((unsigned int) time(NULL));
