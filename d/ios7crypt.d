@@ -20,7 +20,7 @@ enum mode {
 	TEST
 }
 
-int[] xlatPrime = [
+immutable int[] xlatPrime = [
 	0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
 	0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
 	0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
@@ -30,7 +30,7 @@ int[] xlatPrime = [
 	0x3b, 0x66, 0x67, 0x38, 0x37
 ];
 
-int[] xlat(int i, ulong len) {
+int[] xlat(immutable int i, immutable ulong len) {
 	if (len < 1) {
 		return [];
 	}
@@ -39,20 +39,21 @@ int[] xlat(int i, ulong len) {
 	}
 }
 
-string encrypt(string password) {
-	auto seed = uniform(0, 16);
+string encrypt(immutable string password) {
+	immutable auto seed = uniform(0, 16);
 
 	int[] keys = xlat(seed, password.length);
 
 	string[] cipherpairs = [];
-	for(int i = 0; i < password.length; i++) {
+
+	for (int i = 0; i < password.length; i++) {
 		cipherpairs ~= format("%02x", keys[i] ^ password[i]);
 	}
 
 	return format("%02d%s", seed, join(cipherpairs, ""));
 }
 
-string decrypt(string hash) {
+string decrypt(immutable string hash) {
 	if (hash.length < 4) {
 		return "";
 	}
@@ -63,7 +64,8 @@ string decrypt(string hash) {
 		auto seed = parse!(int)(seed_str);
 
 		int[] ciphertext = [];
-		for(int i = 2; i < hash.length; i += 2) {
+
+		for (int i = 2; i < hash.length; i += 2) {
 			try {
 				auto hexpair = hash[i..i+2];
 
@@ -71,7 +73,7 @@ string decrypt(string hash) {
 
 				ciphertext ~= c;
 			}
-			catch(ConvException e) {
+			catch (ConvException e) {
 				break;
 			}
 		}
@@ -79,13 +81,14 @@ string decrypt(string hash) {
 		int[] keys = xlat(seed, ciphertext.length);
 
 		string password = "";
+
 		for (int i = 0; i < ciphertext.length; i++) {
 			password ~= ciphertext[i] ^ keys[i];
 		}
 
 		return password;
 	}
-	catch(ConvException e) {
+	catch (ConvException e) {
 		return "invalid hash";
 	}
 }
@@ -99,7 +102,7 @@ void test() {
 }
 
 version (ios7crypt) {
-	void usage(string program) {
+	void usage(immutable string program) {
 		writeln("Usage: ", program, " [options]");
 		writeln("--encrypt -e=<password>\tEncrypt");
 		writeln("--decrypt -d=<hash>\tDecrypt");
@@ -118,17 +121,17 @@ version (ios7crypt) {
 			usage(args[0]);
 		}
 
-		void handleEncrypt(string option, string value) {
+		void handleEncrypt(immutable string option, immutable string value) {
 			m = mode.ENCRYPT;
 			password = value;
 		}
 
-		void handleDecrypt(string option, string value) {
+		void handleDecrypt(immutable string option, immutable string value) {
 			m = mode.DECRYPT;
 			hash = value;
 		}
 
-		void handleTest(string option, string value) {
+		void handleTest(immutable string option, immutable string value) {
 			m = mode.TEST;
 		}
 
@@ -140,11 +143,11 @@ version (ios7crypt) {
 				"test|t", &handleTest,
 			);
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			usage(args[0]);
 		}
 
-		switch(m) {
+		switch (m) {
 			case mode.ENCRYPT:
 				writeln(encrypt(password));
 				break;
