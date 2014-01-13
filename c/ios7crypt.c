@@ -25,7 +25,7 @@ int xlat[] = {
 
 int XLAT_SIZE = 53;
 
-static void __attribute__((noreturn)) usage(char *program) {
+static void __attribute__((noreturn)) usage(char* const program) {
   printf("Usage: %s [options]\n\n", program);
   printf("-e <passwords>\n");
   printf("-d <hashes>\n");
@@ -34,7 +34,7 @@ static void __attribute__((noreturn)) usage(char *program) {
   exit(0);
 }
 
-void encrypt(char *password, char *hash) {
+void encrypt(char* const password, char* hash) {
   size_t password_length;
 
   int seed;
@@ -58,7 +58,7 @@ void encrypt(char *password, char *hash) {
   }
 }
 
-void decrypt(char *hash, char *password) {
+void decrypt(char* const hash, char* password) {
   long seed;
   size_t i;
   int index, c;
@@ -89,7 +89,7 @@ void decrypt(char *hash, char *password) {
   }
 }
 
-bool reversible(void *data) {
+bool reversible(void* const data) {
   char* password;
   char* hash;
   char* password2;
@@ -126,7 +126,7 @@ bool reversible(void *data) {
   return cmp == 0;
 }
 
-int main(int argc, char **argv) {
+int main(int const argc, char** const argv) {
   int i;
 
   char *password, *hash;
