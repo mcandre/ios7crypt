@@ -63,7 +63,7 @@ static const unsigned int XLAT_LEN = 53;
   NSMutableArray* plaintext = [NSMutableArray arrayWithCapacity: (length - 2) / 2];
 
   for (unsigned int i = 0; i < (length - 2) / 2; i++) {
-    NSScanner* scanner = [NSScanner scannerWithString:[hash substringWithRange: NSMakeRange(i * 2, 2)]];
+    NSScanner* scanner = [NSScanner scannerWithString:[hash substringWithRange: NSMakeRange(2 + i * 2, 2)]];
 
     unsigned int c;
     [scanner scanHexInt: &c];
