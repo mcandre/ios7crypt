@@ -20,13 +20,12 @@ use std::option::Option;
 use std::option::Some;
 use std::option::None;
 
-use extra::getopts::getopts;
-use extra::getopts::Opt;
+use extra::getopts::groups::getopts;
 use extra::getopts::groups::OptGroup;
 use extra::getopts::groups::optflag;
 use extra::getopts::groups::optopt;
-use extra::getopts::Matches;
 use extra::getopts::groups::usage;
+use extra::getopts::Matches;
 
 fn xlat_prime() -> [int, ..53] {
   return [
@@ -117,7 +116,7 @@ fn main() {
     optflag("t", "test", "run unit tests")
   ];
 
-  let result : Matches = match getopts(args.tail(), opts.map(|e| { return e.long_to_short(); } )) {
+  let result : Matches = match getopts(args.tail(), opts) {
     Ok(m) => m,
     Err(f) => fail!(usage(*program, opts))
   };
