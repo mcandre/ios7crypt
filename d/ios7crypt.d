@@ -59,17 +59,13 @@ string decrypt(const string hash) {
 	}
 
 	try {
-		string seed_str = hash[0..2];
-
-		const int seed = parse!(int)(seed_str);
+		const int seed = hash[0 .. 2].to!int;
 
 		int[] ciphertext = [];
 
 		for (int i = 2; i < hash.length; i += 2) {
 			try {
-				string hexpair = hash[i..i+2];
-
-				const int c = parse!(int)(hexpair, 16);
+				const int c = hash[i .. i + 2].to!int(16);
 
 				ciphertext ~= c;
 			}
