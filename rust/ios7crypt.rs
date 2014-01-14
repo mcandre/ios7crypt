@@ -8,15 +8,10 @@ extern mod std;
 extern mod extra;
 
 use std::os::args;
-use std::fmt;
-use std::str::from_utf8;
 use std::rand::{task_rng, Rng};
 
-use std::iter::Zip;
-use std::vec::VecIterator;
 use std::iter::Iterator;
 
-use std::option::Option;
 use std::option::Some;
 use std::option::None;
 
@@ -54,13 +49,13 @@ fn xlat(i : uint, len : uint) -> ~[int] {
   }
 }
 
-fn xor(tp : &(int, int)) -> int {
-  let (a, b) : (int, int) = *tp;
-  return a ^ b;
+fn xor(tp : (&int, &int)) -> int {
+  let (a, b) : (&int, &int) = tp;
+  return (*a) ^ (*b);
 }
 
 fn encrypt(password : ~str) -> ~str {
-  let rng = task_rng();
+  let mut rng = task_rng();
 
   let seed : uint = rng.gen_integer_range(0u, 16);
 
@@ -70,14 +65,14 @@ fn encrypt(password : ~str) -> ~str {
 
   assert_eq!(plaintext.len(), keys.len());
 
-  let zipped : ~[(int, int)] = plaintext.iter().zip(keys.iter()).from_iterator();
+  let zipped : ~[(&int, &int)] = plaintext.iter().zip(keys.iter()).collect();
 
-  let ciphertext : ~[int] = zipped.map(xor);
+  let ciphertext : ~[int] = zipped.map( |e| xor(*e) );
 
   return fmt!(
     "%02d%s",
     seed as int,
-    ciphertext.map( |c| { return fmt!("%02x", *c as uint); } ).connect("")
+    ciphertext.map( |c| fmt!("%02x", *c as uint) ).connect("")
   );
 }
 
