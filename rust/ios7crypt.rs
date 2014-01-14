@@ -4,11 +4,31 @@
 
 #[link(name = "ios7crypt")];
 
-use std;
-use std::getopts::*;
-use result::*;
+extern mod std;
+extern mod extra;
 
-fn xlat_prime() -> [int] {
+use std::os::args;
+use std::fmt;
+use std::str::from_utf8;
+use std::rand::{task_rng, Rng};
+
+use std::iter::Zip;
+use std::vec::VecIterator;
+use std::iter::Iterator;
+
+use std::option::Option;
+use std::option::Some;
+use std::option::None;
+
+use extra::getopts::getopts;
+use extra::getopts::Opt;
+use extra::getopts::groups::OptGroup;
+use extra::getopts::groups::optflag;
+use extra::getopts::groups::optopt;
+use extra::getopts::Matches;
+use extra::getopts::groups::usage;
+
+fn xlat_prime() -> [int, ..53] {
   return [
     0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
     0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
@@ -20,65 +40,62 @@ fn xlat_prime() -> [int] {
   ];
 }
 
-fn xlat(i : uint, len : uint) -> [int] {
-  let xs : [int] = xlat_prime();
-  let xs_len : uint = vec::len(xs);
+fn xlat(i : uint, len : uint) -> ~[int] {
+  let xs : [int, ..53] = xlat_prime();
+  let xs_len : uint = xs.len();
 
   if len < 1u {
-    return [];
+    return [].to_owned();
   }
   else {
     let head : int = xs[i % xs_len];
-    let tail : [int] = xlat(i + 1u, len - 1u);
+    let tail : ~[int] = xlat(i + 1u, len - 1u);
 
-    return [head] + tail;
+    return ([head] + tail).to_owned();
   }
 }
 
-fn xor(tp : (int, int)) -> int {
-  let (a, b) : (int, int) = tp;
+fn xor(tp : &(int, int)) -> int {
+  let (a, b) : (int, int) = *tp;
   return a ^ b;
 }
 
-fn encrypt(password : str) -> str {
-  let r : float = std::rand::mk_rng().next_float();
+fn encrypt(password : ~str) -> ~str {
+  let rng = task_rng();
 
-  let seed : uint = (r * 16.0f) as uint;
+  let seed : uint = rng.gen_integer_range(0u, 16);
 
-  let plaintext : [int] = vec::map(str::chars(password), |c| { return c as int; });
+  let plaintext : &[int] = password.as_bytes().map( |e| *e as int );
 
-  let keys : [int] = xlat(seed, str::char_len(password));
+  let keys : ~[int] = xlat(seed, password.len());
 
-  check vec::same_length(plaintext, keys);
+  assert_eq!(plaintext.len(), keys.len());
 
-  let zipped : [(int, int)] = vec::zip(plaintext, keys);
+  let zipped : ~[(int, int)] = plaintext.iter().zip(keys.iter()).from_iterator();
 
-  let ciphertext : [int] = vec::map(zipped, xor);
+  let ciphertext : ~[int] = zipped.map(xor);
 
-  return #fmt(
+  return fmt!(
     "%02d%s",
     seed as int,
-    str::connect(
-      vec::map(ciphertext, { |c| return #fmt("%02x", c as uint); }),
-      ""
-    )
+    ciphertext.map( |c| { return fmt!("%02x", *c as uint); } ).connect("")
   );
 }
 
-fn decrypt(hash : str) -> str {
-  if str::char_len(hash) < 2u {
-    return "";
+fn decrypt(hash : ~str) -> ~str {
+  if hash.len() < 2u {
+    return "".to_owned();
   }
   else {
-    let seedStr : str = str::substr(hash, 0u, 2u);
+    let seedStr : &str = hash.slice_chars(0u, 2u);
 
     let seed : int = 0; // ...
 
-    let hashStr : str = str::substr(hash, 2u, str::char_len(hash) - 2u);
+    let hashStr : &str = hash.slice_chars(2u, hash.len() - 2u);
 
     // ...
 
-    return "";
+    return "".to_owned();
   }
 }
 
@@ -86,53 +103,49 @@ fn test() {
   // ...
 }
 
-fn usage(program: str) {
-  std::io::println("Usage: " + program + " [options]");
-  std::io::println("-e --encrypt <password>\tEncrypt");
-  std::io::println("-d --decrypt <hash>\tDecrypt");
-  std::io::println("-t --test\t\tUnit test");
-  std::io::println("-h --help\t\tUsage");
-}
+fn main() {
+  let args : ~[~str] = args();
 
-fn main(args: [str]) {
-  check vec::is_not_empty(args);
+  assert_eq!(args.len() > 0, true);
 
-  let program : str = vec::head(args);
+  let program : &~str = args.head();
 
-  let opts = [
-    optflag("h"),
-    optflag("help"),
-    optopt("e"),
-    optopt("encrypt"),
-    optopt("d"),
-    optopt("decrypt"),
-    optopt("t"),
-    optopt("test")
+  let opts : &[OptGroup] = ~[
+    optflag("h", "help", "print usage info"),
+    optopt("e", "encrypt", "encrypt a password", "VAL"),
+    optopt("d", "decrypt", "decrypt a hash", "VAL"),
+    optflag("t", "test", "run unit tests")
   ];
 
-  let match = alt getopts(vec::tail(args), opts) {
-    Ok(m) { m }
-    Err(f) { fail fail_str(f) }
+  let result : Matches = match getopts(args.tail(), opts.map(|e| { return e.long_to_short(); } )) {
+    Ok(m) => m,
+    Err(f) => fail!(usage(*program, opts))
   };
 
-  if opt_present(match, "e") || opt_present(match, "encrypt") {
-    let password : str = opt_str(match, "encrypt");
+  if result.opt_present("e") || result.opt_present("encrypt") {
+    let password : ~str = match result.opt_str("encrypt") {
+      Some(v) => v,
+      None => fail!(usage(*program, opts))
+    };
 
-    let hash : str = encrypt(password);
+    let hash : ~str = encrypt(password);
 
-    std::io::println(hash);
+    println(hash);
   }
-  else if opt_present(match, "d") || opt_present(match, "decrypt") {
-    let hash : str = opt_str(match, "decrypt");
+  else if result.opt_present("d") || result.opt_present("decrypt") {
+    let hash : ~str = match result.opt_str("decrypt") {
+      Some(v) => v,
+      None => fail!(usage(*program, opts))
+    };
 
-    let password : str = decrypt(hash);
+    let password : ~str = decrypt(hash);
 
-    std::io::println(password);
+    println(password);
   }
-  else if opt_present(match, "t") || opt_present(match, "test") {
+  else if result.opt_present("t") || result.opt_present("test") {
     test();
   }
   else {
-    usage(program);
+    fail!(usage(*program, opts))
   }
 }
