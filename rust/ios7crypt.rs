@@ -10,6 +10,9 @@ extern mod extra;
 use std::os::args;
 use std::rand::{task_rng, Rng};
 
+use std::int::parse_bytes;
+use std::str::from_utf8;
+
 use std::iter::Iterator;
 
 use std::option::Some;
@@ -81,20 +84,35 @@ fn decrypt(hash : ~str) -> ~str {
     return "".to_owned();
   }
   else {
-    let seedStr : &str = hash.slice_chars(0u, 2u);
+    let seed_str : &str = hash.slice_chars(0u, 2u);
 
-    let seed : int = 0; // ...
+    let seed : uint = match parse_bytes(seed_str.as_bytes(), 10) {
+      Some(v) => v as uint,
+      None => fail!("Invalid seed")
+    };
 
-    let hashStr : &str = hash.slice_chars(2u, hash.len() - 2u);
+    let hash_str : &str = hash.slice_chars(2u, hash.len());
 
-    // ...
+    let hexpairs : ~[&str] = range(0, hash_str.len() / 2).map( |i| hash_str.slice_chars(i * 2, i * 2 + 2) ).collect();
 
-    return "".to_owned();
+    let ciphertext : ~[int] = hexpairs.map( |hexpair| match parse_bytes(hexpair.as_bytes(), 16) {
+        Some(v) => v,
+        None => fail!("Invalid ciphertext")
+      }
+    );
+
+    let keys : ~[int] = xlat(seed, ciphertext.len());
+
+    assert_eq!(ciphertext.len(), keys.len());
+
+    let zipped : ~[(&int, &int)] = ciphertext.iter().zip(keys.iter()).collect();
+
+    let plaintext : ~[u8] = zipped.map( |e| xor(*e) as u8);
+
+    let password : ~str = from_utf8(plaintext);
+
+    return password;
   }
-}
-
-fn test() {
-  // ...
 }
 
 fn main() {
@@ -104,16 +122,15 @@ fn main() {
 
   let program : &~str = args.head();
 
-  let opts : &[OptGroup] = ~[
+  let opts : ~[OptGroup] = ~[
     optflag("h", "help", "print usage info"),
     optopt("e", "encrypt", "encrypt a password", "VAL"),
     optopt("d", "decrypt", "decrypt a hash", "VAL"),
-    optflag("t", "test", "run unit tests")
   ];
 
   let result : Matches = match getopts(args.tail(), opts) {
     Ok(m) => m,
-    Err(f) => fail!(usage(*program, opts))
+    Err(_) => fail!(usage(*program, opts))
   };
 
   if result.opt_present("e") || result.opt_present("encrypt") {
@@ -135,9 +152,6 @@ fn main() {
     let password : ~str = decrypt(hash);
 
     println(password);
-  }
-  else if result.opt_present("t") || result.opt_present("test") {
-    test();
   }
   else {
     fail!(usage(*program, opts))
