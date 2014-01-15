@@ -18,7 +18,7 @@ static const unsigned int XLAT_LEN = 53;
 @implementation IOS7Crypt
 
 + (NSString*) encrypt: (const NSString*) password {
-  unsigned int length = (unsigned int) [password length];
+  const unsigned int length = (unsigned int) [password length];
 
   if (length < 1) {
     return @"";
@@ -26,16 +26,16 @@ static const unsigned int XLAT_LEN = 53;
 
   const char* password_cstring = [password UTF8String];
 
-  unsigned int seed = arc4random() % 16;
+  const unsigned int seed = arc4random() % 16;
 
-  NSMutableArray* ciphertext = [NSMutableArray arrayWithCapacity: length];
+  const NSMutableArray* ciphertext = [NSMutableArray arrayWithCapacity: length];
 
   for (unsigned int i = 0; i < length; i++) {
-    unsigned int p = (unsigned int) password_cstring[i];
+    const unsigned int p = (unsigned int) password_cstring[i];
 
-    unsigned int k = XLAT[(i + seed) % XLAT_LEN];
+    const unsigned int k = XLAT[(i + seed) % XLAT_LEN];
 
-    unsigned int cipherbyte = p ^ k;
+    const unsigned int cipherbyte = p ^ k;
 
     [ciphertext addObject: [NSNumber numberWithUnsignedInt: cipherbyte]];
   }
@@ -43,7 +43,7 @@ static const unsigned int XLAT_LEN = 53;
   NSString* hash = [NSString stringWithFormat: @"%02d", seed];
 
   for (unsigned int i = 0; i < length; i++) {
-    unsigned int c = [(NSNumber*) [ciphertext objectAtIndex: i] unsignedIntValue];
+    const unsigned int c = [(NSNumber*) [ciphertext objectAtIndex: i] unsignedIntValue];
 
     hash = [hash stringByAppendingString: [NSString stringWithFormat: @"%02x", c]];
   }
@@ -52,25 +52,25 @@ static const unsigned int XLAT_LEN = 53;
 }
 
 + (NSString*) decrypt: (const NSString*) hash {
-  unsigned int length = (unsigned int) [hash length];
+  const unsigned int length = (unsigned int) [hash length];
 
   if (length < 4) {
     return @"";
   }
 
-  unsigned int seed = (unsigned int) [[hash substringToIndex: 2] intValue];
+  const unsigned int seed = (unsigned int) [[hash substringToIndex: 2] intValue];
 
-  NSMutableArray* plaintext = [NSMutableArray arrayWithCapacity: (length - 2) / 2];
+  const NSMutableArray* plaintext = [NSMutableArray arrayWithCapacity: (length - 2) / 2];
 
   for (unsigned int i = 0; i < (length - 2) / 2; i++) {
-    NSScanner* scanner = [NSScanner scannerWithString:[hash substringWithRange: NSMakeRange(2 + i * 2, 2)]];
+    const NSScanner* scanner = [NSScanner scannerWithString:[hash substringWithRange: NSMakeRange(2 + i * 2, 2)]];
 
     unsigned int c;
     [scanner scanHexInt: &c];
 
-    unsigned int k = XLAT[(i + seed) % XLAT_LEN];
+    const unsigned int k = XLAT[(i + seed) % XLAT_LEN];
 
-    unsigned int p = c ^ k;
+    const unsigned int p = c ^ k;
 
     [plaintext addObject: [NSNumber numberWithUnsignedInt: p]];
   }
@@ -78,7 +78,7 @@ static const unsigned int XLAT_LEN = 53;
   NSString* password = @"";
 
   for (unsigned int i = 0; i < (length - 2) / 2; i++) {
-    unsigned int p = [(NSNumber*) [plaintext objectAtIndex: i] unsignedIntValue];
+    const unsigned int p = [(NSNumber*) [plaintext objectAtIndex: i] unsignedIntValue];
 
     NSString* s = [NSString stringWithFormat: @"%c", (char) p];
 
@@ -88,7 +88,7 @@ static const unsigned int XLAT_LEN = 53;
   return password;
 }
 
-+ (void) __attribute__((noreturn)) usage: (char*) program {
++ (void) __attribute__((noreturn)) usage: (const char*) program {
   printf("Usage: %s\n", program);
   printf("-e --encrypt <password>\tEncrypt a password\n");
   printf("-d --decrypt <hash>\tDecrypt a hash\n");
@@ -109,8 +109,8 @@ int main(int argc, char** argv) {
       [IOS7Crypt usage: argv[0]];
     }
     else {
-      NSString* password = [NSString stringWithUTF8String: argv[2]];
-      NSString* hash = [IOS7Crypt encrypt: password];
+      const NSString* password = [NSString stringWithUTF8String: argv[2]];
+      const NSString* hash = [IOS7Crypt encrypt: password];
 
       printf("%s\n", [hash UTF8String]);
     }
@@ -120,8 +120,8 @@ int main(int argc, char** argv) {
       [IOS7Crypt usage: argv[0]];
     }
     else {
-      NSString* hash = [NSString stringWithUTF8String: argv[2]];
-      NSString* password = [IOS7Crypt decrypt: hash];
+      const NSString* hash = [NSString stringWithUTF8String: argv[2]];
+      const NSString* password = [IOS7Crypt decrypt: hash];
 
       printf("%s\n", [password UTF8String]);
     }

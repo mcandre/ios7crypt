@@ -6,6 +6,6 @@ static const unsigned int XLAT_LEN;
 + (NSString*) encrypt: (const NSString*) password;
 + (NSString*) decrypt: (const NSString*) hash;
 
-+ (void) __attribute__((noreturn)) usage: (char*) program;
++ (void) __attribute__((noreturn)) usage: (const char*) program;
 
 @end
