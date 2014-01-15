@@ -40,12 +40,12 @@ static const unsigned int XLAT_LEN = 53;
     [ciphertext addObject: [NSNumber numberWithUnsignedInt: cipherbyte]];
   }
 
-  NSString* hash = [NSString stringWithFormat: @"%02d", seed];
+  NSMutableString* hash = [NSMutableString stringWithFormat: @"%02d", seed];
 
   for (unsigned int i = 0; i < length; i++) {
     const unsigned int c = [(NSNumber*) [ciphertext objectAtIndex: i] unsignedIntValue];
 
-    hash = [hash stringByAppendingString: [NSString stringWithFormat: @"%02x", c]];
+    [hash appendString: [NSString stringWithFormat: @"%02x", c]];
   }
 
   return hash;
@@ -75,14 +75,14 @@ static const unsigned int XLAT_LEN = 53;
     [plaintext addObject: [NSNumber numberWithUnsignedInt: p]];
   }
 
-  NSString* password = @"";
+  NSMutableString* password = [NSMutableString stringWithFormat: @""];
 
   for (unsigned int i = 0; i < (length - 2) / 2; i++) {
     const unsigned int p = [(NSNumber*) [plaintext objectAtIndex: i] unsignedIntValue];
 
     NSString* s = [NSString stringWithFormat: @"%c", (char) p];
 
-    password = [password stringByAppendingString: s];
+   [password appendString: s];
   }
 
   return password;
