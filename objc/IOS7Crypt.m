@@ -45,7 +45,7 @@ static const unsigned int XLAT_LEN = 53;
   for (unsigned int i = 0; i < length; i++) {
     const unsigned int c = [(NSNumber*) [ciphertext objectAtIndex: i] unsignedIntValue];
 
-    [hash appendString: [NSString stringWithFormat: @"%02x", c]];
+    [hash appendFormat: @"%02x", c];
   }
 
   return hash;
@@ -80,9 +80,7 @@ static const unsigned int XLAT_LEN = 53;
   for (unsigned int i = 0; i < (length - 2) / 2; i++) {
     const unsigned int p = [(NSNumber*) [plaintext objectAtIndex: i] unsignedIntValue];
 
-    NSString* s = [NSString stringWithFormat: @"%c", (char) p];
-
-   [password appendString: s];
+    [password appendFormat: @"%c", (char) p];
   }
 
   return password;
