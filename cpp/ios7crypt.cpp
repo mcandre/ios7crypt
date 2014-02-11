@@ -1,3 +1,5 @@
+// Copyright (C) YelloSoft
+
 #include <string>
 #include <sstream>
 #include <ctime>
