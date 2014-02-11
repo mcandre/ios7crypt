@@ -8,8 +8,8 @@ test: ios7crypt
 	./ios7crypt -d 050609012a4957
 	./ios7crypt -t
 
-ios7crypt: ios7crypt.c ios7crypt.h qc.c qc.h
-	$(CC) $(FLAGS) -o ios7crypt ios7crypt.c qc.c -lgc
+ios7crypt: ios7crypt.c ios7crypt.h ../qc/qc.c ../qc/qc.h
+	$(CC) $(FLAGS) -o ios7crypt ios7crypt.c ../qc/qc.c -lgc
 
 splint:
 	find . -type f -name '*.c' -exec splint {} \;
