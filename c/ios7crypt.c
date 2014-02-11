@@ -25,7 +25,7 @@ int xlat[] = {
 
 int XLAT_SIZE = 53;
 
-static void __attribute__((noreturn)) usage(char* const program) {
+void __attribute__((noreturn)) usage(char* const program) {
   printf("Usage: %s [options]\n\n", program);
   printf("-e <passwords>\n");
   printf("-d <hashes>\n");
@@ -53,7 +53,11 @@ void encrypt(char* const password, char* hash) {
     (void) snprintf(hash, 3, "%02d", seed);
 
     for (i = 0; i < password_length; i++) {
-      (void) snprintf(hash + 2 + i * 2, 3, "%02x", (unsigned int) (password[i] ^ xlat[(seed++) % XLAT_SIZE]));
+      (void) snprintf(
+        hash + 2 + i * 2, 3,
+        "%02x",
+        (unsigned int) (password[i] ^ xlat[(seed++) % XLAT_SIZE])
+      );
     }
   }
 }

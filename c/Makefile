@@ -11,8 +11,16 @@ test: ios7crypt
 ios7crypt: ios7crypt.c ios7crypt.h qc.c qc.h
 	$(CC) $(FLAGS) -o ios7crypt ios7crypt.c qc.c -lgc
 
-lint:
-	splint *.c *.h
+splint:
+	find . -type f -name '*.c' -exec splint {} \;
+	find . -type f -name '*.h' -exec splint {} \;
+
+vera++:
+	find . -type f -name '*.cpp' -exec vera++ -s {} \;
+	find . -type f -name '*.c' -exec vera++ -s {} \;
+	find . -type f -name '*.h' -exec vera++ -s {} \;
+
+lint: splint vera++
 
 clean:
 	-rm *.exe
