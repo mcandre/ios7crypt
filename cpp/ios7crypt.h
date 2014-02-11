@@ -1,6 +1,8 @@
 #ifndef IOS7CRYPT_H
 #define IOS7CRYPT_H
 
+// Copyright (C) YelloSoft
+
 #include <string>
 using std::string;
 
