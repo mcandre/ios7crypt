@@ -1,15 +1,17 @@
 CC=clang
 FLAGS=-O2 -Wall -Wextra -Wmost -Weverything -Wno-pointer-arith
 
+BIN=ios7crypt
+
 all: test
 
-test: ios7crypt
-	./ios7crypt -e monkey
-	./ios7crypt -d 050609012a4957
-	./ios7crypt -t
+test: $(BIN)
+	./$(BIN) -e monkey
+	./$(BIN) -d 050609012a4957
+	./$(BIN) -t
 
-ios7crypt: ios7crypt.c ios7crypt.h ../qc/qc.c ../qc/qc.h
-	$(CC) $(FLAGS) -o ios7crypt ios7crypt.c ../qc/qc.c -lgc
+$(BIN): ios7crypt.c ios7crypt.h ../qc/qc.c ../qc/qc.h
+	$(CC) $(FLAGS) -o $(BIN) ios7crypt.c ../qc/qc.c -lgc
 
 splint:
 	find . -type f -name '*.c' -exec splint {} \;
@@ -22,6 +24,12 @@ vera++:
 
 lint: splint vera++
 
+valgrind: $(BIN)
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -e monkey
+
+valgrind: $(BIN)
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -d 050609012a4957
+
 clean:
 	-rm *.exe
-	-rm ios7crypt
+	-rm $(BIN)
