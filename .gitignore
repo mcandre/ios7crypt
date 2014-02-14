@@ -1,5 +1,6 @@
 *.exe
-*.dSYM
+*.o
+*.dSYM/
 *.class
 *.pyc
 Gemfile.lock

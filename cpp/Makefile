@@ -1,14 +1,16 @@
 CC=clang++
 FLAGS=-O2 -Wall -Wextra -Wmost -Weverything
 
+BIN=ios7crypt
+
 all: test
 
-test: ios7crypt
-	./ios7crypt -e monkey
-	./ios7crypt -d 050609012a4957
+test: $(BIN)
+	./$(BIN) -e monkey
+	./$(BIN) -d 050609012a4957
 
-ios7crypt: ios7crypt.cpp ios7crypt.h
-	$(CC) $(FLAGS) -o ios7crypt ios7crypt.cpp
+$(BIN): ios7crypt.cpp ios7crypt.h
+	$(CC) $(FLAGS) -o $(BIN) ios7crypt.cpp
 
 cppcheck:
 	cppcheck --enable=all --suppress=missingIncludeSystem .
@@ -27,6 +29,10 @@ vera++:
 
 lint: cppcheck cpplint splint vera++
 
+valgrind: $(BIN)
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -e monkey
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -d 050609012a4957
+
 clean:
 	-rm *.exe
-	-rm ios7crypt
+	-rm $(BIN)
