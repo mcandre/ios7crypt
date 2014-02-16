@@ -1,17 +1,23 @@
 FLAGS=-Wall -Wextra -Wmost -Weverything -framework Foundation -lobjc -o ios7crypt
 
+BIN=ios7crypt
+
 all: test
 
-test: ios7crypt
-	./ios7crypt -e monkey
-	./ios7crypt -d 050609012a4957
+test: $(BIN)
+	./$(BIN) -e monkey
+	./$(BIN) -d 050609012a4957
 
-ios7crypt: IOS7Crypt.m
+$(BIN): IOS7Crypt.m
 	clang $(FLAGS) IOS7Crypt.m
 
-lint:
+lint: $(BIN)
 	oclint -rc=SHORT_VARIABLE_NAME=1 IOS7Crypt.m -- $(FLAGS)
+
+valgrind: $(BIN)
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -e monkey
+	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -d 050609012a4957
 
 clean:
 	-rm *.exe
-	-rm ios7crypt
+	-rm $(BIN)
