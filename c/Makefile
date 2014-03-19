@@ -14,20 +14,15 @@ $(BIN): ios7crypt.c ios7crypt.h ../qc/qc.c ../qc/qc.h
 	$(CC) $(FLAGS) -o $(BIN) ios7crypt.c ../qc/qc.c -lgc
 
 splint:
-	find . -type f -name '*.c' -exec splint {} \;
-	find . -type f -name '*.h' -exec splint {} \;
+	find . -type f -name '*.[ch]' -exec splint {} \;
 
 vera++:
-	find . -type f -name '*.cpp' -exec vera++ -s {} \;
-	find . -type f -name '*.c' -exec vera++ -s {} \;
-	find . -type f -name '*.h' -exec vera++ -s {} \;
+	find . -type f -name '*.[ch]' -o -name '*.cpp' -exec vera++ -s {} \;
 
 lint: splint vera++
 
 valgrind: $(BIN)
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -e monkey
-
-valgrind: $(BIN)
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -d 050609012a4957
 
 clean:
