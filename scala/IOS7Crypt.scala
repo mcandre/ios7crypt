@@ -44,23 +44,21 @@ object IOS7Crypt {
 
     len match {
       case 0 => ""
-      case _ => {
-        try {
-          var password = ""
+      case _ => try {
+        var password = ""
 
-          var seed = Integer.parseInt(hash.substring(0, 2))
+        var seed = Integer.parseInt(hash.substring(0, 2))
 
-          List.range(2, len, 2).foreach { i : Int =>
-            val encryptedByte = Integer.parseInt(hash.substring(i, i + 2), 16)
-            password += (encryptedByte ^ XLAT(seed % XLAT_LEN)).toChar
-            seed += 1
-          }
-
-          password
+        List.range(2, len, 2).foreach { i : Int =>
+          val encryptedByte = Integer.parseInt(hash.substring(i, i + 2), 16)
+          password += (encryptedByte ^ XLAT(seed % XLAT_LEN)).toChar
+          seed += 1
         }
-        catch {
-          case e : NumberFormatException => ""
-        }
+
+        password
+      }
+      catch {
+        case e : NumberFormatException => ""
       }
     }
   }
