@@ -1,5 +1,3 @@
-#!/usr/bin/env scala
-
 import java.util.Random
 
 object IOS7Crypt {
