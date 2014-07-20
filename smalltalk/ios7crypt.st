@@ -1,5 +1,4 @@
 "exec" "gst" "-f" "$0" "$0" "$@"
-"exit"
 
 "Requires quicksmash."
 "https://github.com/mcandre/quicksmash"
