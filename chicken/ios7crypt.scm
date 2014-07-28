@@ -4,7 +4,6 @@
 (use getopt-long)
 (use fmt)
 
-(use posix)
 (use srfi-1) ; lists
 (use srfi-13) ; strings
 (import extras) ; random
