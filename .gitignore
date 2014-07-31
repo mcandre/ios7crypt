@@ -1,4 +1,4 @@
-*.exe
+bin/
 *.o
 *.dSYM/
 *.class
@@ -6,4 +6,3 @@
 Gemfile.lock
 tmp/
 __pycache__
-ios7crypt

@@ -10,8 +10,8 @@ Requirements:
 
 *)
 
-open Getopt
-open QuickCheck
+module G = Getopt
+module Q = QuickCheck
 
 type mode = Encrypt | Decrypt | Help | Test
 
@@ -83,21 +83,21 @@ let prop_reversible password =
   decrypt (encrypt password) = Some password
 
 (* for generating random strings *)
-let arbstring = arbitrary_string
+let arbstring = Q.arbitrary_string
 
 (* for printing out strings *)
-let showstring = show_string
+let showstring = Q.show_string
 
 (* for being able to test (string -> bool) *)
-let testable_string_to_bool = testable_fun arbstring showstring testable_bool
+let testable_string_to_bool = Q.testable_fun arbstring showstring Q.testable_bool
 
-let test () = quickCheck testable_string_to_bool prop_reversible
+let test () = Q.quickCheck testable_string_to_bool prop_reversible
 
 let specs = [
   ('e', "encrypt", None, Some (fun v -> mode := Encrypt; password := v));
   ('d', "decrypt", None, Some (fun v -> mode := Decrypt; hash := v));
-  ('h', "help", (set mode Help), None);
-  ('t', "test", (set mode Test), None)
+  ('h', "help", (G.set mode Help), None);
+  ('t', "test", (G.set mode Test), None)
 ]
 
 let usage program =
@@ -108,7 +108,7 @@ let usage program =
   print_endline "-h --help\t\tUsage info"
 
 let main program =
-  parse_cmdline specs print_endline;
+  G.parse_cmdline specs print_endline;
 
   match !mode with
     Help -> usage program |
@@ -116,7 +116,7 @@ let main program =
     Decrypt -> (match decrypt !hash with
       Some password -> print_endline password |
       _ -> print_endline "Invalid hash.") |
-    Test -> test ()
+    Test -> ignore (test ())
 
 let _ =
   let program = Sys.argv.(0)

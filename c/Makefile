@@ -1,7 +1,7 @@
 CC=clang
 FLAGS=-O2 -Wall -Wextra -Wmost -Weverything -Wno-pointer-arith
 
-BIN=ios7crypt
+BIN=bin/ios7crypt
 
 all: test
 
@@ -11,6 +11,7 @@ test: $(BIN)
 	./$(BIN) -t
 
 $(BIN): ios7crypt.c ios7crypt.h ../qc/qc.c ../qc/qc.h
+	mkdir -p bin/
 	$(CC) $(FLAGS) -o $(BIN) ios7crypt.c ../qc/qc.c -lgc
 
 cppcheck:
@@ -29,5 +30,4 @@ valgrind: $(BIN)
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -d 050609012a4957
 
 clean:
-	-rm *.exe
-	-rm $(BIN)
+	-rm -rf bin/

@@ -1,13 +1,15 @@
+BIN=bin/ios7crypt
+
 all: test
 
-test: ios7crypt
-	./ios7crypt -t
+test: $(BIN)
+	./$(BIN) -t
 
-ios7crypt: ios7crypt.ml
-	ocamlfind ocamlc -w +a -package str,getopt,quickcheck -linkpkg -o ios7crypt ios7crypt.ml
+$(BIN): ios7crypt.ml
+	mkdir -p bin/
+	ocamlfind ocamlc -w +a -package str,getopt,quickcheck -linkpkg -o $(BIN) ios7crypt.ml
 
 clean:
-	-rm *.exe
+	-rm -rf bin/
 	-rm *.cmo
 	-rm *.cmi
-	-rm ios7crypt

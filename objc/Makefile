@@ -11,7 +11,7 @@ ifneq ($(OS),Windows_NT)
 	endif
 endif
 
-BIN=ios7crypt
+BIN=bin/ios7crypt
 
 all: test
 
@@ -20,6 +20,7 @@ test: $(BIN)
 	./$(BIN) -d 050609012a4957
 
 $(BIN): IOS7Crypt.m
+	mkdir -p bin/
 	clang $(FLAGS) $(LINUX_FLAGS) -o $(BIN) IOS7Crypt.m
 
 lint: $(BIN)
@@ -30,5 +31,4 @@ valgrind: $(BIN)
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -d 050609012a4957
 
 clean:
-	-rm *.exe
-	-rm $(BIN)
+	-rm -rf bin/

@@ -1,15 +1,18 @@
 FLAGS=-w -wi
 
+BIN=bin/ios7crypt
+
 all: test
 
-test: ios7crypt
+test: $(BIN)
 	./ios7crypt -e monkey
 	./ios7crypt -d 104306170e120b
 
-ios7crypt: ios7crypt.d
+$(BIN): ios7crypt.d
+	mkdir -p bin/
 	dmd $(FLAGS) ios7crypt.d -version=ios7crypt ~/.d/dashcheck.d
 
 clean:
-	-rm ios7crypt
-	-rm ios7crypt.o
-	-rm ios7crypt.d.deps
+	-rm -rf bin/
+	-rm *.o
+	-rm *.d.deps
