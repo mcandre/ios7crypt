@@ -14,7 +14,7 @@ $(BIN): ios7crypt.c ios7crypt.h ../qc/qc.c ../qc/qc.h
 	$(CC) $(FLAGS) -o $(BIN) ios7crypt.c ../qc/qc.c -lgc
 
 cppcheck:
-	cppcheck --enable=all --suppressions $$HOME/suppressions.cfg .
+	cppcheck --quiet --enable=all --suppressions $$HOME/suppressions.cfg .
 
 splint:
 	find . -type f -name '*.[ch]' -exec splint {} \;
