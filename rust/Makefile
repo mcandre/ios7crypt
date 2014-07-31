@@ -1,13 +1,15 @@
+BIN=bin/ios7crypt
+
 all: test
 
-test: ios7crypt
-	./ios7crypt -e monkey
-	./ios7crypt -d 060b002f474b10
+test: $(BIN)
+	./$(BIN) -e monkey
+	./$(BIN) -d 060b002f474b10
 
-ios7crypt: ios7crypt.rs
-	rustc ios7crypt.rs
+$(BIN): ios7crypt.rs
+	mkdir -p bin/
+	rustc -o $(BIN) ios7crypt.rs
 
 clean:
-	-rm *.exe
-	-rm ios7crypt
-	-rm -rf *.dSYM
+	-rm -rf bin/
+	-rm -rf *.dSYM/

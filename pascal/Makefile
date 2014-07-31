@@ -1,8 +1,15 @@
-all: ios7crypt
+BIN=bin/ios7crypt
 
-ios7crypt: ios7crypt.pas
-	fpc -dios7crypt ios7crypt.pas
+all: test
+
+test: $(BIN)
+	./$(BIN) -e monkey
+	./$(BIN) -d 1308181c00091d
+
+$(BIN): ios7crypt.pas
+	mkdir -p bin/
+	fpc -dios7crypt -o$(BIN) ios7crypt.pas
 
 clean:
-	-rm ios7crypt
-	-rm ios7crypt.o
+	-rm -rf bin/
+	-rm *.o
