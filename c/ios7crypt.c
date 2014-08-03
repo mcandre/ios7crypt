@@ -35,22 +35,14 @@ void __attribute__((noreturn)) usage(char* const program) {
 }
 
 void encrypt(char* const password, char* hash) {
-  size_t password_length;
+  if (password != NULL && hash != NULL) {
+    size_t password_length = strlen(password);
 
-  int seed;
-
-  size_t i;
-
-  if (
-    password != NULL &&
-    strlen(password) > 0 &&
-    hash != NULL
-  ) {
-    password_length = strlen(password);
-
-    seed = rand() % 16;
+    int seed = rand() % 16;
 
     (void) snprintf(hash, 3, "%02d", seed);
+
+    size_t i;
 
     for (i = 0; i < password_length; i++) {
       (void) snprintf(
@@ -63,28 +55,20 @@ void encrypt(char* const password, char* hash) {
 }
 
 void decrypt(char* const hash, char* password) {
-  long seed;
-  size_t i;
-  int index, c;
+  if (hash != NULL && password != NULL) {
 
-  char *pair = (char*) calloc(3, sizeof(char));
-
-  if (
-    hash != NULL &&
-    strlen(hash) > 3 &&
-    password != NULL &&
-    pair != NULL) {
-
+    char *pair = (char*) calloc(3, sizeof(char));
     strncat(pair, hash, 2);
 
-    seed = strtol(pair, NULL, 10);
+    long seed = strtol(pair, NULL, 10);
 
-    index = 0;
+    int index = 0;
+    size_t i;
 
     for (i = 2; i < strlen(hash); i += 2) {
       pair[0] = pair[1] = '\0';
       strncat(pair, hash + i, 2);
-      c = (int) strtol(pair, NULL, 16);
+      int c = (int) strtol(pair, NULL, 16);
 
       password[index++] = (char) (c ^ xlat[(seed++) % XLAT_SIZE]);
     }
@@ -99,7 +83,7 @@ bool reversible(void* const data) {
   char* password2;
   int cmp;
 
-  password = qc_args(char*, 0, sizeof(char*));
+  password = qc_args(char*, 0, char*);
 
   hash = (char*) calloc((size_t) strlen(password) * 2 + 3, sizeof(char));
 
@@ -182,7 +166,7 @@ int main(int const argc, char** const argv) {
     gen gs[] = { gen_string };
     gen ps[] = { print_string };
 
-    for_all(reversible, 1, gs, ps, sizeof(char*));
+    for_all(reversible, 1, gs, ps, char*);
   }
   else {
     usage(argv[0]);

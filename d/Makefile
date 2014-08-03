@@ -5,12 +5,12 @@ BIN=bin/ios7crypt
 all: test
 
 test: $(BIN)
-	./ios7crypt -e monkey
-	./ios7crypt -d 104306170e120b
+	./$(BIN) -e monkey
+	./$(BIN) -d 104306170e120b
 
 $(BIN): ios7crypt.d
 	mkdir -p bin/
-	dmd $(FLAGS) ios7crypt.d -version=ios7crypt ~/.d/dashcheck.d
+	dmd $(FLAGS) -of$(BIN) ios7crypt.d -version=ios7crypt ~/.d/dashcheck.d
 
 clean:
 	-rm -rf bin/

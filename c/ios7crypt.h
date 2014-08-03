@@ -1,3 +1,5 @@
+/* Copyright 2005-2011 Andrew Pennebaker */
+
 extern int xlat[];
 extern int XLAT_SIZE;
 
