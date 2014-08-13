@@ -1,12 +1,9 @@
-#!/usr/bin/env csi -ss
+":"; exec csi -ss $0 ${1+"$@"}
 
 (use cluckcheck)
 (use getopt-long)
 (use fmt)
-
-(use srfi-1) ; lists
-(use srfi-13) ; strings
-(import extras) ; random
+(use extras) ; random
 
 (define (xlat-prime) '(
 	#x64 #x73 #x66 #x64 #x3b #x6b #x66 #x6f
@@ -88,40 +85,33 @@
 		(single-char #\h)
 		(value #f))))
 
-(define (u p g)
-	(display (format "Usage: ~a [options]\n~a" (cdr p) (usage g)))
+(define (u grammar)
+	(display (format "Usage: ~a [options]\n~a" (program-name) (usage grammar)))
 	(exit))
 
 (define (main args)
 	(with-exception-handler
-		(lambda (e) (u (program) grammar))
-		(let* (
-			(options (make-option-dispatch (getopt-long args grammar) grammar))
-			(password (options 'encrypt))
-			(hash (options 'decrypt))
-			(test (options 'test))
-			(help (options 'help)))
-				(if password
+		(lambda (e) (u grammar))
+		(let* ((options (make-option-dispatch (getopt-long args grammar) grammar))
+					 (password (options 'encrypt))
+					 (hash (options 'decrypt))
+					 (test (options 'test))
+					 (help (options 'help)))
+			(if password
 					(begin
 						(display (format "~a\n" (encrypt password)))
 						(exit))
 					(if hash
-						(begin
-							(display (format "~a\n" (decrypt hash)))
-							(exit))
-						(if test
 							(begin
+								(display (format "~a\n" (decrypt hash)))
+								(exit))
+							(if test
+									(begin
 								(run-test)
 								(exit))
-							(u (program) grammar)))))))
+									(u grammar)))))))
 
-(define (program)
-	(if (string=? (car (argv)) "csi")
-		(let ((s-index (list-index (lambda (x) (string-contains x "-s")) (argv))))
-			(if (number? s-index)
-				(cons 'interpreted (list-ref (argv) (+ 1 s-index)))
-				(cons 'unknown "")))
-		(cons 'compiled (car (argv)))))
-
-(if (equal? (car (program)) 'compiled)
-	(main (cdr (argv))))
+(cond-expand
+ (chicken-compile-shared)
+ (compiling (main (command-line-arguments)))
+ (else))
