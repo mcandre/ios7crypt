@@ -1,4 +1,4 @@
-FLAGS=-Wall -Wextra -Wmost -Weverything -framework Foundation -lobjc
+FLAGS=-Wall -framework Foundation -lobjc -lbsd
 
 LINUX_FLAGS=
 
@@ -6,7 +6,6 @@ ifneq ($(OS),Windows_NT)
 	UNAME_S := $(shell uname -s)
 
 	ifeq ($(UNAME_S),Linux)
-		FLAGS=-Wall -lobjc -o Version
 		LINUX_FLAGS=-I `gnustep-config --variable=GNUSTEP_SYSTEM_HEADERS` -L `gnustep-config --variable=GNUSTEP_SYSTEM_LIBRARIES` -lgnustep-base -fconstant-string-class=NSConstantString -D_NATIVE_OBJC_EXCEPTIONS
 	endif
 endif
@@ -16,8 +15,8 @@ BIN=bin/ios7crypt
 all: test
 
 test: $(BIN)
-	./$(BIN) -e monkey
-	./$(BIN) -d 050609012a4957
+	$(BIN) -e monkey
+	$(BIN) -d 050609012a4957
 
 $(BIN): IOS7Crypt.m
 	mkdir -p bin/
