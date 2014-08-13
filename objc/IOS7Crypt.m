@@ -26,7 +26,7 @@ static const unsigned int XLAT_LEN = 53;
 
   const char* password_cstring = [password UTF8String];
 
-  const unsigned int seed = arc4random() % 16;
+  const unsigned int seed = arc4random(16);
 
   const NSMutableArray* ciphertext = [NSMutableArray arrayWithCapacity: length];
 
