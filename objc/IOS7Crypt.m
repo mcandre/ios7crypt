@@ -26,7 +26,13 @@ static const unsigned int XLAT_LEN = 53;
 
   const char* password_cstring = [password UTF8String];
 
-  const unsigned int seed = arc4random(16);
+  const unsigned int seed =
+    #ifdef HAVE_ARC4RANDOM
+    arc4random(16)
+    #else
+    rand() % 16
+    #endif
+    ;
 
   const NSMutableArray* ciphertext = [NSMutableArray arrayWithCapacity: length];
 
@@ -96,6 +102,8 @@ static const unsigned int XLAT_LEN = 53;
 }
 
 int main(int argc, char** argv) {
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
   if (argc < 2) {
     [IOS7Crypt usage: argv[0]];
   }
@@ -124,6 +132,8 @@ int main(int argc, char** argv) {
       printf("%s\n", [password UTF8String]);
     }
   }
+
+  [pool drain];
 }
 
 @end
