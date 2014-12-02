@@ -1,3 +1,5 @@
+package us.yellosoft.ios7crypt;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;

@@ -1,3 +1,5 @@
+package us.yellosoft.ios7crypt;
+
 import java.awt.Window;
 import java.awt.Dimension;
 import java.awt.Toolkit;

@@ -1,3 +1,5 @@
+package us.yellosoft.ios7crypt;
+
 import java.util.Random;
 
 public final class IOS7Crypt {
