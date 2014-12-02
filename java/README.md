@@ -8,6 +8,8 @@ $ mvn exec:java -Dexec.mainClass=us.yellosoft.ios7crypt.CommandLine -Dexec.args=
 monkey
 $ mvn exec:java -Dexec.mainClass=us.yellosoft.ios7crypt.IOS7CryptGUI
 ...
+$ java -jar target/ios7crypt-0.0.1.jar
+...
 ```
 
 # Code coverage
