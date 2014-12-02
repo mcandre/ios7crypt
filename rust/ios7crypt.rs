@@ -1,14 +1,15 @@
-// ios7crypt.rs
-// Andrew Pennebaker
-// 7 Feb 2012
+//! IOS7Crypt port for Rust
+//! Andrew Pennebaker
+//! 7 Feb 2012 - 2 Dec 2014
 
-#[link(name = "ios7crypt")];
+#![crate_id(name = "ios7crypt")]
 
-extern mod std;
-extern mod extra;
+extern crate std;
+extern crate getopts;
 
 use std::os::args;
-use std::rand::{task_rng, Rng};
+use std::rand::{task_rng};
+use std::rand::distributions::{IndependentSample, Range};
 
 use std::int::parse_bytes;
 use std::str::from_utf8;
@@ -18,12 +19,7 @@ use std::iter::Iterator;
 use std::option::Some;
 use std::option::None;
 
-use extra::getopts::groups::getopts;
-use extra::getopts::groups::OptGroup;
-use extra::getopts::groups::optflag;
-use extra::getopts::groups::optopt;
-use extra::getopts::groups::usage;
-use extra::getopts::Matches;
+use getopts::{getopts, OptGroup, optflag, optopt, usage, Matches};
 
 fn xlat_prime() -> [int, ..53] {
   return [
@@ -37,18 +33,20 @@ fn xlat_prime() -> [int, ..53] {
   ];
 }
 
-fn xlat(i : uint, len : uint) -> ~[int] {
+fn xlat(i : uint, len : uint) -> Vec<int> {
   let xs : [int, ..53] = xlat_prime();
   let xs_len : uint = xs.len();
 
   if len < 1u {
-    return [].to_owned();
+    return Vec::new();
   }
   else {
-    let head : int = xs[i % xs_len];
-    let tail : ~[int] = xlat(i + 1u, len - 1u);
+    let mut head : Vec<int> = Vec::new();
+    head.push(xs[i % xs_len]);
 
-    return ([head] + tail).to_owned();
+    let tail : Vec<int> = xlat(i + 1u, len - 1u);
+
+    return head + tail;
   }
 }
 
@@ -57,103 +55,102 @@ fn xor(tp : (&int, &int)) -> int {
   return (*a) ^ (*b);
 }
 
-fn encrypt(password : ~str) -> ~str {
+fn encrypt(password : String) -> String {
   let mut rng = task_rng();
 
-  let seed : uint = rng.gen_integer_range(0u, 16);
+  let seed : uint = Range::new(0u, 16u).ind_sample(&mut rng);
 
-  let plaintext : &[int] = password.as_bytes().map( |e| *e as int );
+  let password_bytes : &[u8] = password.as_bytes();
 
-  let keys : ~[int] = xlat(seed, password.len());
+  let plaintext : Vec<int> = Vec::from_fn(password.len(), |index| *(password_bytes.get(index).unwrap()) as int );
+
+  let keys : Vec<int> = xlat(seed, password.len());
 
   assert_eq!(plaintext.len(), keys.len());
 
-  let zipped : ~[(&int, &int)] = plaintext.iter().zip(keys.iter()).collect();
+  let zipped : Vec<(&int, &int)> = plaintext.iter().zip(keys.iter()).collect();
 
-  let ciphertext : ~[int] = zipped.map( |e| xor(*e) );
+  let ciphertext : Vec<int> = Vec::from_fn(password.len(), |index| xor(*(zipped.get(index))));
 
-  return fmt!(
-    "%02d%s",
+  return format!(
+    "{:02d}{}",
     seed as int,
-    ciphertext.map( |c| fmt!("%02x", *c as uint) ).connect("")
+    Vec::from_fn(password.len() * 2, |index| format!("{:02x}", *(ciphertext.get(index)) as uint) ).connect("")
   );
 }
 
-fn decrypt(hash : ~str) -> ~str {
+fn decrypt(hash : String) -> String {
   if hash.len() < 2u {
-    return "".to_owned();
+    return "".to_string();
   }
   else {
-    let seed_str : &str = hash.slice_chars(0u, 2u);
+    let hash_slice : &str = hash.as_slice();
+
+    let seed_str : &str = hash_slice.slice(0u, 2u);
 
     let seed : uint = match parse_bytes(seed_str.as_bytes(), 10) {
       Some(v) => v as uint,
       None => fail!("Invalid seed")
     };
 
-    let hash_str : &str = hash.slice_chars(2u, hash.len());
+    let hash_str : &str = hash_slice.slice(2u, hash.len());
 
-    let hexpairs : ~[&str] = range(0, hash_str.len() / 2).map( |i| hash_str.slice_chars(i * 2, i * 2 + 2) ).collect();
+    let hexpairs : Vec<&str> = range(0, hash_str.len() / 2).map( |i| hash_str.slice_chars(i * 2, i * 2 + 2) ).collect();
 
-    let ciphertext : ~[int] = hexpairs.map( |hexpair| match parse_bytes(hexpair.as_bytes(), 16) {
+    let ciphertext : Vec<int> = Vec::from_fn(hexpairs.len(), |index| match parse_bytes(hexpairs.get(index).as_bytes(), 16) {
         Some(v) => v,
         None => fail!("Invalid ciphertext")
       }
     );
 
-    let keys : ~[int] = xlat(seed, ciphertext.len());
+    let keys : Vec<int> = xlat(seed, ciphertext.len());
 
     assert_eq!(ciphertext.len(), keys.len());
 
-    let zipped : ~[(&int, &int)] = ciphertext.iter().zip(keys.iter()).collect();
+    let zipped : Vec<(&int, &int)> = ciphertext.iter().zip(keys.iter()).collect();
 
-    let plaintext : ~[u8] = zipped.map( |e| xor(*e) as u8);
+    let plainbytes : Vec<int> = Vec::from_fn(hexpairs.len(), |index| xor(*(zipped.get(index))));
 
-    let password : ~str = from_utf8(plaintext);
+    let plaintext : Vec<u8> = Vec::from_fn(plainbytes.len(), |index| (plainbytes.get(index).to_u8()).unwrap());
 
-    return password;
+    let password : &str = from_utf8(plaintext.as_slice()).unwrap();
+
+    return password.to_string();
   }
 }
 
 fn main() {
-  let args : ~[~str] = args();
+  let argv : Vec<String> = args();
 
-  assert_eq!(args.len() > 0, true);
+  assert_eq!(argv.len() > 0, true);
 
-  let program : &~str = args.head();
+  let program : &String = argv.get(0);
 
-  let opts : ~[OptGroup] = ~[
+  let opts : &[OptGroup] = &[
     optflag("h", "help", "print usage info"),
     optopt("e", "encrypt", "encrypt a password", "VAL"),
     optopt("d", "decrypt", "decrypt a hash", "VAL"),
   ];
 
-  let result : Matches = match getopts(args.tail(), opts) {
-    Ok(m) => m,
-    Err(_) => fail!(usage(*program, opts))
-  };
+  let rest = argv.slice(1, argv.len());
+
+  let result : Matches = getopts(rest, opts).unwrap();
 
   if result.opt_present("e") || result.opt_present("encrypt") {
-    let password : ~str = match result.opt_str("encrypt") {
-      Some(v) => v,
-      None => fail!(usage(*program, opts))
-    };
+    let password : String = result.opt_str("encrypt").unwrap();
 
-    let hash : ~str = encrypt(password);
+    let hash : String = encrypt(password);
 
-    println(hash);
+    println!("{}", hash);
   }
   else if result.opt_present("d") || result.opt_present("decrypt") {
-    let hash : ~str = match result.opt_str("decrypt") {
-      Some(v) => v,
-      None => fail!(usage(*program, opts))
-    };
+    let hash : String = result.opt_str("decrypt").unwrap();
 
-    let password : ~str = decrypt(hash);
+    let password : String = decrypt(hash);
 
-    println(password);
+    println!("{}", password);
   }
   else {
-    fail!(usage(*program, opts))
+    println!("{}", usage(program.as_slice(), opts));
   }
 }
