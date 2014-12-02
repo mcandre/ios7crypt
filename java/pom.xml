@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <name>ios7crypt</name>
-  <url>https://github.com/mcandre/mcandre/tree/master/java/ios7crypt/</url>
+  <url>https://github.com/mcandre/ios7crypt/tree/master/java/</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
