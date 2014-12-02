@@ -75,7 +75,7 @@ fn encrypt(password : String) -> String {
   return format!(
     "{:02d}{}",
     seed as int,
-    Vec::from_fn(password.len() * 2, |index| format!("{:02x}", *(ciphertext.get(index)) as uint) ).connect("")
+    Vec::from_fn(password.len(), |index| format!("{:02x}", *(ciphertext.get(index)) as uint) ).connect("")
   );
 }
 
