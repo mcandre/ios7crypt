@@ -4,7 +4,6 @@
 
 #![crate_id(name = "ios7crypt")]
 
-extern crate std;
 extern crate getopts;
 
 use std::os::args;
@@ -70,12 +69,12 @@ fn encrypt(password : String) -> String {
 
   let zipped : Vec<(&int, &int)> = plaintext.iter().zip(keys.iter()).collect();
 
-  let ciphertext : Vec<int> = Vec::from_fn(password.len(), |index| xor(*(zipped.get(index))));
+  let ciphertext : Vec<int> = Vec::from_fn(password.len(), |index| xor(zipped[index]));
 
   return format!(
     "{:02d}{}",
     seed as int,
-    Vec::from_fn(password.len(), |index| format!("{:02x}", *(ciphertext.get(index)) as uint) ).connect("")
+    Vec::from_fn(password.len(), |index| format!("{:02x}", ciphertext[index] as uint) ).connect("")
   );
 }
 
@@ -97,7 +96,7 @@ fn decrypt(hash : String) -> String {
 
     let hexpairs : Vec<&str> = range(0, hash_str.len() / 2).map( |i| hash_str.slice_chars(i * 2, i * 2 + 2) ).collect();
 
-    let ciphertext : Vec<int> = Vec::from_fn(hexpairs.len(), |index| match parse_bytes(hexpairs.get(index).as_bytes(), 16) {
+    let ciphertext : Vec<int> = Vec::from_fn(hexpairs.len(), |index| match parse_bytes(hexpairs[index].as_bytes(), 16) {
         Some(v) => v,
         None => fail!("Invalid ciphertext")
       }
@@ -109,9 +108,9 @@ fn decrypt(hash : String) -> String {
 
     let zipped : Vec<(&int, &int)> = ciphertext.iter().zip(keys.iter()).collect();
 
-    let plainbytes : Vec<int> = Vec::from_fn(hexpairs.len(), |index| xor(*(zipped.get(index))));
+    let plainbytes : Vec<int> = Vec::from_fn(hexpairs.len(), |index| xor(zipped[index]));
 
-    let plaintext : Vec<u8> = Vec::from_fn(plainbytes.len(), |index| (plainbytes.get(index).to_u8()).unwrap());
+    let plaintext : Vec<u8> = Vec::from_fn(plainbytes.len(), |index| (plainbytes[index].to_u8()).unwrap());
 
     let password : &str = from_utf8(plaintext.as_slice()).unwrap();
 
@@ -124,7 +123,7 @@ fn main() {
 
   assert_eq!(argv.len() > 0, true);
 
-  let program : &String = argv.get(0);
+  let ref program : String = argv[0];
 
   let opts : &[OptGroup] = &[
     optflag("h", "help", "print usage info"),
