@@ -1,4 +1,8 @@
-# Example
+# ios7crypt/java
+
+IOS7Crypt password encrypter/decrypter in Java
+
+# EXAMPLE
 
 ```
 $ mvn package
@@ -12,7 +16,11 @@ $ java -jar target/ios7crypt-0.0.1.jar
 ...
 ```
 
-# Code coverage
+# REQUIREMENTS
+
+* [JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) 1.6+
+
+# CODE COVERAGE
 
 ```
 $ mvn site
