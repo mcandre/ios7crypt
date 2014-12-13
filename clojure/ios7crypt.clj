@@ -31,9 +31,7 @@
          (join
           ""
 
-          ;; TODO: Correct the loop so that the values are collected
-
-          (loop [i (- len 1)]
+          (for [i (range len)]
             (let [key (nth XLAT (mod (+ seed i) XLAT-LEN))]
               (format
                "%02x"
@@ -41,23 +39,24 @@
 
 (defn decrypt [hash]
   (let [len (count hash)]
-    (if (or (< len 1) (== (mod len 2) 0))
+    (if (or (< len 1) (not= (mod len 2) 0))
       ""
       (try
-        (let [password ""
-              seed (Integer/parseInt (.substring hash 0 2))]
-          (new String
-               (loop [i 2 len 2]
-                 (let [key (nth XLAT (mod (+ seed i) XLAT-LEN))
-                       cipher (Integer/parseInt (.substring hash i (+ i 2)) 16)]
-                       (cast Character (bit-xor key cipher))))))
+        (let [seed (Integer/parseInt (.substring hash 0 2))]
+          (join
+           ""
+           (for [i (range (/ (- len 2) 2))]
+             (let [key (nth XLAT (mod (+ seed i) XLAT-LEN))
+                   j (+ (* i 2) 2)
+                   cipher (Integer/parseInt (.substring hash j (+ j 2)) 16)]
+               (char (bit-xor key cipher))))))
         (catch NumberFormatException e
-         "")))))
+          "")))))
 
 (defn usage []
-  (print "Usage: ios7crypt.clj [OPTION]")
-  (print "-e --encrypt <password>\tEncrypt a password")
-  (print "-d --decrypt <hash>\tDecrypt a hash"))
+  (println "Usage: ios7crypt.clj [OPTION]")
+  (println "-e --encrypt <password>\tEncrypt a password")
+  (println "-d --decrypt <hash>\tDecrypt a hash"))
 
 (defn -main [& args]
   (if (not= (count args) 2)
@@ -65,8 +64,8 @@
     (let [option (nth args 0)
           value (nth args 1)]
       (if (or (= option "-e") (= option "--encrypt"))
-        (print (encrypt value))
-        (print (decrypt value))))))
+        (println (encrypt value))
+        (println (decrypt value))))))
 
 (when (.contains (first *command-line-args*) *source-path*)
   (apply -main (rest *command-line-args*)))
