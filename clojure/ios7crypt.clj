@@ -23,18 +23,21 @@
   (let [len (count password)]
     (if (< len 1)
       ""
-      (let [seed (* (.nextDouble R) 16)
+      (let [seed (int (* (.nextDouble R) 16))
             hash (format "%02d" seed)]
         (format
          "%s%s"
          hash
          (join
           ""
-          (loop [i len]
+
+          ;; TODO: Correct the loop so that the values are collected
+
+          (loop [i (- len 1)]
             (let [key (nth XLAT (mod (+ seed i) XLAT-LEN))]
               (format
                "%02x"
-               (^ key (.charAt password i)))))))))))
+               (bit-xor key (byte (.charAt password i))))))))))))
 
 (defn decrypt [hash]
   (let [len (count hash)]
@@ -47,21 +50,21 @@
                (loop [i 2 len 2]
                  (let [key (nth XLAT (mod (+ seed i) XLAT-LEN))
                        cipher (Integer/parseInt (.substring hash i (+ i 2)) 16)]
-                       (cast Character (^ key cipher))))))
+                       (cast Character (bit-xor key cipher))))))
         (catch NumberFormatException e
          "")))))
 
-(defn usage
+(defn usage []
   (print "Usage: ios7crypt.clj [OPTION]")
   (print "-e --encrypt <password>\tEncrypt a password")
   (print "-d --decrypt <hash>\tDecrypt a hash"))
 
 (defn -main [& args]
-  (if (!= (length args) 2)
+  (if (not= (count args) 2)
     (usage)
-    (let ((option (nth args 0))
-          (value (nth args 1)))
-      (if (or (== option "-e") (== option "--encrypt"))
+    (let [option (nth args 0)
+          value (nth args 1)]
+      (if (or (= option "-e") (= option "--encrypt"))
         (print (encrypt value))
         (print (decrypt value))))))
 
