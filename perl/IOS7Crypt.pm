@@ -50,7 +50,7 @@ sub decrypt {
   my ($seed, $encrypted) = ($hash =~ /^([0-9]{2})([a-fA-F0-9]+)/i);
 
   my $len = length $encrypted;
-  
+
   if ($len % 2 != 0) {
     $len--;
   }
