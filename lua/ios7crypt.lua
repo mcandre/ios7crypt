@@ -24,14 +24,14 @@ bxor = function(x, y)
     if x % 2 == 0 then     -- x had a '0' in bit i
       if  y % 2 == 1 then  -- y had a '1' in bit i
         y = y - 1
-        z = z + 2 ^ i      -- set bit i of z to '1' 
+        z = z + 2 ^ i      -- set bit i of z to '1'
       end
     else                   -- x had a '1' in bit i
       x = x-1
       if y % 2 == 0 then   -- y had a '0' in bit i
-        z = z + 2 ^ i      -- set bit i of z to '1' 
+        z = z + 2 ^ i      -- set bit i of z to '1'
       else
-        y = y - 1 
+        y = y - 1
       end
     end
 

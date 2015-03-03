@@ -14,14 +14,14 @@ empty =: 0 $ 0
 NB. index xlat len
 
 xlat =: dyad : 0
-	if. y < 1 do.
-		empty
-	elseif. 1 do.
-		h =. ((#xlatPrime) | x) { xlatPrime
-		t =. (x + 1) xlat (y - 1)
+  if. y < 1 do.
+    empty
+  elseif. 1 do.
+    h =. ((#xlatPrime) | x) { xlatPrime
+    t =. (x + 1) xlat (y - 1)
 
-		h, t
-	end.
+    h, t
+  end.
 )
 
 xor =: 22 b.
@@ -34,42 +34,42 @@ NB. With help from Raul Miller.
 join =: #@[ }. [:;,L:0
 
 encrypt =: monad : 0
-	seed =. ? 16
+  seed =. ? 16
 
-	plaintext =. 3 u: 7 u: y
-	keys =. seed xlat (#plaintext)
+  plaintext =. 3 u: 7 u: y
+  keys =. seed xlat (#plaintext)
 
-	ciphertext =. plaintext xor keys
+  ciphertext =. plaintext xor keys
 
-	'' join ((dec seed), (hex ciphertext))
+  '' join ((dec seed), (hex ciphertext))
 )
 
 NB. With help from Raul Miller
 split =: <;._1@,
 
 main =: monad : 0
-	password =. 'monkey'
-	hash =. encrypt password
+  password =. 'monkey'
+  hash =. encrypt password
 
-	echo hash
+  echo hash
 
-	NB. ...
+  NB. ...
 
-	exit ''
+  exit ''
 )
 
 program =: monad : 0
-	if. (#ARGV) > 1 do.
-		> 1 { ARGV
-	else.
-		'Interpreted'
-	end.
+  if. (#ARGV) > 1 do.
+    > 1 { ARGV
+  else.
+    'Interpreted'
+  end.
 )
 
 shouldrun =: monad : 0
-	if. '.*ios7crypt.*' rxeq program 0 do.
-		main 0
-	end.
+  if. '.*ios7crypt.*' rxeq program 0 do.
+    main 0
+  end.
 )
 
 shouldrun 0

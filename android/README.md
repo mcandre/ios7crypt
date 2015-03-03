@@ -10,4 +10,6 @@ http://www.yellosoft.us/ios7crypt
 
 # EXAMPLE
 
-	$ rake install
+```
+$ rake install
+```
