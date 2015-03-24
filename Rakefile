@@ -18,6 +18,10 @@ task :astyle => [] do
   sh 'find . -type d -name android -prune -o -type f -name "*.java" -exec astyle {} \\;'
 end
 
+task :astyle_dry => [] do
+  sh 'find . -type d -name android -prune -o -type f -name "*.java" -exec astyle --dry-run {} \\;'
+end
+
 task :clean_astyle => [] do
   sh 'find . -type f -name "*.orig" -exec rm {} \\;'
 end
@@ -27,7 +31,7 @@ task :lint => [
   :churn,
   :lili,
   :editorconfig,
-  :astyle
+  :astyle_dry
 ] do
 end
 
