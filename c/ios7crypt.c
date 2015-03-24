@@ -25,7 +25,7 @@ int xlat[] = {
 
 int XLAT_SIZE = 53;
 
-void __attribute__((noreturn)) usage(char* const program) {
+void __attribute__((noreturn)) usage(char *const program) {
   printf("Usage: %s [options]\n\n", program);
   printf("-e <passwords>\n");
   printf("-d <hashes>\n");
@@ -34,7 +34,7 @@ void __attribute__((noreturn)) usage(char* const program) {
   exit(0);
 }
 
-void encrypt(char* const password, char* hash) {
+void encrypt(char *const password, char *hash) {
   if (password != NULL && hash != NULL) {
     size_t password_length = strlen(password);
 
@@ -48,16 +48,16 @@ void encrypt(char* const password, char* hash) {
       (void) snprintf(
         hash + 2 + i * 2, 3,
         "%02x",
-        (unsigned int) (password[i] ^ xlat[(seed++) % XLAT_SIZE])
+        (unsigned int)(password[i] ^ xlat[(seed++) % XLAT_SIZE])
       );
     }
   }
 }
 
-void decrypt(char* const hash, char* password) {
+void decrypt(char *const hash, char *password) {
   if (hash != NULL && password != NULL) {
 
-    char *pair = (char*) calloc(3, sizeof(char));
+    char *pair = (char *) calloc(3, sizeof(char));
     strncat(pair, hash, 2);
 
     long seed = strtol(pair, NULL, 10);
@@ -70,22 +70,22 @@ void decrypt(char* const hash, char* password) {
       strncat(pair, hash + i, 2);
       int c = (int) strtol(pair, NULL, 16);
 
-      password[index++] = (char) (c ^ xlat[(seed++) % XLAT_SIZE]);
+      password[index++] = (char)(c ^ xlat[(seed++) % XLAT_SIZE]);
     }
 
     free(pair);
   }
 }
 
-bool reversible(void* const data) {
-  char* password;
-  char* hash;
-  char* password2;
+bool reversible(void *const data) {
+  char *password;
+  char *hash;
+  char *password2;
   int cmp;
 
-  password = qc_args(char*, 0, char*);
+  password = qc_args(char *, 0, char *);
 
-  hash = (char*) calloc((size_t) strlen(password) * 2 + 3, sizeof(char));
+  hash = (char *) calloc((size_t) strlen(password) * 2 + 3, sizeof(char));
 
   if (hash == NULL) {
     printf("Out of memory.\n");
@@ -94,7 +94,8 @@ bool reversible(void* const data) {
 
   encrypt(password, hash);
 
-  password2 = (char*) calloc((size_t) strlen(hash) / 2 * sizeof(char), sizeof(char));
+  password2 = (char *) calloc((size_t) strlen(hash) / 2 * sizeof(char),
+                              sizeof(char));
 
   if (password2 == NULL) {
     printf("Out of memory.\n");
@@ -114,7 +115,7 @@ bool reversible(void* const data) {
   return cmp == 0;
 }
 
-int main(int const argc, char** const argv) {
+int main(int const argc, char **const argv) {
   int i;
 
   char *password, *hash;
@@ -125,8 +126,7 @@ int main(int const argc, char** const argv) {
 
   if (argc < 2) {
     usage(argv[0]);
-  }
-  else if (strcmp(argv[1], "-e") == 0) {
+  } else if (strcmp(argv[1], "-e") == 0) {
     if (argc < 3) {
       usage(argv[0]);
     }
@@ -143,8 +143,7 @@ int main(int const argc, char** const argv) {
         free(hash);
       }
     }
-  }
-  else if (strcmp(argv[1], "-d") == 0) {
+  } else if (strcmp(argv[1], "-d") == 0) {
     if (argc < 3) {
       usage(argv[0]);
     }
@@ -161,14 +160,12 @@ int main(int const argc, char** const argv) {
         free(password);
       }
     }
-  }
-  else if (strcmp(argv[1], "-t") == 0) {
+  } else if (strcmp(argv[1], "-t") == 0) {
     gen gs[] = { gen_string };
     gen ps[] = { print_string };
 
-    for_all(reversible, 1, gs, ps, char*);
-  }
-  else {
+    for_all(reversible, 1, gs, ps, char *);
+  } else {
     usage(argv[0]);
   }
 

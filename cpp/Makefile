@@ -6,8 +6,8 @@ BIN=bin/ios7crypt
 all: test
 
 test: $(BIN)
-	./$(BIN) -e monkey
-	./$(BIN) -d 050609012a4957
+	$(BIN) -e monkey
+	$(BIN) -d 050609012a4957
 
 $(BIN): ios7crypt.cpp ios7crypt.h
 	mkdir -p bin/
@@ -25,11 +25,20 @@ splint:
 vera++:
 	find . -type f -name '*.cpp' -o -name '*.[ch]' -exec vera++ -s {} \;
 
-lint: cppcheck cpplint splint vera++
+astyle-apply:
+	-find . -type d -name android -prune -o -type f -name "*.java" -o -name "*.cpp" -o -name "*.[chm]" -exec astyle {} \; | grep -v Unchanged
+
+astyle:
+	-find . -type d -name android -prune -o -type f -name "*.java" -o -name "*.cpp" -o -name "*.[chm]" -exec astyle --dry-run {} \; | grep -v Unchanged
+
+clean-astyle:
+	-find . -type f -name "*.orig" -exec rm {} \;
+
+lint: cppcheck cpplint splint vera++ astyle
 
 valgrind: $(BIN)
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -e monkey
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -d 050609012a4957
 
-clean:
+clean: clean-astyle
 	-rm -rf bin/

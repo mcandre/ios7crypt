@@ -22,12 +22,23 @@ $(BIN): IOS7Crypt.m
 	mkdir -p bin/
 	clang $(FLAGS) $(LINUX_FLAGS) -o $(BIN) IOS7Crypt.m
 
-lint: $(BIN)
+oclint: $(BIN)
 	oclint -rc=SHORT_VARIABLE_NAME=1 IOS7Crypt.m -- $(FLAGS)
+
+astyle-apply:
+	-find . -type d -name android -prune -o -type f -name "*.java" -o -name "*.cpp" -o -name "*.[chm]" -exec astyle {} \; | grep -v Unchanged
+
+astyle:
+	-find . -type d -name android -prune -o -type f -name "*.java" -o -name "*.cpp" -o -name "*.[chm]" -exec astyle --dry-run {} \; | grep -v Unchanged
+
+clean-astyle:
+	-find . -type f -name "*.orig" -exec rm {} \;
+
+lint: oclint astyle
 
 valgrind: $(BIN)
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -e monkey
 	valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes --dsymutil=yes ./$(BIN) -d 050609012a4957
 
-clean:
+clean: clean-astyle
 	-rm -rf bin/
