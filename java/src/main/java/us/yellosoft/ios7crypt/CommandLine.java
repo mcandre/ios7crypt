@@ -43,19 +43,22 @@ public final class CommandLine {
     g.setOpterr(false);
 
     int c = g.getopt();
+
     while (c != -1) {
-      switch(c) {
-        case 'e':
-          mode = "encrypt";
-          password = g.getOptarg();
-          break;
-        case 'd':
-          mode = "decrypt";
-          hash = g.getOptarg();
-          break;
-        default:
-          usage();
-          break;
+      switch (c) {
+      case 'e':
+        mode = "encrypt";
+        password = g.getOptarg();
+        break;
+
+      case 'd':
+        mode = "decrypt";
+        hash = g.getOptarg();
+        break;
+
+      default:
+        usage();
+        break;
       }
 
       c = g.getopt();
@@ -70,14 +73,13 @@ public final class CommandLine {
     if (mode == "encrypt") {
       System.out.println(IOS7Crypt.encrypt(password));
 
-      for (String arg:leftoverArgs) {
+      for (String arg : leftoverArgs) {
         System.out.println(IOS7Crypt.encrypt(arg));
       }
-    }
-    else if (mode == "decrypt") {
+    } else if (mode == "decrypt") {
       System.out.println(IOS7Crypt.decrypt(hash));
 
-      for (String arg:leftoverArgs) {
+      for (String arg : leftoverArgs) {
         System.out.println(IOS7Crypt.decrypt(arg));
       }
     }

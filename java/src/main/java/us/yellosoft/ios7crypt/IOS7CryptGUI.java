@@ -55,8 +55,7 @@ public class IOS7CryptGUI extends JPanel implements ActionListener {
   public final void actionPerformed(final ActionEvent e) {
     if (e.getSource() == passwordField) {
       hashField.setText(IOS7Crypt.encrypt(passwordField.getText()));
-    }
-    else if (e.getSource() == hashField) {
+    } else if (e.getSource() == hashField) {
       passwordField.setText(IOS7Crypt.decrypt(hashField.getText()));
     }
   }

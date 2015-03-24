@@ -20,7 +20,7 @@ public final class IOS7Crypt {
       return "";
     }
 
-    int seed = (int) (new Random().nextDouble() * 16);
+    int seed = (int)(new Random().nextDouble() * 16);
 
     String hash = String.format("%02d", seed);
 
@@ -35,8 +35,7 @@ public final class IOS7Crypt {
   public static String decrypt(final String hash) {
     if (hash.length() < 1) {
       return "";
-    }
-    else if (hash.length() % 2 != 0) {
+    } else if (hash.length() % 2 != 0) {
       return "";
     }
 
@@ -47,12 +46,11 @@ public final class IOS7Crypt {
 
       for (int i = 2; i + 1 < hash.length(); i += 2) {
         int encryptedByte = Integer.parseInt(hash.substring(i, i + 2), 16);
-        password += (char) (encryptedByte ^ XLAT[(seed++) % XLAT.length]);
+        password += (char)(encryptedByte ^ XLAT[(seed++) % XLAT.length]);
       }
 
       return password;
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       return "";
     }
   }
