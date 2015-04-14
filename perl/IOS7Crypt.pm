@@ -69,6 +69,7 @@ sub usage {
   print "Usage: $0 [options]\n";
   print "-e\t<password>\n";
   print "-d\t<hash>\n";
+  print "-t\tself-test\n";
 
   exit 0;
 }
