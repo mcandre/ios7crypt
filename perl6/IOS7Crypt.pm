@@ -67,9 +67,9 @@ module IOS7Crypt {
   }
 
   sub usage is export {
-    print "Usage: $0 [options]\n";
-    print "-e=<password>\n";
-    print "-d=<hash>\n";
+    say "Usage: $*PROGRAM_NAME [options]";
+    say '-e=<password>';
+    say '-d=<hash>';
 
     exit 0;
   }
@@ -80,11 +80,11 @@ sub MAIN(:$e = '', :$d = '') {
 
   if ($e ne '') {
     my $hash = encrypt($e);
-    print "$hash\n";
+    say $hash;
   }
   elsif ($d ne '') {
     my $password = decrypt($d);
-    print "$password\n";
+    say $password;
   }
   else {
     usage;
