@@ -120,6 +120,11 @@
           </instrumentation>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.10</version>
+      </plugin>
     </plugins>
   </build>
 
@@ -175,18 +180,6 @@
       <groupId>gnu.getopt</groupId>
       <artifactId>java-getopt</artifactId>
       <version>1.0.13</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.9.5</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.cobertura</groupId>
