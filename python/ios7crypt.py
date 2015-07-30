@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""IOS7Crypt password encryptor/decryptor"""
+'''IOS7Crypt password encryptor/decryptor'''
 
 import os
 import sys
@@ -19,8 +19,8 @@ XLAT = [
 
 def encrypt(password):
     seed = ord(os.urandom(1)) % 16
-    return "%02d%s" % (seed, "".join(
-        ["%02x" % (
+    return '%02d%s' % (seed, ''.join(
+        ['%02x' % (
             ord(password[i]) ^ XLAT[seed + i]
         ) for i in range(len(password))])
     )
@@ -29,7 +29,7 @@ def encrypt(password):
 def decrypt(h):
     seed, h = int(h[:2]), h[2:]
     cipher_bytes = [int(h[i:i + 2], 16) for i in range(0, len(h), 2)]
-    return "".join(
+    return ''.join(
         [chr(
             cipher_bytes[i] ^ XLAT[(seed + i) % len(XLAT)]
         ) for i in range(len(cipher_bytes))]
@@ -43,31 +43,31 @@ def test():
 
 
 def usage():
-    print("Usage: %s [options]" % (sys.argv[0]))
-    print("-e --encrypt\t<password>")
-    print("-d --decrypt\t<hash>")
-    print("-t --test\trun unit tests")
-    print("-h --help\tusage")
+    print('Usage: %s [options]' % (sys.argv[0]))
+    print('-e --encrypt\t<password>')
+    print('-d --decrypt\t<hash>')
+    print('-t --test\trun unit tests')
+    print('-h --help\tusage')
 
     sys.exit()
 
 
 def main():
-    encrypt_mode = "ENCRYPT"
-    decrypt_mode = "DECRYPT"
-    test_mode = "TEST"
+    encrypt_mode = 'ENCRYPT'
+    decrypt_mode = 'DECRYPT'
+    test_mode = 'TEST'
 
     mode = encrypt_mode
-    password = ""
-    h = ""
+    password = ''
+    h = ''
 
     optlist, args = [], []
 
     try:
         optlist, args = getopt(
             sys.argv[1:],
-            "e:d:th",
-            ["encrypt=", "decrypt=", "test", "help"]
+            'e:d:th',
+            ['encrypt=', 'decrypt=', 'test', 'help']
         )
     except Exception:
         usage()
@@ -76,15 +76,15 @@ def main():
         usage()
 
     for option, value in optlist:
-        if option == "-h" or option == "--help":
+        if option == '-h' or option == '--help':
             usage()
-        elif option == "-e" or option == "--encrypt":
+        elif option == '-e' or option == '--encrypt':
             mode = encrypt_mode
             password = value
-        elif option == "-d" or option == "--decrypt":
+        elif option == '-d' or option == '--decrypt':
             mode = decrypt_mode
             h = value
-        elif option == "-t" or option == "--test":
+        elif option == '-t' or option == '--test':
             mode = test_mode
 
     if mode == encrypt_mode:
@@ -94,5 +94,5 @@ def main():
     elif mode == test_mode:
         test()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
