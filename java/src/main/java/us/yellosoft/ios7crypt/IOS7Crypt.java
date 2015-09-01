@@ -46,7 +46,7 @@ public final class IOS7Crypt {
 
       for (int i = 2; i + 1 < hash.length(); i += 2) {
         int encryptedByte = Integer.parseInt(hash.substring(i, i + 2), 16);
-        password += (char)(encryptedByte ^ XLAT[(seed++) % XLAT.length]);
+        password += (char)(encryptedByte ^ XLAT[(seed + i/2 - 1) % XLAT.length]);
       }
 
       return password;
