@@ -22,14 +22,16 @@ public final class IOS7Crypt {
 
     final int seed = (int)(new Random().nextDouble() * 16);
 
-    String hash = String.format("%02d", seed);
+    final StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder.append(String.format("%02d", seed));
 
     for (int i = 0; i < password.length() && i < 11; i++) {
       int encryptedByte = XLAT[(seed + i) % XLAT.length] ^ password.charAt(i);
-      hash += String.format("%02x", encryptedByte);
+      stringBuilder.append(String.format("%02x", encryptedByte));
     }
 
-    return hash;
+    return stringBuilder.toString();
   }
 
   public static String decrypt(final String hash) {
@@ -40,16 +42,16 @@ public final class IOS7Crypt {
     }
 
     try {
-      String password = "";
+      final StringBuilder stringBuilder = new StringBuilder();
 
       final int seed = Integer.parseInt(hash.substring(0, 2));
 
       for (int i = 2; i + 1 < hash.length(); i += 2) {
         int encryptedByte = Integer.parseInt(hash.substring(i, i + 2), 16);
-        password += (char)(encryptedByte ^ XLAT[(seed + i/2 - 1) % XLAT.length]);
+        stringBuilder.append((char)(encryptedByte ^ XLAT[(seed + i/2 - 1) % XLAT.length]));
       }
 
-      return password;
+      return stringBuilder.toString();
     } catch (NumberFormatException e) {
       return "";
     }
