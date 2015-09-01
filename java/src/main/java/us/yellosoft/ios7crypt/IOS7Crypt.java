@@ -20,7 +20,7 @@ public final class IOS7Crypt {
       return "";
     }
 
-    int seed = (int)(new Random().nextDouble() * 16);
+    final int seed = (int)(new Random().nextDouble() * 16);
 
     String hash = String.format("%02d", seed);
 
@@ -42,7 +42,7 @@ public final class IOS7Crypt {
     try {
       String password = "";
 
-      int seed = Integer.parseInt(hash.substring(0, 2));
+      final int seed = Integer.parseInt(hash.substring(0, 2));
 
       for (int i = 2; i + 1 < hash.length(); i += 2) {
         int encryptedByte = Integer.parseInt(hash.substring(i, i + 2), 16);
