@@ -25,7 +25,7 @@ public final class IOS7Crypt {
     String hash = String.format("%02d", seed);
 
     for (int i = 0; i < password.length() && i < 11; i++) {
-      int encryptedByte = XLAT[(seed++) % XLAT.length] ^ password.charAt(i);
+      int encryptedByte = XLAT[(seed + i) % XLAT.length] ^ password.charAt(i);
       hash += String.format("%02x", encryptedByte);
     }
 
