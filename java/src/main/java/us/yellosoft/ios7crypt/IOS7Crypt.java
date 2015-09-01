@@ -36,7 +36,7 @@ public final class IOS7Crypt {
   }
 
   public static String decrypt(final String hash) {
-    if (hash.length() < 1 || hash.length() % 2 != 0) {
+    if (hash.length() < 1) {
       return "";
     }
 
