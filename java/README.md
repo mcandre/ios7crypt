@@ -6,19 +6,17 @@ IOS7Crypt password encrypter/decrypter in Java
 
 ```
 $ mvn package
-$ mvn exec:java -Dexec.mainClass=us.yellosoft.ios7crypt.CommandLine -Dexec.args="-e monkey"
+$ bin/ios7crypt -e monkey
 00091c080f5e12
-$ mvn exec:java -Dexec.mainClass=us.yellosoft.ios7crypt.CommandLine -Dexec.args="-d 00091c080f5e12"
+$ bin/ios7crypt -d 00091c080f5e12
 monkey
-$ mvn exec:java -Dexec.mainClass=us.yellosoft.ios7crypt.IOS7CryptGUI
-...
-$ java -jar target/ios7crypt-0.0.1.jar
+$ java -jar target/ios7crypt-0.0.1-jar-with-dependencies.jar
 ...
 ```
 
 # REQUIREMENTS
 
-* [JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) 1.6+
+* [JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) 1.8+
 
 # CODE COVERAGE
 
