@@ -30,7 +30,7 @@ public final class IOS7Crypt {
       String.join(
         "",
         IntStream.range(0, password.length()).parallel().mapToObj(
-          i -> String.format("%02x", Iterables.get(XLAT, seed + i) ^ password.charAt(i))
+          (final int i) -> String.format("%02x", Iterables.get(XLAT, seed + i) ^ password.charAt(i))
         ).collect(Collectors.toList())
       );
   }
@@ -47,7 +47,7 @@ public final class IOS7Crypt {
       return String.join(
         "",
         IntStream.range(0, encryptedPassword.length() / 2).parallel().mapToObj(
-          i -> "" + (char) (Integer.parseInt(encryptedPassword.substring(i*2, i*2 + 2), 16) ^ Iterables.get(XLAT, seed + i))
+          (final int i) -> "" + (char) (Integer.parseInt(encryptedPassword.substring(i*2, i*2 + 2), 16) ^ Iterables.get(XLAT, seed + i))
         ).collect(Collectors.toList())
       );
     } catch (NumberFormatException e) {
