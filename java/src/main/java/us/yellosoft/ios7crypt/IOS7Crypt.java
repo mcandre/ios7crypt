@@ -1,6 +1,8 @@
 package us.yellosoft.ios7crypt;
 
 import java.util.Random;
+import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Iterables;
 
@@ -24,36 +26,30 @@ public final class IOS7Crypt {
 
     final int seed = (int)(new Random().nextDouble() * 16);
 
-    final StringBuilder stringBuilder = new StringBuilder();
-
-    stringBuilder.append(String.format("%02d", seed));
-
-    for (int i = 0; i < password.length() && i < 11; i++) {
-      int encryptedByte = Iterables.get(XLAT, seed + i) ^ password.charAt(i);
-      stringBuilder.append(String.format("%02x", encryptedByte));
-    }
-
-    return stringBuilder.toString();
+    return String.format("%02d", seed) +
+      String.join(
+        "",
+        IntStream.range(0, password.length()).parallel().mapToObj(
+          i -> String.format("%02x", Iterables.get(XLAT, seed + i) ^ password.charAt(i))
+        ).collect(Collectors.toList())
+      );
   }
 
   public static String decrypt(final String hash) {
-    if (hash.length() < 1) {
-      return "";
-    } else if (hash.length() % 2 != 0) {
+    if (hash.length() < 1 || hash.length() % 2 != 0) {
       return "";
     }
 
     try {
-      final StringBuilder stringBuilder = new StringBuilder();
-
       final int seed = Integer.parseInt(hash.substring(0, 2));
+      final String encryptedPassword = hash.substring(2);
 
-      for (int i = 2; i + 1 < hash.length(); i += 2) {
-        int encryptedByte = Integer.parseInt(hash.substring(i, i + 2), 16);
-        stringBuilder.append((char)(encryptedByte ^ Iterables.get(XLAT, seed + i/2 - 1)));
-      }
-
-      return stringBuilder.toString();
+      return String.join(
+        "",
+        IntStream.range(0, encryptedPassword.length() / 2).parallel().mapToObj(
+          i -> "" + (char) (Integer.parseInt(encryptedPassword.substring(i*2, i*2 + 2), 16) ^ Iterables.get(XLAT, seed + i))
+        ).collect(Collectors.toList())
+      );
     } catch (NumberFormatException e) {
       return "";
     }
