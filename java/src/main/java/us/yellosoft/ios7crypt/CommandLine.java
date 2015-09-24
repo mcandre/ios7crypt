@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
+/** CLI for IOS7Crypt */
 public final class CommandLine {
+  /** Utility class */
   private CommandLine() {}
 
+  /** Print usage information */
   public static void usage() {
     System.out.println(
       "Usage: CommandLine [OPTIONS]\n" +
@@ -22,6 +25,9 @@ public final class CommandLine {
     System.exit(0);
   }
 
+  /** Execute CLI
+      @param args CLI flags
+   */
   public static void main(final String[] args) {
     String mode = "encrypt";
     String password = "";

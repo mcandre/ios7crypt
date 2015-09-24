@@ -6,9 +6,12 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.Iterables;
 
+/** Cisco IOSv7 password encryptor/decryptor */
 public final class IOS7Crypt {
+  /** Utility class */
   private IOS7Crypt() {}
 
+  /** Static key */
   public static final Iterable<Integer> XLAT = Iterables.cycle(
     0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
     0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
@@ -19,12 +22,16 @@ public final class IOS7Crypt {
     0x3b, 0x66, 0x67, 0x38, 0x37
   );
 
+  /** Encrypt password
+      @param password an ASCII-formatted password
+      @return Cisco IOSv7 encrypted hash
+   */
   public static String encrypt(final String password) {
     if (password.length() < 1) {
       return "";
     }
 
-    final int seed = (int)(new Random().nextDouble() * 16);
+    final int seed = (int) (new Random().nextDouble() * 16);
 
     return String.format("%02d", seed) +
       String.join(
@@ -35,6 +42,10 @@ public final class IOS7Crypt {
       );
   }
 
+  /** Decrypt a hash
+      @param hash a Cisco IOSv7-encrypted hash
+      @return an ASCII password
+   */
   public static String decrypt(final String hash) {
     if (hash.length() < 1) {
       return "";
@@ -47,7 +58,7 @@ public final class IOS7Crypt {
       return String.join(
         "",
         IntStream.range(0, encryptedPassword.length() / 2).parallel().mapToObj(
-          (final int i) -> "" + (char) (Integer.parseInt(encryptedPassword.substring(i*2, i*2 + 2), 16) ^ Iterables.get(XLAT, seed + i))
+          (final int i) -> "" + (char) (Integer.parseInt(encryptedPassword.substring(i * 2, i * 2 + 2), 16) ^ Iterables.get(XLAT, seed + i))
         ).collect(Collectors.toList())
       );
     } catch (NumberFormatException e) {
