@@ -1,3 +1,5 @@
+package us.yellosoft.ios7crypt
+
 import java.util.Random
 
 object IOS7Crypt {
@@ -58,6 +60,20 @@ object IOS7Crypt {
       catch {
         case e : NumberFormatException => ""
       }
+    }
+  }
+
+  def main(args : Array[String]) : Unit = {
+    if (args.length < 2) {
+      println("Usage: ios7crypt (-e <password>) | (-e <hash>)")
+    }
+    else if (args(0) == "-e") {
+      val password = args(1)
+      println(encrypt(password))
+    }
+    else if (args(0) == "-d") {
+      val hash = args(1)
+      println(decrypt(hash))
     }
   }
 }
