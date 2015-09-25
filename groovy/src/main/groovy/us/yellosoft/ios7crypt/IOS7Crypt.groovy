@@ -1,9 +1,10 @@
 #!/usr/bin/env groovy
 
-/* Requires gruesome
-   https://github.com/mcandre/gruesome */
+package us.yellosoft.ios7crypt
 
 import java.util.Random
+
+import us.yellosoft.gruesome.Gruesome
 
 class IOS7Crypt {
   static def xlatPrime = [
