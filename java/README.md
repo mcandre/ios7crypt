@@ -28,11 +28,11 @@ $ gradle javadoc
 $ open build/docs/javadoc/index.html
 ```
 
-# CODE COVERAGE
+# TEST + CODE COVERAGE
 
 ```
-$ gradle cobertura
-$ open build/reports/coburtura/index.html
+$ gradle jacoco
+$ open build/reports/jacoco/test/html/index.html
 ```
 
 # LINTING
