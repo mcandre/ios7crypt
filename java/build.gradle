@@ -30,6 +30,7 @@ repositories {
 }
 
 dependencies {
+  compile 'com.offbytwo:docopt:0.6.0.20150202'
   compile 'com.google.guava:guava:18.0'
   compile 'gnu.getopt:java-getopt:1.0.13'
 
