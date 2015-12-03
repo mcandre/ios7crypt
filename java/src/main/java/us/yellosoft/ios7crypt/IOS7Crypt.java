@@ -8,9 +8,6 @@ import com.google.common.collect.Iterables;
 
 /** Cisco IOSv7 password encryptor/decryptor */
 public final class IOS7Crypt {
-  /** Utility class */
-  private IOS7Crypt() {}
-
   /** Static key */
   public static final Iterable<Integer> XLAT = Iterables.cycle(
     0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
@@ -21,6 +18,9 @@ public final class IOS7Crypt {
     0x39, 0x38, 0x37, 0x33, 0x32, 0x35, 0x34, 0x6b,
     0x3b, 0x66, 0x67, 0x38, 0x37
   );
+
+  /** Utility class */
+  private IOS7Crypt() {}
 
   /** Encrypt password
       @param password an ASCII-formatted password
@@ -58,7 +58,7 @@ public final class IOS7Crypt {
       return String.join(
         "",
         IntStream.range(0, encryptedPassword.length() / 2).parallel().mapToObj(
-          (final int i) -> "" + (char) (Integer.parseInt(encryptedPassword.substring(i * 2, i * 2 + 2), 16) ^ Iterables.get(XLAT, seed + i))
+          (final int i) -> Character.toString((char) (Integer.parseInt(encryptedPassword.substring(i * 2, i * 2 + 2), 16) ^ Iterables.get(XLAT, seed + i)))
         ).collect(Collectors.toList())
       );
     } catch (NumberFormatException e) {

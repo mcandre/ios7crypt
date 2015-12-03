@@ -6,9 +6,6 @@ import org.docopt.Docopt;
 
 /** CLI for IOS7Crypt */
 public final class CommandLine {
-  /** Utility class */
-  private CommandLine() {}
-
   /** DocOpt usage spec */
   public static final String DOC =
     "Usage:\n" +
@@ -19,6 +16,9 @@ public final class CommandLine {
     "  -e --encrypt=<password>  Encrypt a password\n" +
     "  -d --decrypt=<hash>      Decrypt a hash\n" +
     "  -h --help                Print usage information";
+
+  /** Utility class */
+  private CommandLine() {}
 
   /** Execute CLI
       @param args CLI flags

@@ -19,7 +19,11 @@ $ java -jar build/libs/ios7crypt-all.jar
 * [JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) 1.7+
 * [Gradle](http://gradle.org/) 2.1+
 
-E.g., `brew install gradle`
+## Optional
+
+* [Sonar](http://www.sonarqube.org/)
+
+E.g., `brew install gradle sonar sonar-runner`
 
 # JAVADOCS
 
@@ -39,4 +43,12 @@ $ open build/reports/jacoco/test/html/index.html
 
 ```
 $ gradle check
+```
+
+## Optional: Sonar
+
+```
+$ sonar start
+$ gradle check sonar
+$ open http://localhost:9000/
 ```
