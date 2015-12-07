@@ -19,6 +19,8 @@ public final class IOS7Crypt {
     0x3b, 0x66, 0x67, 0x38, 0x37
   );
 
+  private static Random random = new Random();
+
   /** Utility class */
   private IOS7Crypt() {}
 
@@ -31,7 +33,7 @@ public final class IOS7Crypt {
       return "";
     }
 
-    final int seed = (int) (new Random().nextDouble() * 16);
+    final int seed = random.nextInt(16);
 
     return String.format("%02d", seed) +
       String.join(
