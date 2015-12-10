@@ -35,13 +35,16 @@ public final class IOS7Crypt {
 
     final int seed = random.nextInt(16);
 
-    return String.format("%02d", seed) +
+    return String.format(
+      "%02d%s",
+      seed,
       String.join(
         "",
         IntStream.range(0, password.length()).parallel().mapToObj(
           (final int i) -> String.format("%02x", Iterables.get(XLAT, seed + i) ^ password.charAt(i))
         ).collect(Collectors.toList())
-      );
+      )
+    );
   }
 
   /** Decrypt a hash
