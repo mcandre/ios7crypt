@@ -2,7 +2,6 @@ package us.yellosoft.ios7crypt;
 
 import java.util.Random;
 import java.util.stream.IntStream;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.Iterables;
 
@@ -42,7 +41,7 @@ public final class IOS7Crypt {
         "",
         IntStream.range(0, password.length()).parallel().mapToObj(
           (final int i) -> String.format("%02x", Iterables.get(XLAT, seed + i) ^ password.charAt(i))
-        ).collect(Collectors.toList())
+        ).toArray(String[]::new)
       )
     );
   }
@@ -64,7 +63,7 @@ public final class IOS7Crypt {
         "",
         IntStream.range(0, encryptedPassword.length() / 2).parallel().mapToObj(
           (final int i) -> Character.toString((char) (Integer.parseInt(encryptedPassword.substring(i * 2, i * 2 + 2), 16) ^ Iterables.get(XLAT, seed + i)))
-        ).collect(Collectors.toList())
+        ).toArray(String[]::new)
       );
     } catch (NumberFormatException e) {
       return "";
