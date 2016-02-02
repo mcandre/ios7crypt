@@ -20,3 +20,7 @@ monkey
 
 * A C compiler (e.g., `clang`, `gcc`, `cl`)
 * [qc](https://github.com/mcandre/qc)
+
+## Optional
+
+* [Python](https://www.python.org/) 2+ (for infer)
