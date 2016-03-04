@@ -5,8 +5,9 @@ IOS7Crypt encrypter/decrypter in Clojure
 # EXAMPLE
 
 ```
-lein exec ios7crypt.clj -e monkey
+$ gradle clean shadowJar
+java -jar build/libs/clojure-all.jar -e monkey
 141a1d05070133
-$ lein exec ios7crypt.clj -d 141a1d05070133
+$ java -jar build/libs/clojure-all.jar -d 141a1d05070133
 monkey
 ```

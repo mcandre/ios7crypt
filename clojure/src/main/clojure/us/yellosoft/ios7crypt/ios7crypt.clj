@@ -1,6 +1,4 @@
-":";exec lein exec $0 ${1+"$@"}
-
-(ns args
+(ns us.yellosoft.ios7crypt.IOS7Crypt
   (:gen-class))
 
 (use '[clojure.string :only (join)])
@@ -66,6 +64,3 @@
       (if (or (= option "-e") (= option "--encrypt"))
         (println (encrypt value))
         (println (decrypt value))))))
-
-(when (.contains (first *command-line-args*) *source-path*)
-  (apply -main (rest *command-line-args*)))
