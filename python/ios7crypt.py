@@ -5,6 +5,7 @@
 import os
 import sys
 from getopt import getopt
+from contracts import *
 
 XLAT = [
     0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
@@ -17,6 +18,7 @@ XLAT = [
 ]
 
 
+@contract(password='str')
 def encrypt(password):
     seed = ord(os.urandom(1)) % 16
     return '%02d%s' % (seed, ''.join(
@@ -26,6 +28,7 @@ def encrypt(password):
     )
 
 
+@contract(h='str')
 def decrypt(h):
     seed, h = int(h[:2]), h[2:]
     cipher_bytes = [int(h[i:i + 2], 16) for i in range(0, len(h), 2)]
