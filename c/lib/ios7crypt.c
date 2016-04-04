@@ -10,7 +10,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "../qc/qc.h"
+#include "../qc/lib/qc.h"
 #include "ios7crypt.h"
 
 int xlat[] = {
