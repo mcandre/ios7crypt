@@ -61,8 +61,6 @@ def main():
     test_mode = 'TEST'
 
     mode = encrypt_mode
-    password = ''
-    h = ''
 
     optlist, args = [], []
 
