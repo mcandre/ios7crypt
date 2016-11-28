@@ -1,5 +1,4 @@
-#ifndef IOS7CRYPT_H
-#define IOS7CRYPT_H
+#pragma once
 
 // Copyright (C) YelloSoft
 
@@ -13,4 +12,3 @@ static void usage(string const program);
 string encrypt(string const password);
 string decrypt(string const hash);
 
-#endif
