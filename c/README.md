@@ -1,3 +1,9 @@
+# DEPRECATED
+
+See https://github.com/mcandre/go-ios7crypt
+
+Robust C code requires vigilance, whereas Go automatically solves most of these issues on behalf of the programmer.
+
 # ios7crypt/c
 
 IOS7Crypt password encrypter/decrypter in C
