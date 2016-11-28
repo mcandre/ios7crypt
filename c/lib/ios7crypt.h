@@ -1,3 +1,5 @@
+#pragma once
+
 /* Copyright 2005-2011 Andrew Pennebaker */
 
 extern int xlat[];
