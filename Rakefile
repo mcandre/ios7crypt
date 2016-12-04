@@ -36,13 +36,28 @@ task :pep8 => [] do
   sh 'find . -name node_modules -prune -o -name bower_components -prune -o -name "*.py" -exec pep8 {} \\;'
 end
 
+task :shlint => [] do
+  sh 'find . \( -wholename \'*/node_modules*\' \) -prune -o -type f \( -name \'*.sh\' -o -name \'*.bashrc*\' -o -name \'.*profile*\' -o -name \'*.envrc*\' \) -print | xargs shlint'
+end
+
+task :checkbashisms => [] do
+  sh 'find . \( -wholename \'*/node_modules*\' \) -prune -o -type f \( -name \'*.sh\' -o -name \'*.bashrc*\' -o -name \'.*profile*\' -o -name \'*.envrc*\' \) -print | xargs checkbashisms -n -p'
+end
+
+task :shellcheck => [] do
+  sh 'find . \( -wholename \'*/node_modules*\' \) -prune -o -type f \( -name \'*.sh\' -o -name \'*.bashrc*\' -o -name \'.*profile*\' -o -name \'*.envrc*\' \) -print | xargs shellcheck'
+end
+
 task :lint => [
   :flog,
   :churn,
   :lili,
   :editorconfig,
   :astyle_dry,
-  :pep8
+  :pep8,
+  :shlint,
+  :checkbashisms,
+  :shellcheck
 ] do
 end
 
