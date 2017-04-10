@@ -52,7 +52,7 @@ fn xor(tp : (&u8, &u8)) -> u8 {
   return (*a) ^ (*b);
 }
 
-fn encrypt(password : String) -> String {
+fn encrypt(password : &str) -> String {
   let mut rng = rand::thread_rng();
 
   let seed : usize = rng.gen_range(0, 16);
@@ -69,12 +69,12 @@ fn encrypt(password : String) -> String {
 
   let hexpairs : Vec<String> = ciphertext.iter().map(|cipherbyte| format!("{:02x}", cipherbyte)).collect();
 
-  let hexdata : String = hexpairs.join("");
+  let hexdata : String = hexpairs.concat();
 
   return format!("{:02}{}", seed, hexdata);
 }
 
-fn decrypt(hash : String) -> String {
+fn decrypt(hash : &str) -> String {
   if hash.len() < 2 {
     return "".to_string();
   }
@@ -110,6 +110,11 @@ fn decrypt(hash : String) -> String {
   }
 }
 
+#[test]
+fn smoketest() {
+  assert_eq!(decrypt("1308181c00091d"), "monkey");
+}
+
 fn usage(brief : &String, opts : &getopts::Options) {
     println!("{}", (*opts).usage(brief));
     process::exit(0);
@@ -136,18 +141,14 @@ fn main() {
   let optmatches : getopts::Matches = optresult.unwrap();
 
   if optmatches.opt_present("e") || optmatches.opt_present("encrypt") {
-    let password : String = optmatches.opt_str("encrypt").unwrap();
+    let password = optmatches.opt_str("encrypt").unwrap();
 
-    let hash : String = encrypt(password);
-
-    println!("{}", hash);
+    println!("{}", encrypt(&password));
   }
   else if optmatches.opt_present("d") || optmatches.opt_present("decrypt") {
-    let hash : String = optmatches.opt_str("decrypt").unwrap();
+    let hash = optmatches.opt_str("decrypt").unwrap();
 
-    let password : String = decrypt(hash);
-
-    println!("{}", password);
+    println!("{}", decrypt(&hash));
   }
   else {
     usage(&brief, &opts);
