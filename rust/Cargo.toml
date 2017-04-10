@@ -1,9 +1,0 @@
-[package]
-
-name = "ios7crypt"
-version = "0.0.1"
-authors = ["Andrew Pennebaker <andrew.pennebaker@gmail.com>"]
-
-[dependencies]
-rand = "0.3.15"
-getopts = "0.2.14"
