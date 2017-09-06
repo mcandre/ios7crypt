@@ -17,11 +17,3 @@ Cisco routers have traditionally used an extremely weak encryption algorithm for
 Cisco has [acknowledged](http://www.cisco.com/en/US/tech/tk59/technologies_tech_note09186a00809d38a7.shtml) this insecurity.
 
 Herein are contained proof of concept decryption programs in a multitude of programming languages, not intended for any malicious hacking but for research purposes only.
-
-# HOMEPAGE
-
-http://www.yellosoft.us/ios7crypt
-
-# LIVE WEB APP
-
-http://ios7.yellosoft.us/

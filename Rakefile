@@ -48,6 +48,10 @@ task :shellcheck => [] do
   sh 'find . \( -wholename \'*/node_modules*\' -o -name \'*.bat\' \) -prune -o -type f \( -name \'*.sh\' -o -name \'*.bashrc*\' -o -name \'.*profile*\' -o -name \'*.envrc*\' \) -print | xargs shellcheck'
 end
 
+task :funk => [] do
+  sh 'funk .'
+end
+
 task :lint => [
   :flog,
   :churn,
@@ -57,7 +61,8 @@ task :lint => [
   :pep8,
   :shlint,
   :checkbashisms,
-  :shellcheck
+  :shellcheck,
+  :funk
 ] do
 end
 
