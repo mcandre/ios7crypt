@@ -3,161 +3,161 @@
 #library("ios7crypt");
 
 var xlatPrime = const [
-  0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
-  0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
-  0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
-  0x55, 0x42, 0x73, 0x67, 0x76, 0x63, 0x61, 0x36,
-  0x39, 0x38, 0x33, 0x34, 0x6e, 0x63, 0x78, 0x76,
-  0x39, 0x38, 0x37, 0x33, 0x32, 0x35, 0x34, 0x6b,
-  0x3b, 0x66, 0x67, 0x38, 0x37
+    0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
+    0x41, 0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72,
+    0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
+    0x55, 0x42, 0x73, 0x67, 0x76, 0x63, 0x61, 0x36,
+    0x39, 0x38, 0x33, 0x34, 0x6e, 0x63, 0x78, 0x76,
+    0x39, 0x38, 0x37, 0x33, 0x32, 0x35, 0x34, 0x6b,
+    0x3b, 0x66, 0x67, 0x38, 0x37
 ];
 
 xlat(index, len) {
-  if (len < 1) {
-    return [];
-  }
-  else {
-    var i = (index % xlatPrime.length).toInt();
+    if (len < 1) {
+        return [];
+    }
+    else {
+        var i = (index % xlatPrime.length).toInt();
 
-    var head = xlatPrime[i];
+        var head = xlatPrime[i];
 
-    var res = [head];
+        var res = [head];
 
-    var tail = xlat(index + 1, len - 1);
+        var tail = xlat(index + 1, len - 1);
 
-    res.addAll(tail);
+        res.addAll(tail);
 
-    return res;
-  }
+        return res;
+    }
 }
 
 encrypt(password) {
-  if (password.length < 1) {
-    return "";
-  }
-
-  var seed = (Math.random() * 16).toInt();
-
-  var keys = xlat(seed, password.length);
-
-  var plaintext = [];
-
-  for (var i = 0; i < password.length; i++) {
-    plaintext.add(password.charCodeAt(i));
-  }
-
-  var ciphertext = [];
-
-  for (var i = 0; i < plaintext.length; i++) {
-    ciphertext.add(plaintext[i] ^ keys[i]);
-  }
-
-  var seedpair = "${seed}";
-
-  if (seedpair.length < 2) {
-    seedpair = "0${seedpair}";
-  }
-
-  var hexpairs = [];
-
-  for (var i = 0; i < ciphertext.length; i++) {
-    var pair = ciphertext[i].toRadixString(16);
-
-    if (pair.length < 2) {
-      pair = "0$pair";
+    if (password.length < 1) {
+        return "";
     }
 
-    hexpairs.add(pair);
-  }
+    var seed = (Math.random() * 16).toInt();
 
-  return "${seedpair}${Strings.concatAll(hexpairs).toLowerCase()}";
+    var keys = xlat(seed, password.length);
+
+    var plaintext = [];
+
+    for (var i = 0; i < password.length; i++) {
+        plaintext.add(password.charCodeAt(i));
+    }
+
+    var ciphertext = [];
+
+    for (var i = 0; i < plaintext.length; i++) {
+        ciphertext.add(plaintext[i] ^ keys[i]);
+    }
+
+    var seedpair = "${seed}";
+
+    if (seedpair.length < 2) {
+        seedpair = "0${seedpair}";
+    }
+
+    var hexpairs = [];
+
+    for (var i = 0; i < ciphertext.length; i++) {
+        var pair = ciphertext[i].toRadixString(16);
+
+        if (pair.length < 2) {
+            pair = "0$pair";
+        }
+
+        hexpairs.add(pair);
+    }
+
+    return "${seedpair}${Strings.concatAll(hexpairs).toLowerCase()}";
 }
 
 pairs(text) {
-  var ps = [text.substring(0, 2)];
+    var ps = [text.substring(0, 2)];
 
-  if (text.length > 3) {
-    ps.addAll(pairs(text.substring(2)));
-  }
+    if (text.length > 3) {
+        ps.addAll(pairs(text.substring(2)));
+    }
 
-  return ps;
+    return ps;
 }
 
 decrypt(hash) {
-  if (hash.length < 4) {
-    return "";
-  }
+    if (hash.length < 4) {
+        return "";
+    }
 
-  var seedStr = hash.substring(0, 2);
-  var hashStr = hash.substring(2);
+    var seedStr = hash.substring(0, 2);
+    var hashStr = hash.substring(2);
 
-  var seed = Math.parseInt(seedStr);
+    var seed = Math.parseInt(seedStr);
 
-  var hexpairs = pairs(hashStr);
+    var hexpairs = pairs(hashStr);
 
-  var ciphertext = [];
+    var ciphertext = [];
 
-  for (var i = 0; i < hexpairs.length; i++) {
-    var cipher = Math.parseInt("0x" + hexpairs[i]);
-    ciphertext.add(cipher);
-  }
+    for (var i = 0; i < hexpairs.length; i++) {
+        var cipher = Math.parseInt("0x" + hexpairs[i]);
+        ciphertext.add(cipher);
+    }
 
-  var keys = xlat(seed, ciphertext.length);
+    var keys = xlat(seed, ciphertext.length);
 
-  var plaintext = [];
+    var plaintext = [];
 
-  for (var i = 0; i < ciphertext.length; i++) {
-    var plain = ciphertext[i] ^ keys[i];
-    plaintext.add(plain);
-  }
+    for (var i = 0; i < ciphertext.length; i++) {
+        var plain = ciphertext[i] ^ keys[i];
+        plaintext.add(plain);
+    }
 
-  var password = new String.fromCharCodes(plaintext);
+    var password = new String.fromCharCodes(plaintext);
 
-  return password;
+    return password;
 }
 
 test() {
-  // ...
+    // ...
 }
 
 usage(program) {
-  print("Usage: ${program} [options]");
-  print("-e --encrypt <password>\tEncrypt");
-  print("-d --decrypt <hash>\tDecrypt");
-  print("-t --test\t\tUnit test");
-  print("-h --help\t\tUsage");
+    print("Usage: ${program} [options]");
+    print("-e --encrypt <password>\tEncrypt");
+    print("-d --decrypt <hash>\tDecrypt");
+    print("-t --test\t\tUnit test");
+    print("-h --help\t\tUsage");
 
-  exit(0);
+    exit(0);
 }
 
 main() {
-  var program = new Options().script;
-  var args = new Options().arguments;
+    var program = new Options().script;
+    var args = new Options().arguments;
 
-  if (args.length < 1) {
-    usage(program);
-  }
-
-  if (args[0] == "-e" || args[0] == "--encrypt") {
-    if (args.length < 2) {
-      usage(program);
+    if (args.length < 1) {
+        usage(program);
     }
 
-    var password = args[1];
-    print(encrypt(password));
-  }
-  else if (args[0] == "-d" || args[0] == "--decrypt") {
-    if (args.length < 2) {
-      usage(program);
-    }
+    if (args[0] == "-e" || args[0] == "--encrypt") {
+        if (args.length < 2) {
+            usage(program);
+        }
 
-    var hash = args[1];
-    print(decrypt(hash));
-  }
-  else if (args[0] == "-t" || args[0] == "--test") {
-    test();
-  }
-  else {
-    usage(program);
-  }
+        var password = args[1];
+        print(encrypt(password));
+    }
+    else if (args[0] == "-d" || args[0] == "--decrypt") {
+        if (args.length < 2) {
+            usage(program);
+        }
+
+        var hash = args[1];
+        print(decrypt(hash));
+    }
+    else if (args[0] == "-t" || args[0] == "--test") {
+        test();
+    }
+    else {
+        usage(program);
+    }
 }

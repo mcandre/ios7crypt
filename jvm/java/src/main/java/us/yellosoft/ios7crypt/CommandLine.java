@@ -6,8 +6,8 @@ import org.docopt.Docopt;
 
 /** CLI for IOS7Crypt */
 public final class CommandLine {
-  /** DocOpt usage spec */
-  public static final String DOC =
+    /** DocOpt usage spec */
+    public static final String DOC =
     "Usage:\n" +
     "  ios7crypt --encrypt=<password>\n" +
     "  ios7crypt --decrypt=<hash>\n" +
@@ -17,19 +17,19 @@ public final class CommandLine {
     "  -d --decrypt=<hash>      Decrypt a hash\n" +
     "  -h --help                Print usage information";
 
-  /** Utility class */
-  private CommandLine() {}
+    /** Utility class */
+    private CommandLine() {}
 
-  /** Execute CLI
-      @param args CLI flags
-   */
-  public static void main(final String[] args) {
-    Map<String, Object> options = new Docopt(DOC).withVersion("0.0.1").parse(args);
+        /** Execute CLI
+        @param args CLI flags
+        */
+        public static void main(final String[] args) {
+            Map<String, Object> options = new Docopt(DOC).withVersion("0.0.1").parse(args);
 
-    if ((String) options.get("--encrypt") != null) {
-      System.out.println(IOS7Crypt.encrypt((String) options.get("--encrypt")));
-    } else if ((String) options.get("--decrypt") != null) {
-      System.out.println(IOS7Crypt.decrypt((String) options.get("--decrypt")));
+            if ((String) options.get("--encrypt") != null) {
+                System.out.println(IOS7Crypt.encrypt((String) options.get("--encrypt")));
+            } else if ((String) options.get("--decrypt") != null) {
+                System.out.println(IOS7Crypt.decrypt((String) options.get("--decrypt")));
+            }
+        }
     }
-  }
-}
