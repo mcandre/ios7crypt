@@ -1,1 +1,1 @@
-PyContracts==1.7.6
+PyContracts>=1.7.6,<2.0

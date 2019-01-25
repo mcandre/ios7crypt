@@ -22,8 +22,9 @@ Herein are contained proof of concept decryption programs in a multitude of prog
 
 ## Optional
 
-* [make](https://www.gnu.org/software/make/)
 * [GNU findutils](https://www.gnu.org/software/findutils/)
-* [stank](https://github.com/mcandre/stank) (e.g. `go get github.com/mcandre/stank/...`)
-* [Python](https://www.python.org) 3+ (for yamllint)
-* [Node.js](https://nodejs.org/en/) (for eclint)
+* [Python](https://www.python.org/) 3+
+* [GHC Haskell](https://www.haskell.org/) 8+
+* [Go](https://golang.org/) 1.9+
+* [GNU make](https://www.gnu.org/software/make/)
+* [checkbashisms](https://sourceforge.net/projects/checkbaskisms/)
