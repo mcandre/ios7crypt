@@ -25,8 +25,8 @@ int xlat[] = {
 
 int XLAT_SIZE = 53;
 
-static void __attribute__((noreturn)) usage(string const program) {
-    cout << "Usage: " << program << " [options]" << endl << endl <<
+static void __attribute__((noreturn)) usage(char** const argv) {
+    cout << "Usage: " << argv[0] << " [options]" << endl << endl <<
         "-e <password>" << endl <<
         "-d <hash>" << endl <<
         "-t unit test" << endl;
@@ -72,12 +72,12 @@ string decrypt(string const hash) {
 
 int main(int const argc, char** const argv) {
     if (argc < 2) {
-        usage(argv[0]);
+        usage(argv);
     }
 
     if (strcmp(argv[1], "-e") == 0) {
         if (argc < 3) {
-            usage(argv[0]);
+            usage(argv);
         }
 
         srand(uint(time(nullptr)));
@@ -87,12 +87,12 @@ int main(int const argc, char** const argv) {
 
     if (strcmp(argv[1], "-d") == 0) {
         if (argc < 3) {
-            usage(argv[0]);
+            usage(argv);
         }
 
         cout << decrypt(argv[2]) << endl;
         return 0;
     }
 
-    usage(argv[0]);
+    usage(argv);
 }
