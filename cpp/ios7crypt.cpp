@@ -1,16 +1,18 @@
 // Copyright (C) YelloSoft
 
-#include <string>
-#include <sstream>
+#include "ios7crypt.hh"
+
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
-#include "ios7crypt.h"
+#include <sstream>
+#include <string>
+
 using std::cout;
 using std::endl;
+using std::ios;
 using std::string;
 using std::stringstream;
-using std::ios;
 using std::stoi;
 
 int xlat[] = {
@@ -26,37 +28,29 @@ int xlat[] = {
 int XLAT_SIZE = 53;
 
 static void __attribute__((noreturn)) usage(string const program) {
-    cout << "Usage: " << program << " [options]" << endl << endl;
-    cout << "-e <passwords>" << endl;
-    cout << "-d <hashes>" << endl;
-    cout << "-t unit test" << endl;
-
-    exit(0);
+    cout << "Usage: " << program << " [options]" << endl << endl <<
+        "-e <password>" << endl <<
+        "-d <hash>" << endl <<
+        "-t unit test" << endl;
+    exit(1);
 }
 
 string encrypt(string const password) {
     stringstream hash;
 
     if (password.length() > 0) {
-        size_t password_length = password.length();
-
-        int seed;
-
-        size_t i;
-
-        seed = rand() % 16;
+        int seed = rand() % 16;
 
         hash.setf(ios::dec, ios::basefield);
         hash.width(2);
         hash.fill('0');
         hash << seed;
 
-        for (i = 0; i < password_length; i++) {
+        for (auto &p : password) {
             hash.setf(ios::hex, ios::basefield);
             hash.width(2);
             hash.fill('0');
-
-            hash << (unsigned int) (password[i] ^ xlat[(seed++) % XLAT_SIZE]);
+            hash << uint(p ^ xlat[(seed++) % XLAT_SIZE]);
         }
     }
 
@@ -67,14 +61,11 @@ string decrypt(string const hash) {
     stringstream password;
 
     if (hash.length() > 3) {
-        int seed = stoi(hash.substr(0, 2), NULL, 10);
+        int seed = stoi(hash.substr(0, 2), nullptr, 10);
 
-        size_t i;
-
-        for (i = 2; i < hash.length(); i += 2) {
-            int c = stoi(hash.substr(i, 2), NULL, 16);
-
-            password << (char) (c ^ xlat[(seed++) % XLAT_SIZE]);
+        for (size_t i = 2; i < hash.length(); i += 2) {
+            int c = stoi(hash.substr(i, 2), nullptr, 16);
+            password << char(c ^ xlat[(seed++) % XLAT_SIZE]);
         }
     }
 
@@ -82,36 +73,22 @@ string decrypt(string const hash) {
 }
 
 int main(int const argc, char** const argv) {
-    int i;
-
-    srand((unsigned int) time(NULL));
-
     if (argc < 2) {
         usage(argv[0]);
-    }
-    else if (strcmp(argv[1], "-e") == 0) {
+    } else if (strcmp(argv[1], "-e") == 0) {
         if (argc < 3) {
             usage(argv[0]);
         }
 
-        for (i = 2; i < argc; i++) {
-            string password = argv[i];
-
-            cout << encrypt(password) << endl;
-        }
-    }
-    else if (strcmp(argv[1], "-d") == 0) {
+        srand(uint(time(nullptr)));
+        cout << encrypt(argv[2]) << endl;
+    } else if (strcmp(argv[1], "-d") == 0) {
         if (argc < 3) {
             usage(argv[0]);
         }
 
-        for (i = 2; i < argc; i++) {
-            string hash = argv[i];
-
-            cout << decrypt(hash) << endl;
-        }
-    }
-    else {
+        cout << decrypt(argv[2]) << endl;
+    } else {
         usage(argv[0]);
     }
 
