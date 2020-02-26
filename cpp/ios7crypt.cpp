@@ -73,22 +73,26 @@ string decrypt(string const hash) {
 int main(int const argc, char** const argv) {
     if (argc < 2) {
         usage(argv[0]);
-    } else if (strcmp(argv[1], "-e") == 0) {
+    }
+
+    if (strcmp(argv[1], "-e") == 0) {
         if (argc < 3) {
             usage(argv[0]);
         }
 
         srand(uint(time(nullptr)));
         cout << encrypt(argv[2]) << endl;
-    } else if (strcmp(argv[1], "-d") == 0) {
+        return 0;
+    }
+
+    if (strcmp(argv[1], "-d") == 0) {
         if (argc < 3) {
             usage(argv[0]);
         }
 
         cout << decrypt(argv[2]) << endl;
-    } else {
-        usage(argv[0]);
+        return 0;
     }
 
-    return 0;
+    usage(argv[0]);
 }
