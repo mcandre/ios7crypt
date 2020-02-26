@@ -2,8 +2,6 @@
 
 #include "ios7crypt.hh"
 
-#include <ctime>
-#include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -11,9 +9,9 @@
 using std::cout;
 using std::endl;
 using std::ios;
+using std::stoi;
 using std::string;
 using std::stringstream;
-using std::stoi;
 
 int xlat[] = {
     0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f,
@@ -39,7 +37,7 @@ string encrypt(string const password) {
     stringstream hash;
 
     if (password.length() > 0) {
-        int seed = rand() % 16;
+        auto seed = rand() % 16;
 
         hash.setf(ios::dec, ios::basefield);
         hash.width(2);
@@ -61,10 +59,10 @@ string decrypt(string const hash) {
     stringstream password;
 
     if (hash.length() > 3) {
-        int seed = stoi(hash.substr(0, 2), nullptr, 10);
+        auto seed = stoi(hash.substr(0, 2), nullptr, 10);
 
         for (size_t i = 2; i < hash.length(); i += 2) {
-            int c = stoi(hash.substr(i, 2), nullptr, 16);
+            auto c = stoi(hash.substr(i, 2), nullptr, 16);
             password << char(c ^ xlat[(seed++) % XLAT_SIZE]);
         }
     }
