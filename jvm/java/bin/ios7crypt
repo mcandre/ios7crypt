@@ -1,2 +1,5 @@
 #!/bin/sh
+set -eu
+IFS="$(printf '%b_' '\n\t ')"
+IFS="${IFS%_}"
 java -cp "${0%/*}"/../build/libs/ios7crypt-all.jar us.yellosoft.ios7crypt.CommandLine "$@"
