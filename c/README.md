@@ -1,52 +1,21 @@
-# DEPRECATED
-
-See https://github.com/mcandre/go-ios7crypt
-
-Robust C code requires vigilance, whereas Go automatically solves most of these issues on behalf of the programmer.
-
 # ios7crypt/c
 
 IOS7Crypt password encrypter/decrypter in C
 
 # EXAMPLE
 
-```
-$ git submodule init
-$ git submodule update
-$ cd qc/
-$ cmake . && make
-$ cd ../
-
-$ cmake . && make
-
-$ bin/ios7crypt -e monkey
+```console
+$ ios7crypt -e monkey
 0941410712000e
 
-$ bin/ios7crypt -d 050609012a4957
+$ ios7crypt -d 050609012a4957
 monkey
-
-$ bin/ios7crypt -t
-+++ OK, passed 100 tests.
 ```
 
-# REQUIREMENTS
+# RUNTIME REQUIREMENTS
 
-## Compiler Collection
+(None)
 
-* [clang](http://clang.llvm.org/)
+# CONTRIBUTING
 
-E.g. from Xcode
-
-* [gcc](https://gcc.gnu.org/)
-
-E.g. from Apt, Dnf, Homebrew, MinGW, Strawberry Perl
-
-## CMake
-
-* [cmake](https://cmake.org/)
-
-E.g. `brew install cmake`
-
-## Optional
-
-* [Python](https://www.python.org/) 2+ (for infer)
+For more details on developing tinyrick itself, see [DEVELOPMENT.md](DEVELOPMENT.md).

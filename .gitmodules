@@ -1,3 +1,0 @@
-[submodule "qc"]
-	path = c/qc
-	url = https://github.com/mcandre/qc.git
