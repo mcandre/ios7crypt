@@ -29,7 +29,7 @@ void usage(const char *program) {
     printf("-d <hashes>\n");
 }
 
-void encrypt(unsigned int prng_seed, const char *password, char *hash) {
+void encrypt(unsigned int prng_seed, char *password, char *hash) {
     if (password != NULL && hash != NULL) {
         size_t password_length = strlen(password);
 
@@ -39,7 +39,7 @@ void encrypt(unsigned int prng_seed, const char *password, char *hash) {
 
         size_t i;
 
-        for (i = 0; i < password_length; i++) {
+        for (i = 0; i < password_length && i < 11; i++) {
             (void) snprintf(
                 hash + 2 + i * 2, 3,
                 "%02x",
@@ -49,69 +49,44 @@ void encrypt(unsigned int prng_seed, const char *password, char *hash) {
     }
 }
 
-char *decrypt(const char *hash, char *password) {
+char* decrypt(char *hash, char *password) {
     if (hash == NULL || password == NULL) {
         return NULL;
     }
 
-    char *pair = (char*) calloc(3, sizeof(char));
-
-    if (pair == NULL) {
-        fprintf(stderr, "out of memory\n");
-        return NULL;
-    }
-
-    strncat(pair, hash, 2);
+    char pair[3];
+    memset(pair, 0, sizeof(pair));
+    strncpy(pair, hash, 2);
 
     long seed = strtol(pair, NULL, 10);
     int index = 0;
 
     for (size_t i = 2; i < strlen(hash); i += 2) {
-        pair[0] = pair[1] = '\0';
-        strncat(pair, hash + i, 2);
+        memset(pair, 0, sizeof(pair));
+        strncpy(pair, hash + i, 2);
         int c = (int) strtol(pair, NULL, 16);
         password[index++] = (char)(c ^ xlat[(seed++) % XLAT_SIZE]);
     }
 
-    free(pair);
     return password;
 }
 
 #ifdef __SANITIZE_ADDRESS__
-bool prop_reversible(const char *password) {
-    char *hash = (char*) calloc(
-        (size_t) strlen(password) * 2 + 3,
-        sizeof(char)
-    );
-
-    if (hash == NULL) {
-        fprintf(stderr, "out of memory\n");
-        return false;
-    }
+bool prop_reversible(char *password) {
+    char hash[25];
+    memset(hash, 0, sizeof(hash));
 
     unsigned int prng_seed = (unsigned int) time(NULL);
     encrypt(prng_seed, password, hash);
 
-    char *password2 = (char*) calloc(
-        (size_t) strlen(hash) / 2,
-        sizeof(char)
-    );
+    char password2[12];
+    memset(password2, 0, sizeof(password2));
 
-    if (password2 == NULL) {
-        fprintf(stderr, "out of memory\n");
-        free(hash);
-        return false;
-    }
-
-    if (decrypt(hash, password2)) {
-        free(password2);
-        free(hash);
+    if (decrypt(hash, password2) == NULL) {
         return false;
     }
 
     int cmp = strcmp(password, password2);
-    free(password2);
-    free(hash);
     return cmp == 0;
 }
 
@@ -122,18 +97,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
         len = 11;
     }
 
-    char *password = calloc(len+1, sizeof(char));
-
-    if (password == NULL) {
-        return 0;
-    }
-
-    for (size_t i = 0; i < len; i++) {
-        password[i] = (char) (Data[i]);
-    }
-
+    char password[12];
+    memset(password, 0, sizeof(password));
+    memcpy(password, Data, len);
     prop_reversible(password);
-    free(password);
     return 0;
 }
 #else
@@ -156,22 +123,13 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
         }
 
+        char hash[25];
+        memset(hash, 0, sizeof(hash));
+
         for (int i = 2; i < argc; i++) {
             char *password = argv[i];
-
-            char *hash = (char *) calloc(
-                (size_t) strlen(password) * 2 + 3,
-                sizeof(char)
-            );
-
-            if (hash == NULL) {
-                fprintf(stderr, "out of memory\n");
-                return EXIT_FAILURE;
-            }
-
             encrypt(prng_seed, password, hash);
             printf("%s\n", hash);
-            free(hash);
         }
 
         return EXIT_SUCCESS;
@@ -181,26 +139,17 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
         }
 
+        char password[11];
+        memset(password, 0, sizeof(password));
+
         for (int i = 2; i < argc; i++) {
             char *hash = argv[i];
 
-            char *password = (char *) calloc(
-                (size_t) strlen(hash) / 2,
-                sizeof(char)
-            );
-
-            if (password == NULL) {
-                fprintf(stderr, "out of memory\n");
-                return EXIT_FAILURE;
-            }
-
             if (decrypt(hash, password) == NULL) {
-                free(password);
                 return EXIT_FAILURE;
             }
 
             printf("%s\n", password);
-            free(password);
         }
 
         return EXIT_SUCCESS;
