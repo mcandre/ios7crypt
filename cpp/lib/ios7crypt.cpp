@@ -2,6 +2,7 @@
 
 #include "ios7crypt.hh"
 
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -25,19 +26,17 @@ int xlat[] = {
 
 int XLAT_SIZE = 53;
 
-static void __attribute__((noreturn)) usage(char** const argv) {
+void usage(const char **argv) {
     cout << "Usage: " << argv[0] << " [options]" << endl << endl <<
         "-e <password>" << endl <<
-        "-d <hash>" << endl <<
-        "-t unit test" << endl;
-    exit(1);
+        "-d <hash>" << endl;
 }
 
-string encrypt(string const password) {
+string encrypt(uint prng_seed, const string password) {
     stringstream hash;
 
     if (password.length() > 0) {
-        auto seed = rand() % 16;
+        auto seed = rand_r(&prng_seed) % 16;
 
         hash.setf(ios::dec, ios::basefield);
         hash.width(2);
@@ -55,7 +54,7 @@ string encrypt(string const password) {
     return hash.str();
 }
 
-string decrypt(string const hash) {
+string decrypt(const string hash) {
     stringstream password;
 
     if (hash.length() > 3) {
@@ -70,9 +69,40 @@ string decrypt(string const hash) {
     return password.str();
 }
 
-int main(int const argc, char** const argv) {
+#ifdef __SANITIZE_ADDRESS__
+bool prop_reversible(string password) {
+    uint prng_seed = uint(time(nullptr));
+    string hash = encrypt(prng_seed, password);
+    string password2 = decrypt(hash);
+    return password.compare(password2) == 0;
+}
+
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+    size_t len = Size;
+
+    if (len > 11) {
+        len = 11;
+    }
+
+    char password_buf[12];
+    memset(password_buf, 0, sizeof(password_buf));
+    memcpy(password_buf, Data, len);
+    string password = string(password_buf);
+    prop_reversible(password);
+    return 0;
+}
+#else
+int main(const int argc, const char **argv) {
+    uint prng_seed = uint(time(nullptr));
+
     if (argc < 2) {
         usage(argv);
+        exit(EXIT_FAILURE);
+    }
+
+    if (strcmp(argv[1], "-h") == 0) {
+        usage(argv);
+        exit(EXIT_SUCCESS);
     }
 
     if (strcmp(argv[1], "-e") == 0) {
@@ -80,19 +110,21 @@ int main(int const argc, char** const argv) {
             usage(argv);
         }
 
-        srand(uint(time(nullptr)));
-        cout << encrypt(argv[2]) << endl;
-        return 0;
+        cout << encrypt(prng_seed, argv[2]) << endl;
+        return EXIT_SUCCESS;
     }
 
     if (strcmp(argv[1], "-d") == 0) {
         if (argc < 3) {
             usage(argv);
+            exit(EXIT_FAILURE);
         }
 
         cout << decrypt(argv[2]) << endl;
-        return 0;
+        return EXIT_SUCCESS;
     }
 
     usage(argv);
+    exit(EXIT_FAILURE);
 }
+#endif
