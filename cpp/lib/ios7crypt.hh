@@ -4,6 +4,10 @@
 
 #include <string>
 
+#ifdef __APPLE__
+#include <sys/types.h>
+#endif
+
 using std::string;
 
 extern int xlat[];

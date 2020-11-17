@@ -118,8 +118,11 @@ else()
     add_custom_target(leaks DEPENDS valgrind)
 endif()
 
-if(CMAKE_C_COMPILER_ID MATCHES "Clang")
-    add_executable(fuzz-ios7crypt lib/ios7crypt.cpp)
+if(
+    CMAKE_C_COMPILER_ID MATCHES "Clang" AND
+    NOT CMAKE_SYSTEM_NAME MATCHES "Darwin"
+)
+    add_executable(fuzz-ios7crypt lib/ios7crypt.c)
     set_target_properties(fuzz-ios7crypt PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "debug"
         COMPILE_FLAGS "-g -fsanitize=address,fuzzer"

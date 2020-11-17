@@ -9,7 +9,7 @@
 extern int xlat[];
 extern int XLAT_SIZE;
 
-void usage(const char *program);
+void usage(char **argv);
 void encrypt(unsigned int seed, char *password, char *hash);
 char* decrypt(char *hash, char *password);
 

@@ -23,8 +23,8 @@ int xlat[] = {
 
 int XLAT_SIZE = 53;
 
-void usage(const char *program) {
-    printf("Usage: %s [options]\n\n", program);
+void usage(char **argv) {
+    printf("Usage: %s [options]\n\n", argv[0]);
     printf("-e <passwords>\n");
     printf("-d <hashes>\n");
 }
@@ -108,18 +108,18 @@ int main(int argc, char **argv) {
     unsigned int prng_seed = (unsigned int) time(NULL);
 
     if (argc < 2) {
-        usage(argv[0]);
+        usage(argv);
         return EXIT_FAILURE;
     }
 
     if (strcmp(argv[1], "-h") == 0) {
-        usage(argv[0]);
+        usage(argv);
         return EXIT_SUCCESS;
     }
 
     if (strcmp(argv[1], "-e") == 0) {
         if (argc < 3) {
-            usage(argv[0]);
+            usage(argv);
             return EXIT_FAILURE;
         }
 
@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
         return EXIT_SUCCESS;
     } else if (strcmp(argv[1], "-d") == 0) {
         if (argc < 3) {
-            usage(argv[0]);
+            usage(argv);
             return EXIT_FAILURE;
         }
 
@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
         return EXIT_SUCCESS;
     }
 
-    usage(argv[0]);
+    usage(argv);
     return EXIT_FAILURE;
 }
 #endif
