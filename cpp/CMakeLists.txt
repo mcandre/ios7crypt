@@ -122,13 +122,24 @@ if(
     CMAKE_C_COMPILER_ID MATCHES "Clang" AND
     NOT CMAKE_SYSTEM_NAME MATCHES "Darwin"
 )
-    add_executable(fuzz-ios7crypt lib/ios7crypt.c)
-    set_target_properties(fuzz-ios7crypt PROPERTIES
+    set(SANITIZE_TIMEOUT_SEC 10)
+    set(FUZZER_RUNTIME_FLAGS "-max_total_time=${SANITIZE_TIMEOUT_SEC}")
+
+    add_executable(fuzz-ios7crypt lib/ios7crypt.cpp)
+
+    set(SANITIZE_RULES "fuzzer,address,undefined")
+    set(SANITIZE_FLAGS "-fsanitize=${SANITIZE_RULES} -fno-sanitize-recover=${SANITIZE_RULES}")
+
+    set_target_properties(
+        fuzz-ios7crypt
+        PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "debug"
-        COMPILE_FLAGS "-g -fsanitize=address,fuzzer"
-        LINK_FLAGS "-fsanitize=address,fuzzer"
-        COMPILE_DEFINITIONS "__SANITIZE_ADDRESS__")
-    add_custom_target(fuzz COMMAND debug/fuzz-ios7crypt -max_total_time=60)
+        COMPILE_FLAGS "-g ${SANITIZE_FLAGS}"
+        LINK_FLAGS "${SANITIZE_FLAGS}"
+        COMPILE_DEFINITIONS "__SANITIZE_ADDRESS__"
+    )
+
+    add_custom_target(fuzz COMMAND debug/fuzz-ios7crypt "${FUZZER_RUNTIME_FLAGS}")
 else()
     add_custom_target(fuzz)
 endif()

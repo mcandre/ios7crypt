@@ -10,8 +10,8 @@ extern int xlat[];
 extern int XLAT_SIZE;
 
 void usage(char **argv);
-void encrypt(unsigned int seed, char *password, char *hash);
-char* decrypt(char *hash, char *password);
+int encrypt(unsigned int seed, char *password, char *hash);
+int decrypt(char *hash, char *password);
 
 #ifdef __SANITIZE_ADDRESS__
 bool prop_reversible(char *password);
