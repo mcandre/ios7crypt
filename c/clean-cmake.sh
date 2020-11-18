@@ -2,12 +2,12 @@
 unset IFS
 set -euf
 
-rm -f crash-* ||
-    rm -rf leak-* ||
-    rm -rf debug ||
-    rm -rf bin ||
-    rm -rf Testing ||
-    rm -f Makefile
+rm -f crash-*
+rm -rf leak-*
+rm -rf debug
+rm -rf bin
+rm -rf Testing
+rm -f Makefile
 
 /usr/bin/find . \
     -iwholename '*cmake*' \
