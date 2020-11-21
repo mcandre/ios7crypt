@@ -1,11 +1,14 @@
 FROM library/debian:buster
 ENV PATH $PATH:/root/.local/bin:/root/sail/bin
+COPY requirements-dev.txt /tmp
 RUN apt-get update && \
     apt-get install -y \
         clang \
         cmake \
         cppcheck \
+        doxygen \
         git \
+        graphviz \
         make \
         python3-pip \
         python3-setuptools \
@@ -20,5 +23,5 @@ RUN apt-get update && \
         /var/cache/apt/pkgcache.bin \
         /var/cache/apt/srcpkgcache.bin && \
     pip3 install wheel && \
-    pip3 install cpplint && \
+    pip3 install -r /tmp/requirements-dev.txt && \
     git clone https://github.com/mcandre/sail.git $HOME/sail

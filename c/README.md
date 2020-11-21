@@ -8,7 +8,7 @@ IOS7Crypt password encrypter/decrypter in C
 $ ios7crypt -e monkey
 0941410712000e
 
-$ ios7crypt -d 050609012a4957
+$ ios7crypt -d "0941410712000e"
 monkey
 ```
 

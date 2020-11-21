@@ -5,7 +5,6 @@ project(ios7crypt)
 
 set(EXECUTABLE_OUTPUT_PATH "bin")
 set(LSB_RELEASE "")
-set(ETC_RELEASE "")
 
 if(MSVC)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
@@ -19,14 +18,13 @@ if(MSVC)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${EXECUTABLE_OUTPUT_PATH}")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
     execute_process(COMMAND lsb_release -a OUTPUT_VARIABLE LSB_RELEASE)
-    execute_process(COMMAND cat /etc/*release* OUTPUT_VARIABLE ETC_RELEASE)
 endif()
 
 set(WINDOWS_C_FLAGS "${CMAKE_C_FLAGS} /O2 /WX /W4 /wd4204")
-
 set(UNIX_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Werror")
 set(GNU_C_FLAGS "${UNIX_C_FLAGS} -std=gnu99 -Wextra -Wall -pedantic")
-set(CLANG_C_FLAGS "${GNU_C_FLAGS} -Wmost -Weverything -Wno-nullability-extension")
+set(LLVM_FLAGS "-Wmost -Weverything -Wno-documentation-unknown-command")
+set(CLANG_C_FLAGS "${GNU_C_FLAGS} ${LLVM_FLAGS}")
 
 if(MSVC)
     set(CMAKE_C_FLAGS "${WINDOWS_C_FLAGS}")
@@ -41,15 +39,17 @@ else()
     set(CMAKE_C_FLAGS "${UNIX_C_FLAGS}")
 endif()
 
-add_executable(ios7crypt lib/ios7crypt.c)
+include_directories(include)
+
+add_executable(ios7crypt src/cmd/ios7crypt/main.c src/ios7crypt.c)
 
 add_test(NAME ios7crypt_encrypt_test COMMAND bin/ios7crypt -e monkey)
-add_test(NAME ios7crypt_decrypt_test COMMAND bin/ios7crypt -d "00091c080f5e12")
+add_test(NAME ios7crypt_decrypt_test COMMAND bin/ios7crypt -d "0941410712000e")
 add_test(NAME ios7crypt_usage_test COMMAND bin/ios7crypt -h)
 
-add_custom_target(cppcheck COMMAND cppcheck -q --enable=all --inline-suppr --suppressions-list=suppressions.cfg -DX_PATH_MAX=1024 --error-exitcode=1 lib)
-add_custom_target(cpplint COMMAND sail lib | xargs -n 1 cpplint)
-add_custom_target(vera++ COMMAND sail lib | xargs -n 1 vera++)
+add_custom_target(cppcheck COMMAND cppcheck -q --enable=all --inline-suppr --suppressions-list=suppressions.cfg -DX_PATH_MAX=1024 --error-exitcode=1 -I include src)
+add_custom_target(cpplint COMMAND sail include src | xargs -n 1 cpplint)
+add_custom_target(vera++ COMMAND sail include src | xargs -n 1 vera++)
 
 # Missing linter ports
 if(
@@ -75,7 +75,7 @@ else()
 endif()
 
 add_custom_target(valgrind_encrypt_test COMMAND valgrind --error-exitcode=1 --leak-check=full bin/ios7crypt -e monkey)
-add_custom_target(valgrind_decrypt_test COMMAND valgrind --error-exitcode=1 --leak-check=full bin/ios7crypt -d "00091c080f5e12")
+add_custom_target(valgrind_decrypt_test COMMAND valgrind --error-exitcode=1 --leak-check=full bin/ios7crypt -d "0941410712000e")
 add_custom_target(valgrind_usage_test COMMAND valgrind --error-exitcode=1 --leak-check=full bin/ios7crypt -h)
 add_custom_target(valgrind DEPENDS valgrind_encrypt_test valgrind_decrypt_test valgrind_usage_test)
 
@@ -116,7 +116,7 @@ if(
     set(SANITIZE_TIMEOUT_SEC 10)
     set(FUZZER_RUNTIME_FLAGS "-max_total_time=${SANITIZE_TIMEOUT_SEC}")
 
-    add_executable(fuzz-ios7crypt lib/ios7crypt.c)
+    add_executable(fuzz-ios7crypt src/cmd/ios7crypt/main.c src/ios7crypt.c)
 
     set(SANITIZE_RULES "fuzzer,address,undefined")
     set(SANITIZE_FLAGS "-fsanitize=${SANITIZE_RULES} -fno-sanitize-recover=${SANITIZE_RULES}")
@@ -134,5 +134,7 @@ if(
 else()
     add_custom_target(fuzz)
 endif()
+
+add_custom_target(doc COMMAND doxygen Doxyfile)
 
 add_custom_target(clean-cmake COMMAND sh clean-cmake.sh)
