@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #ifdef __SANITIZE_ADDRESS__
-bool prop_reversible(char *password);
+bool prop_reversible(char *password, size_t password_len);
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
 #else
 void usage(char **argv);

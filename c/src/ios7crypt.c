@@ -21,48 +21,65 @@ static int xlat[53] = {
     0x3b, 0x66, 0x67, 0x38, 0x37
 };
 
-#define XLAT_LEN (sizeof(xlat)/sizeof(int))
+#define xlat_len (sizeof(xlat)/sizeof(int))
 
-int encrypt(char *hash, unsigned int prng_seed, char *password) {
-    if (password == NULL || hash == NULL) {
+int encrypt(
+    char *hash,
+    size_t hash_size,
+    unsigned int prng_seed,
+    char *password,
+    size_t password_len
+) {
+    if (password_len > 11) {
         return -1;
     }
 
     int seed = rand_r(&prng_seed) % 16;
-    (void) snprintf(hash, sizeof(hash)-1, "%02d", seed);
+    int bytes_written = snprintf(hash, sizeof(hash)-1, "%02d", seed);
 
-    size_t len = strlen(password);
-
-    if (len > 11) {
-        len = 11;
+    if (bytes_written < 0 || bytes_written > (int) hash_size) {
+        return bytes_written;
     }
 
-    for (size_t i = 0; i < len; i++) {
+    for (size_t i = 0; i < password_len; i++) {
         int p = (int) password[i];
-        (void) snprintf(
+        int b_w = snprintf(
             hash + 2 + i * 2, 3,
             "%02x",
-            p ^ xlat[(seed++) % (int) XLAT_LEN]
+            p ^ xlat[(seed++) % (int) xlat_len]
         );
+
+        if (b_w < 0) {
+            return b_w;
+        }
+
+        bytes_written += b_w;
+
+        if (bytes_written > (int) hash_size) {
+            return bytes_written;
+        }
     }
 
-    return (int) len;
+    return bytes_written;
 }
 
-int decrypt(char *password, char *hash) {
-    if (hash == NULL || password == NULL) {
-        return -1;
-    }
-
-    size_t len = strlen(hash);
-
-    if (len < 4 || len % 2 != 0) {
+int decrypt(
+    char *password,
+    size_t password_size,
+    char *hash,
+    size_t hash_len
+) {
+    if (
+        hash_len > 24 ||
+        hash_len < 2 ||
+        hash_len % 2 != 0 ||
+        password_size < hash_len/2
+    ) {
         return -1;
     }
 
     char pair[3];
-    memset(pair, 0, sizeof(pair));
-    strncpy(pair, hash, 2);
+    (void) snprintf(pair, sizeof(pair), "%s", hash);
 
     errno = 0;
     int seed = (int) strtol(pair, NULL, 10);
@@ -73,9 +90,8 @@ int decrypt(char *password, char *hash) {
 
     int index = 0;
 
-    for (size_t i = 2; i < len; i += 2) {
-        memset(pair, 0, sizeof(pair));
-        strncpy(pair, hash + i, 2);
+    for (size_t i = 2; i < hash_len; i += 2) {
+        (void) snprintf(pair, sizeof(pair), "%s", hash+i);
 
         errno = 0;
         int c = (int) strtol(pair, NULL, 16);
@@ -84,8 +100,9 @@ int decrypt(char *password, char *hash) {
             return -1;
         }
 
-        password[index++] = (char)(c ^ xlat[(seed++) % (int) XLAT_LEN]);
+        password[index++] = (char)(c ^ xlat[(seed++) % (int) xlat_len]);
     }
 
-    return (int) (len-2)/2;
+    password[index] = '\0';
+    return index;
 }

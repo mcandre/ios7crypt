@@ -13,20 +13,21 @@
 #include "ios7crypt/ios7crypt.h"
 
 #ifdef __SANITIZE_ADDRESS__
-bool prop_reversible(char *password) {
+bool prop_reversible(char *password, size_t password_len) {
     char hash[25];
     memset(hash, 0, sizeof(hash));
-
     unsigned int prng_seed = (unsigned int) time(NULL);
+    int bytes_written = encrypt(hash, sizeof(hash), prng_seed, password, password_len);
 
-    if (encrypt(hash, prng_seed, password) == -1) {
+    if (bytes_written < 0 || bytes_written > (int) sizeof(hash)) {
         return false;
     }
 
     char password2[12];
     memset(password2, 0, sizeof(password2));
+    bytes_written = decrypt(password2, sizeof(password2), hash, sizeof(hash)-1);
 
-    if (decrypt(password2, hash) == -1) {
+    if (bytes_written < 0 || bytes_written > (int) sizeof(password2)) {
         return false;
     }
 
@@ -34,16 +35,17 @@ bool prop_reversible(char *password) {
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-    size_t len = Size;
-
-    if (len > 11) {
-        len = 11;
-    }
-
     char password[12];
     memset(password, 0, sizeof(password));
-    memcpy(password, Data, len);
-    prop_reversible(password);
+
+    size_t password_len = Size;
+
+    if (password_len > sizeof(password)-1) {
+        password_len = sizeof(password)-1;
+    }
+
+    memcpy(password, Data, password_len);
+    prop_reversible(password, password_len);
     return 0;
 }
 #else
@@ -77,9 +79,10 @@ int main(int argc, char **argv) {
 
         for (int i = 2; i < argc; i++) {
             char *password = argv[i];
+            int bytes_written = encrypt(hash, sizeof(hash), prng_seed, password, strlen(password));
 
-            if (encrypt(hash, prng_seed, password) == -1) {
-                fprintf(stderr, "error during encryption\n");
+            if (bytes_written < 0 || bytes_written > (int) sizeof(hash)) {
+                fprintf(stderr, "error writing to buffer\n");
                 return EXIT_FAILURE;
             }
 
@@ -93,13 +96,14 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
         }
 
-        char password[11];
+        char password[12];
         memset(password, 0, sizeof(password));
 
         for (int i = 2; i < argc; i++) {
             char *hash = argv[i];
+            int bytes_written = decrypt(password, sizeof(password), hash, strlen(hash));
 
-            if (decrypt(password, hash) == -1) {
+            if (bytes_written < 0 || bytes_written > (int) sizeof(password)) {
                 fprintf(stderr, "error during decryption\n");
                 return EXIT_FAILURE;
             }
