@@ -16,20 +16,20 @@
 /**
  * encrypt produces Cisco IOSv7 hashes.
  *
+ * @param hash Cisco IOSv7 buffer
  * @param seed PRNG seed
  * @param password plaintext
- * @param hash Cisco IOSv7 buffer
  *
  * @returns the number of characters encrypted.
  */
-int encrypt(unsigned int seed, char *password, char *hash);
+int encrypt(char *hash, unsigned int seed, char *password);
 
 /**
  * decrypt reverses Cisco IOSv7 hashes.
  *
- * @param hash Cisco IOSv7
  * @param password plaintext buffer
+ * @param hash Cisco IOSv7
  *
  * @returns the number of characters decrypted, or -1 on error.
  */
-int decrypt(char *hash, char *password);
+int decrypt(char *password, char *hash);

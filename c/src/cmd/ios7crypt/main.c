@@ -19,14 +19,14 @@ bool prop_reversible(char *password) {
 
     unsigned int prng_seed = (unsigned int) time(NULL);
 
-    if (encrypt(prng_seed, password, hash) == -1) {
+    if (encrypt(hash, prng_seed, password) == -1) {
         return false;
     }
 
     char password2[12];
     memset(password2, 0, sizeof(password2));
 
-    if (decrypt(hash, password2) == -1) {
+    if (decrypt(password2, hash) == -1) {
         return false;
     }
 
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
         for (int i = 2; i < argc; i++) {
             char *password = argv[i];
 
-            if (encrypt(prng_seed, password, hash) == -1) {
+            if (encrypt(hash, prng_seed, password) == -1) {
                 fprintf(stderr, "error during encryption\n");
                 return EXIT_FAILURE;
             }
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
         for (int i = 2; i < argc; i++) {
             char *hash = argv[i];
 
-            if (decrypt(hash, password) == -1) {
+            if (decrypt(password, hash) == -1) {
                 fprintf(stderr, "error during decryption\n");
                 return EXIT_FAILURE;
             }

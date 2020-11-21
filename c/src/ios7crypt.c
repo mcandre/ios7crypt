@@ -23,7 +23,7 @@ static int xlat[53] = {
 
 #define XLAT_LEN (sizeof(xlat)/sizeof(int))
 
-int encrypt(unsigned int prng_seed, char *password, char *hash) {
+int encrypt(char *hash, unsigned int prng_seed, char *password) {
     if (password == NULL || hash == NULL) {
         return -1;
     }
@@ -49,9 +49,7 @@ int encrypt(unsigned int prng_seed, char *password, char *hash) {
     return (int) len;
 }
 
-// On success, returns the number of characters decrypted.
-// Otherwise, returns -1.
-int decrypt(char *hash, char *password) {
+int decrypt(char *password, char *hash) {
     if (hash == NULL || password == NULL) {
         return -1;
     }
