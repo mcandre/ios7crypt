@@ -16,24 +16,20 @@
 /**
  * encrypt produces Cisco IOSv7 hashes.
  *
- * @param hash buffer
- * @param hash_size buffer size (bytes)
+ * @param hash buffer (1 + 2 * password bytes)
  * @param seed PRNG seed
- * @param password plaintext
- * @param password_len max password length (string). Shall not exceed 11.
+ * @param password truncated to 11 characters + null terminator
  *
- * @returns bytes written. A value outside [0, hash_size] indicates error.
+ * @returns zero. -1 indicates error.
  */
-int encrypt(char *hash, size_t hash_size, unsigned int seed, char *password, size_t password_len);
+int encrypt(char *hash, unsigned int seed, char *password);
 
 /**
  * decrypt reverses Cisco IOSv7 hashes.
  *
  * @param password buffer
- * @param password_size buffer size (bytes)
- * @param hash Cisco IOSv7
- * @param hash_len max hash length (string). Shall not exceed 24.
+ * @param hash max 24 characters + null terminator
  *
- * @returns bytes written. A value outside [0, password_size] indicates error.
+ * @returns zero. -1 indicates error.
  */
-int decrypt(char *password, size_t password_size, char *hash, size_t hash_len);
+int decrypt(char *password, char *hash);
