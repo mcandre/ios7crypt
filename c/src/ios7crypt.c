@@ -28,7 +28,7 @@ int encrypt(char *hash, unsigned int prng_seed, char *password) {
     size_t seed_sz = 3;
     int bytes_written = snprintf(hash, seed_sz, "%02d", seed);
 
-    if (bytes_written < 0 || bytes_written > (int) seed_sz) {
+    if (bytes_written < 0 || (size_t) bytes_written > seed_sz) {
         return -1;
     }
 
@@ -50,7 +50,7 @@ int encrypt(char *hash, unsigned int prng_seed, char *password) {
             p ^ xlat[(seed++) % (int) xlat_len]
         );
 
-        if (bytes_written < 0 || bytes_written > (int) pair_sz) {
+        if (bytes_written < 0 || (size_t) bytes_written > pair_sz) {
             return -1;
         }
     }
