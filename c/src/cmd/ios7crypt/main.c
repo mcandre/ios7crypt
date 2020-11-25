@@ -4,7 +4,6 @@
 
 #include "main.h"
 
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,15 +12,11 @@
 #include "ios7crypt/ios7crypt.h"
 
 #ifdef __SANITIZE_ADDRESS__
-bool prop_reversible(char *password) {
+static bool prop_reversible(char *password) {
     char hash[25];
     memset(hash, 0, sizeof(hash));
     unsigned int prng_seed = (unsigned int) time(NULL);
-
-    if (encrypt(hash, prng_seed, password) < 0) {
-        return false;
-    }
-
+    encrypt(hash, prng_seed, password);
     char password2[12];
     memset(password2, 0, sizeof(password2));
 
@@ -47,7 +42,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     return 0;
 }
 #else
-void usage(char **argv) {
+static void usage(char **argv) {
     printf("Usage: %s [options]\n\n", argv[0]);
     printf("-e <passwords>\n");
     printf("-d <hashes>\n");
@@ -77,12 +72,7 @@ int main(int argc, char **argv) {
 
         for (int i = 2; i < argc; i++) {
             char *password = argv[i];
-
-            if (encrypt(hash, prng_seed, password) < 0) {
-                fprintf(stderr, "error writing to buffer\n");
-                return EXIT_FAILURE;
-            }
-
+            encrypt(hash, prng_seed, password);
             printf("%s\n", hash);
         }
 

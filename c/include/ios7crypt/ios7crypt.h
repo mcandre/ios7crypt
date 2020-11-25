@@ -19,10 +19,8 @@
  * @param hash buffer (1 + 2 * password bytes)
  * @param seed PRNG seed
  * @param password truncated to 11 characters + null terminator
- *
- * @returns zero. -1 indicates error.
  */
-int encrypt(char *hash, unsigned int seed, char *password);
+void encrypt(char *hash, unsigned int seed, char *password);
 
 /**
  * decrypt reverses Cisco IOSv7 hashes.
