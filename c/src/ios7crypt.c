@@ -46,23 +46,29 @@ void encrypt(char *hash, unsigned int prng_seed, char *password) {
 int decrypt(char *password, char *hash) {
     char pair[3];
     size_t pair_sz = sizeof(pair);
+
     (void) snprintf(pair, pair_sz, "%.*s", 2, hash);
     int seed = (int) strtol(pair, NULL, 10);
 
-    for (size_t i = 2; i < 24; i += 2) {
-        if (hash[i] == '\0') {
+    size_t i;
+
+    for (i = 0; i < 11; i++) {
+        size_t j = 2 + 2 * i;
+
+        if (hash[j] == '\0') {
             break;
         }
 
-        if (hash[i + 1] == '\0') {
+        if (hash[j + 1] == '\0') {
             return -1;
         }
 
-        (void) snprintf(pair, pair_sz, "%.*s", 2, hash + i);
+        (void) snprintf(pair, pair_sz, "%.*s", 2, hash + j);
         int c = (int) strtol(pair, NULL, 16);
         char p = (char) (c ^ xlat[(seed++) % (int) xlat_len]);
-        (void) strncat(password, &p, 1);
+        password[i] = p;
     }
 
+    password[i] = '\0';
     return 0;
 }

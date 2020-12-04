@@ -2,8 +2,11 @@
  * @copyright 2020 YelloSoft
 */
 
-#include "main.h"
-
+#ifdef __SANITIZE_ADDRESS__
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,11 +17,9 @@
 #ifdef __SANITIZE_ADDRESS__
 static bool prop_reversible(char *password) {
     char hash[25];
-    memset(hash, 0, sizeof(hash));
     unsigned int prng_seed = (unsigned int) time(NULL);
     encrypt(hash, prng_seed, password);
     char password2[12];
-    memset(password2, 0, sizeof(password2));
 
     if (decrypt(password2, hash) < 0) {
         return false;
@@ -27,7 +28,7 @@ static bool prop_reversible(char *password) {
     return strcmp(password, password2) == 0;
 }
 
-int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+extern int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     char password[12];
     size_t password_sz = sizeof(password);
     size_t password_len = Size;
@@ -68,7 +69,6 @@ int main(int argc, char **argv) {
         }
 
         char hash[25];
-        memset(hash, 0, sizeof(hash));
 
         for (int i = 2; i < argc; i++) {
             char *password = argv[i];
@@ -84,7 +84,6 @@ int main(int argc, char **argv) {
         }
 
         char password[12];
-        memset(password, 0, sizeof(password));
 
         for (int i = 2; i < argc; i++) {
             char *hash = argv[i];

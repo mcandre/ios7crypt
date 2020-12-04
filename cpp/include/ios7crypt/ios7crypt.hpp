@@ -14,9 +14,12 @@
 #endif
 #include <vector>
 
+/**
+ * @brief ios7crypt manages legacy Cisco hashes.
+ */
 namespace ios7crypt {
     /**
-     * Encrypt produces Cisco IOSv7 hashes.
+     * @brief Encrypt produces Cisco IOSv7 hashes.
      *
      * @param prng_seed PRNG seed
      * @param password plaintext
@@ -26,7 +29,7 @@ namespace ios7crypt {
     std::string Encrypt(uint prng_seed, std::string password);
 
     /**
-     * Decrypt reverses Cisco IOSv7 hashes.
+     * @brief Decrypt reverses Cisco IOSv7 hashes.
      *
      * @param hash Cisco IOSv7
      *

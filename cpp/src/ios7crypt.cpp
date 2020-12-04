@@ -2,7 +2,6 @@
  * @copyright 2020 YelloSoft
  */
 
-#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <string>

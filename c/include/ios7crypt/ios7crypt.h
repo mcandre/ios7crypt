@@ -14,7 +14,7 @@
 #include <stdint.h>
 
 /**
- * encrypt produces Cisco IOSv7 hashes.
+ * @brief encrypt produces Cisco IOSv7 hashes.
  *
  * @param hash buffer (1 + 2 * password bytes)
  * @param seed PRNG seed
@@ -23,7 +23,7 @@
 void encrypt(char *hash, unsigned int seed, char *password);
 
 /**
- * decrypt reverses Cisco IOSv7 hashes.
+ * @brief decrypt reverses Cisco IOSv7 hashes.
  *
  * @param password buffer
  * @param hash max 24 characters + null terminator
