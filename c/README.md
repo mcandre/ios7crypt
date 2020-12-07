@@ -1,4 +1,4 @@
-# ios7crypt/c
+# ios7crypt
 
 IOS7Crypt password encrypter/decrypter in C
 
@@ -11,6 +11,10 @@ $ ios7crypt -e monkey
 $ ios7crypt -d "0941410712000e"
 monkey
 ```
+
+# DOCUMENTATION
+
+https://mcandre.github.io/ios7crypt/c/
 
 # RUNTIME REQUIREMENTS
 

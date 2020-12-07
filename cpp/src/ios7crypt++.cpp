@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 
-#include "ios7crypt/ios7crypt.hpp"
+#include "ios7crypt++/ios7crypt++.hpp"
 
 static std::vector<int> Xlat() {
     const int bs[53] = {

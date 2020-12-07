@@ -1,14 +1,14 @@
 # Doxyfile 1.8.20
 
-PROJECT_NAME           = "ios7crypt"
+PROJECT_NAME           = "ios7crypt++"
 
 EXTRACT_ALL            = YES
 QUIET                  = YES
 WARN_AS_ERROR          = YES
 
-INPUT                  = include/ios7crypt \
+INPUT                  = include/ios7crypt++ \
                             src \
-                            src/cmd/ios7crypt
+                            src/cmd/ios7crypt++
 
 GENERATE_LATEX         = NO
 

@@ -18,7 +18,7 @@
 #include <string_view>
 #include <vector>
 
-#include "ios7crypt/ios7crypt.hpp"
+#include "ios7crypt++/ios7crypt++.hpp"
 
 #ifdef __SANITIZE_ADDRESS__
 static bool PropReversible(std::string password) {

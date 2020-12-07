@@ -1,0 +1,34 @@
+---
+# generic
+language: "cpp"
+
+os: "linux"
+dist: "focal"
+
+# git checkout --orphan gh-pages
+# git rm -rf .
+# touch README.md
+# git add README.md
+# git commit -m pages
+# git push -u <remote> gh-pages
+# git checkout master
+branches:
+  only:
+  - "master"
+
+addons:
+  apt:
+    packages:
+    - "doxygen"
+    - "graphviz"
+
+script:
+- "cd \"$TRAVIS_BUILD_DIR\""
+- "sh publish-docs.sh"
+
+env:
+  global:
+    # gem install travis
+    # travis login [--pro] [--github-token <personal-access-token>]
+    # travis encrypt [--pro] "GH_REPO_TOKEN=<personal-access-token>"
+    secure: "B7MG5AhJAeYZ7KpvXmZ/xIlEIdN/iQl8+SnjN0vk46ZbgghGLy189mlWSLKyfHaPt/ipddYkzRzjxiWQOzHes3KlB8K8n5Av+qIir49JuJnoTQIopVRnifRwTdCatqI3yl4Oo1fQrGFqkbKGY9nUMekACoPT5I8KGaozQ9xLKQKFUI93MO4raHXThUmzF153K1YkzkZVQi15UKLOCTUTyZRFFQaqeQY6G26KeUrxlOi3IDCj1Sp5jauKXUMcprUGxtuRcJNe2g6qzu1T13eIEkiDZrU1hsbrzWys8rhCCLOVZaiUr6XObJ+OYoMANBVz9U9H7wNyfr6JDAjPsbNZmENKgK6dj6C3VDzFvh5e/A5Oebri8cv096r0tEl5F/QoEPh9YErkiXTaMwlElK0BOj/8lCQ8rG8JFfLt5Y1ec5Kayh1O060bf4VYvmCdGwRuR6SoPWlBu4/L/48XS2rFkl4p5yjuRFm/moSdWJswfbD8T9peacSgljBFZ+m53h8gSi1bAd903fi/kpZA78URfbRmivHvEUJGn8yIh+dlSTQi1uBU/LEIdQ3MccHGVfRKAff2FQnjDgw3WSsOnc6LKg8LBDiyrLiYuwYKOVk1uk1LmF02Vuk/2AgV4P9mMpcHehKsxoD1GX2YDSn0Urn/IpJe1MU2B9sQJh0Ejo6mpeo="

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.4)
 set(CMAKE_MESSAGE_LOG_LEVEL "WARNING")
 set(EXECUTABLE_OUTPUT_PATH "bin")
-project(ios7crypt)
+project(ios7crypt++)
 
 if(MSVC)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}")
@@ -38,12 +38,12 @@ endif()
 
 include_directories(include)
 
-add_executable(ios7crypt src/cmd/ios7crypt/main.cpp src/ios7crypt.cpp)
+add_executable(ios7crypt++ src/cmd/ios7crypt++/main.cpp src/ios7crypt++.cpp)
 
 enable_testing()
-add_test(NAME ios7crypt_encrypt_test COMMAND bin/ios7crypt -e monkey)
-add_test(NAME ios7crypt_decrypt_test COMMAND bin/ios7crypt -d "0941410712000e")
-add_test(NAME ios7crypt_usage_test COMMAND bin/ios7crypt -h)
+add_test(NAME ios7crypt_encrypt_test COMMAND bin/ios7crypt++ -e monkey)
+add_test(NAME ios7crypt_decrypt_test COMMAND bin/ios7crypt++ -d "0941410712000e")
+add_test(NAME ios7crypt_usage_test COMMAND bin/ios7crypt++ -h)
 
 add_custom_target(cppcheck COMMAND cppcheck -q --force --enable=all --inline-suppr --suppressions-list=suppressions.cfg --error-exitcode=1 -U__SANITIZE_ADDRESS__ -I include src)
 add_custom_target(cpplint COMMAND sail include src | xargs -n 1 cpplint)
@@ -56,9 +56,9 @@ else()
     add_custom_target(lint DEPENDS cppcheck cpplint vera++)
 endif()
 
-add_custom_target(valgrind_encrypt_test COMMAND valgrind --error-exitcode=1 --leak-check=full bin/ios7crypt -e monkey)
-add_custom_target(valgrind_decrypt_test COMMAND valgrind --error-exitcode=1 --leak-check=full bin/ios7crypt -d "00091c080f5e12")
-add_custom_target(valgrind_usage_test COMMAND valgrind --error-exitcode=1 --leak-check=full bin/ios7crypt -h)
+add_custom_target(valgrind_encrypt_test COMMAND valgrind --error-exitcode=1 --leak-check=full bin/ios7crypt++ -e monkey)
+add_custom_target(valgrind_decrypt_test COMMAND valgrind --error-exitcode=1 --leak-check=full bin/ios7crypt++ -d "00091c080f5e12")
+add_custom_target(valgrind_usage_test COMMAND valgrind --error-exitcode=1 --leak-check=full bin/ios7crypt++ -h)
 add_custom_target(valgrind DEPENDS valgrind_encrypt_test valgrind_decrypt_test valgrind_usage_test)
 
 # Broken or missing valgrind
@@ -80,13 +80,13 @@ if(
     set(SANITIZE_TIMEOUT_SEC 10)
     set(FUZZER_RUNTIME_FLAGS "-max_total_time=${SANITIZE_TIMEOUT_SEC}")
 
-    add_executable(fuzz-ios7crypt src/cmd/ios7crypt/main.cpp src/ios7crypt.cpp)
+    add_executable(fuzz-ios7crypt++ src/cmd/ios7crypt++/main.cpp src/ios7crypt++.cpp)
 
     set(SANITIZE_RULES "fuzzer,address,undefined")
     set(SANITIZE_FLAGS "-fsanitize=${SANITIZE_RULES} -fno-sanitize-recover=${SANITIZE_RULES}")
 
     set_target_properties(
-        fuzz-ios7crypt
+        fuzz-ios7crypt++
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "debug"
         COMPILE_FLAGS "-g ${SANITIZE_FLAGS}"
@@ -94,7 +94,7 @@ if(
         COMPILE_DEFINITIONS "__SANITIZE_ADDRESS__"
     )
 
-    add_custom_target(fuzz COMMAND debug/fuzz-ios7crypt "${FUZZER_RUNTIME_FLAGS}")
+    add_custom_target(fuzz COMMAND debug/fuzz-ios7crypt++ "${FUZZER_RUNTIME_FLAGS}")
 else()
     add_custom_target(fuzz)
 endif()
