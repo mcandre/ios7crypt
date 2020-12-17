@@ -1,42 +1,43 @@
 plugins {
-    id 'de.kotka.clojuresque.clojure' version '2.0.0'
-    id 'com.github.johnrengelman.shadow' version '1.2.3'
-    id 'org.sonarqube' version '1.1'
+    id 'checkstyle'
+    id 'dev.clojurephant.clojure' version '0.6.0-alpha.4'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'com.github.spotbugs' version '4.6.0'
+    id 'jacoco'
+    id 'org.sonarqube' version '2.7'
+    id 'pmd'
 }
-
-apply plugin: 'de.kotka.clojuresque.clojure'
-apply plugin: 'checkstyle'
-apply plugin: 'findbugs'
-apply plugin: 'pmd'
-apply plugin: 'jacoco'
 
 compileJava {
     options.compilerArgs << '-Xlint:all'
 }
 
-clojure.aotCompile = true
+clojure {
+    builds {
+        main {
+            aotAll()
+        }
+    }
+}
 
 checkstyle {
     configFile = "${rootProject.projectDir}/config/checkstyle/checkstyle.xml" as File
     configProperties = [configDir: "${rootProject.projectDir}/config"]
 }
 
-findbugs {
-    sourceSets = [sourceSets.main]
+spotbugs {
+    excludeFilter = file("${rootProject.projectDir}/config/spotbugs/exclude.xml")
 }
 
-tasks.withType(FindBugs) {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
+pmd {
+    consoleOutput = true
+    ruleSets = [] // Replace; Don't append
+    ruleSetFiles = files("config/pmd/rulesets.xml")
 }
-
-pmd { consoleOutput = true }
 
 jar {
     manifest {
-        attributes 'Main-Class': 'us.yellosoft.ios7crypt.IOS7Crypt'
+        attributes 'Main-Class': 'us.yellosoft.ios7crypt'
     }
 }
 

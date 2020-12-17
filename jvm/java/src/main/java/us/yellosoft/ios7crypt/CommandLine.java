@@ -1,7 +1,5 @@
 package us.yellosoft.ios7crypt;
 
-import java.util.Map;
-
 import org.docopt.Docopt;
 
 /** CLI for IOS7Crypt */
@@ -20,16 +18,17 @@ public final class CommandLine {
     /** Utility class */
     private CommandLine() {}
 
-        /** Execute CLI
-        @param args CLI flags
+    /**
+        * Execute CLI
+        * @param args CLI flags
         */
-        public static void main(final String[] args) {
-            Map<String, Object> options = new Docopt(DOC).withVersion("0.0.1").parse(args);
+    public static void main(final String[] args) {
+        final var options = new Docopt(DOC).withVersion("0.0.1").parse(args);
 
-            if ((String) options.get("--encrypt") != null) {
-                System.out.println(IOS7Crypt.encrypt((String) options.get("--encrypt")));
-            } else if ((String) options.get("--decrypt") != null) {
-                System.out.println(IOS7Crypt.decrypt((String) options.get("--decrypt")));
-            }
+        if ((String) options.get("--encrypt") != null) {
+            System.out.println(IOS7CryptUtil.encrypt((String) options.get("--encrypt")));
+        } else if ((String) options.get("--decrypt") != null) {
+            System.out.println(IOS7CryptUtil.decrypt((String) options.get("--decrypt")));
         }
     }
+}

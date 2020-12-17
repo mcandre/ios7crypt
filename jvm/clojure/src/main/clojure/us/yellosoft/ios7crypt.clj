@@ -1,4 +1,4 @@
-(ns us.yellosoft.ios7crypt.IOS7Crypt
+(ns us.yellosoft.ios7crypt
   (:gen-class))
 
 (use '[clojure.string :only (join)])

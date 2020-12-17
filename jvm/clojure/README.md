@@ -6,8 +6,10 @@ IOS7Crypt encrypter/decrypter in Clojure
 
 ```
 $ gradle clean shadowJar
-java -jar build/libs/clojure-all.jar -e monkey
+
+$ bin/ios7crypt -e monkey
 141a1d05070133
-$ java -jar build/libs/clojure-all.jar -d 141a1d05070133
+
+$ bin/ios7crypt -d 141a1d05070133
 monkey
 ```

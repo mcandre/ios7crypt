@@ -4,6 +4,7 @@ package us.yellosoft.ios7crypt
 
 import java.util.Random
 
+import groovy.cli.picocli.CliBuilder
 import us.yellosoft.gruesome.Gruesome
 
 class IOS7Crypt {
