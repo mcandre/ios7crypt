@@ -17,7 +17,7 @@
 #ifdef __SANITIZE_ADDRESS__
 static bool prop_reversible(char *password) {
     char hash[25];
-    unsigned int prng_seed = (unsigned int) time(NULL);
+    const unsigned int prng_seed = (unsigned int) time(NULL);
     encrypt(hash, prng_seed, password);
     char password2[12];
 
@@ -30,7 +30,7 @@ static bool prop_reversible(char *password) {
 
 extern int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     char password[12];
-    size_t password_sz = sizeof(password);
+    const size_t password_sz = sizeof(password);
     size_t password_len = Size;
 
     if (password_len > password_sz - 1) {
@@ -49,8 +49,8 @@ static void usage(char **argv) {
     printf("-d <hashes>\n");
 }
 
-int main(int argc, char **argv) {
-    unsigned int prng_seed = (unsigned int) time(NULL);
+int main(int argc, const char **argv) {
+    const unsigned int prng_seed = (unsigned int) time(NULL);
 
     if (argc < 2) {
         usage(argv);
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
         char hash[25];
 
         for (int i = 2; i < argc; i++) {
-            char *password = argv[i];
+            const char *password = argv[i];
             encrypt(hash, prng_seed, password);
             printf("%s\n", hash);
         }
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
         char password[12];
 
         for (int i = 2; i < argc; i++) {
-            char *hash = argv[i];
+            const char *hash = argv[i];
 
             if (decrypt(password, hash) < 0) {
                 fprintf(stderr, "error during decryption\n");

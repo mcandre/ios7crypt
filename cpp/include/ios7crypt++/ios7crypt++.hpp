@@ -26,7 +26,7 @@ namespace ios7crypt {
      *
      * @returns Cisco IOSv7 hash
      */
-    std::string Encrypt(uint prng_seed, std::string password);
+    std::string Encrypt(uint prng_seed, const std::string &password);
 
     /**
      * @brief Decrypt reverses Cisco IOSv7 hashes.
@@ -35,5 +35,5 @@ namespace ios7crypt {
      *
      * @returns password, or std::nullopt on error.
      */
-    std::optional<std::string> Decrypt(std::string hash);
+    std::optional<std::string> Decrypt(const std::string &hash);
 }

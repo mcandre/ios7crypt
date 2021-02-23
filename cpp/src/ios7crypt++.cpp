@@ -22,8 +22,8 @@ static std::vector<int> Xlat() {
     return std::vector<int>(bs, bs + sizeof(bs)/sizeof(int));
 }
 
-std::string ios7crypt::Encrypt(uint prng_seed, std::string password) {
-    auto xs = Xlat();
+std::string ios7crypt::Encrypt(uint prng_seed, const std::string &password) {
+    const auto xs = Xlat();
     auto seed = int(rand_r(&prng_seed) % 16);
 
     auto hash = std::stringstream();
@@ -33,7 +33,7 @@ std::string ios7crypt::Encrypt(uint prng_seed, std::string password) {
     hash << seed;
 
     for (auto &p_char : password) {
-        auto p = int(p_char);
+        const auto p = int(p_char);
         hash.setf(std::ios::hex, std::ios::basefield);
         hash.width(2);
         hash.fill('0');
@@ -43,12 +43,12 @@ std::string ios7crypt::Encrypt(uint prng_seed, std::string password) {
     return hash.str();
 }
 
-std::optional<std::string> ios7crypt::Decrypt(std::string hash) {
+std::optional<std::string> ios7crypt::Decrypt(const std::string &hash) {
     if (hash.length() < 4 || hash.length() % 2 != 0) {
         return std::nullopt;
     }
 
-    auto xs = Xlat();
+    const auto xs = Xlat();
 
     errno = 0;
     auto seed = std::stoi(hash.substr(0, 2), nullptr, 10);
@@ -61,7 +61,7 @@ std::optional<std::string> ios7crypt::Decrypt(std::string hash) {
 
     for (size_t i = 2; i < hash.length(); i += 2) {
         errno = 0;
-        auto c = std::stoi(hash.substr(i, 2), nullptr, 16);
+        const auto c = std::stoi(hash.substr(i, 2), nullptr, 16);
 
         if (errno != 0) {
             return std::nullopt;

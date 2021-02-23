@@ -21,10 +21,10 @@
 #include "ios7crypt++/ios7crypt++.hpp"
 
 #ifdef __SANITIZE_ADDRESS__
-static bool PropReversible(std::string password) {
-    auto prng_seed = uint(time(nullptr));
-    auto hash = ios7crypt::Encrypt(prng_seed, password);
-    auto password2 = ios7crypt::Decrypt(hash);
+static bool PropReversible(const std::string &password) {
+    const auto prng_seed = uint(time(nullptr));
+    const auto hash = ios7crypt::Encrypt(prng_seed, password);
+    const auto password2 = ios7crypt::Decrypt(hash);
 
     if (!password2.has_value()) {
         return false;
@@ -34,17 +34,19 @@ static bool PropReversible(std::string password) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-    char password[12];
-    auto password_sz = sizeof(password);
-    auto password_len = Size;
+    char password_cstr[12];
+    const auto password_cstr_sz = sizeof(password_cstr);
+    auto password_cstr_len = Size;
 
-    if (password_len > password_sz - 1) {
-        password_len = password_sz - 1;
+    if (password_cstr_len > password_cstr_sz - 1) {
+        password_cstr_len = password_cstr_sz - 1;
     }
 
-    memcpy(password, Data, password_len);
-    password[password_len] = '\0';
-    PropReversible(std::string(password));
+    memcpy(password_cstr, Data, password_cstr_len);
+    password_cstr[password_cstr_len] = '\0';
+
+    const auto &password = std::string(password_cstr);
+    PropReversible(password);
     return 0;
 }
 #else
@@ -54,10 +56,9 @@ static void Usage(std::vector<std::string_view> args) {
         "-d <hash>" << std::endl;
 }
 
-int main(const int argc, const char **argv) {
-    uint prng_seed = uint(time(nullptr));
-
-    auto args = std::vector<std::string_view>{argv, argv+argc};
+int main(int argc, const char **argv) {
+    const uint prng_seed = uint(time(nullptr));
+    const auto args = std::vector<std::string_view>{argv, argv+argc};
 
     if (args.size() < 2) {
         Usage(args);
@@ -70,38 +71,34 @@ int main(const int argc, const char **argv) {
     }
 
     if (args.at(1).compare("-e") == 0) {
-        std::string password;
-
         try {
-            password = std::string(args.at(2));
+            const auto &password = std::string(args.at(2));
+
+            std::cout << ios7crypt::Encrypt(prng_seed, password) << std::endl;
+            return EXIT_SUCCESS;
         } catch (const std::out_of_range) {
             Usage(args);
             return EXIT_FAILURE;
         }
-
-        std::cout << ios7crypt::Encrypt(prng_seed, std::string(args.at(2))) << std::endl;
-        return EXIT_SUCCESS;
     }
 
     if (args.at(1).compare("-d") == 0) {
-        std::string hash;
-
         try {
-            hash = std::string(args.at(2));
+            const auto &hash = std::string(args.at(2));
+
+            const auto password = ios7crypt::Decrypt(hash);
+
+            if (!password.has_value()) {
+                std::cerr << "error during decryption" << std::endl;
+                return EXIT_FAILURE;
+            }
+
+            std::cout << password.value() << std::endl;
+            return EXIT_SUCCESS;
         } catch (const std::out_of_range) {
             Usage(args);
             exit(EXIT_FAILURE);
         }
-
-        auto password = ios7crypt::Decrypt(std::string(args.at(2)));
-
-        if (!password.has_value()) {
-            std::cerr << "error during decryption" << std::endl;
-            return EXIT_FAILURE;
-        }
-
-        std::cout << password.value() << std::endl;
-        return EXIT_SUCCESS;
     }
 
     Usage(args);
