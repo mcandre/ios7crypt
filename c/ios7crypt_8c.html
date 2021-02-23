@@ -103,12 +103,12 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a9b39789c7a08befd25556735aa4e7d9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ios7crypt_8c.html#a9b39789c7a08befd25556735aa4e7d9f">encrypt</a> (char *hash, unsigned int prng_seed, char *password)</td></tr>
-<tr class="memdesc:a9b39789c7a08befd25556735aa4e7d9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">encrypt produces Cisco IOSv7 hashes.  <a href="ios7crypt_8c.html#a9b39789c7a08befd25556735aa4e7d9f">More...</a><br /></td></tr>
-<tr class="separator:a9b39789c7a08befd25556735aa4e7d9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68121b40694d12c1cea9c4875da799b1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ios7crypt_8c.html#a68121b40694d12c1cea9c4875da799b1">decrypt</a> (char *password, char *hash)</td></tr>
-<tr class="memdesc:a68121b40694d12c1cea9c4875da799b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">decrypt reverses Cisco IOSv7 hashes.  <a href="ios7crypt_8c.html#a68121b40694d12c1cea9c4875da799b1">More...</a><br /></td></tr>
-<tr class="separator:a68121b40694d12c1cea9c4875da799b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9d257f33c59ad9b8f3dd68f76cbc08b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ios7crypt_8c.html#ae9d257f33c59ad9b8f3dd68f76cbc08b">encrypt</a> (char *hash, unsigned int prng_seed, const char *password)</td></tr>
+<tr class="memdesc:ae9d257f33c59ad9b8f3dd68f76cbc08b"><td class="mdescLeft">&#160;</td><td class="mdescRight">encrypt produces Cisco IOSv7 hashes.  <a href="ios7crypt_8c.html#ae9d257f33c59ad9b8f3dd68f76cbc08b">More...</a><br /></td></tr>
+<tr class="separator:ae9d257f33c59ad9b8f3dd68f76cbc08b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c99f4ed65428029e07f151e064d6c65"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ios7crypt_8c.html#a7c99f4ed65428029e07f151e064d6c65">decrypt</a> (char *password, const char *hash)</td></tr>
+<tr class="memdesc:a7c99f4ed65428029e07f151e064d6c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">decrypt reverses Cisco IOSv7 hashes.  <a href="ios7crypt_8c.html#a7c99f4ed65428029e07f151e064d6c65">More...</a><br /></td></tr>
+<tr class="separator:a7c99f4ed65428029e07f151e064d6c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="acbf919376c0f51df78797d89e4b0edc5"></a>
@@ -126,8 +126,8 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a68121b40694d12c1cea9c4875da799b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68121b40694d12c1cea9c4875da799b1">&#9670;&nbsp;</a></span>decrypt()</h2>
+<a id="a7c99f4ed65428029e07f151e064d6c65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c99f4ed65428029e07f151e064d6c65">&#9670;&nbsp;</a></span>decrypt()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -141,7 +141,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">char *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>hash</em>&#160;</td>
         </tr>
         <tr>
@@ -164,8 +164,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a9b39789c7a08befd25556735aa4e7d9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9b39789c7a08befd25556735aa4e7d9f">&#9670;&nbsp;</a></span>encrypt()</h2>
+<a id="ae9d257f33c59ad9b8f3dd68f76cbc08b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9d257f33c59ad9b8f3dd68f76cbc08b">&#9670;&nbsp;</a></span>encrypt()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -185,7 +185,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">char *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>password</em>&#160;</td>
         </tr>
         <tr>
