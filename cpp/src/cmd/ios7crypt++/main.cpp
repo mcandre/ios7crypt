@@ -45,7 +45,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     memcpy(password_cstr, Data, password_cstr_len);
     password_cstr[password_cstr_len] = '\0';
 
-    const auto &password = std::string(password_cstr);
+    const auto password = std::string(password_cstr);
     PropReversible(password);
     return 0;
 }
@@ -72,7 +72,7 @@ int main(int argc, const char **argv) {
 
     if (args.at(1).compare("-e") == 0) {
         try {
-            const auto &password = std::string(args.at(2));
+            const auto password = std::string(args.at(2));
 
             std::cout << ios7crypt::Encrypt(prng_seed, password) << std::endl;
             return EXIT_SUCCESS;
@@ -84,7 +84,7 @@ int main(int argc, const char **argv) {
 
     if (args.at(1).compare("-d") == 0) {
         try {
-            const auto &hash = std::string(args.at(2));
+            const auto hash = std::string(args.at(2));
 
             const auto password = ios7crypt::Decrypt(hash);
 
