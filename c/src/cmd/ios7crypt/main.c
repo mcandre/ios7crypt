@@ -43,7 +43,7 @@ extern int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     return 0;
 }
 #else
-static void usage(char **argv) {
+static void usage(const char **argv) {
     printf("Usage: %s [options]\n\n", argv[0]);
     printf("-e <passwords>\n");
     printf("-d <hashes>\n");
